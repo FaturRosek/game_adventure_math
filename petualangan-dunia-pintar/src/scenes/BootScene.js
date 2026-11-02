@@ -15,23 +15,7 @@ export class BootScene extends Phaser.Scene {
 
     GAME_CONFIG.characters.forEach((char) => {
       g.clear();
-      g.fillStyle(0x2c3e50, 1);
-      g.fillRoundedRect(2, 6, 48, 56, 16);
-      g.fillStyle(char.color, 1);
-      g.fillRoundedRect(5, 9, 42, 50, 14);
-      g.fillStyle(0xfff5e6, 1);
-      g.fillRoundedRect(13, 28, 26, 26, 10);
-      g.fillStyle(0xffffff, 1);
-      g.fillCircle(19, 21, 6);
-      g.fillCircle(35, 21, 6);
-      g.fillStyle(0x1e272e, 1);
-      g.fillCircle(20, 21, 3);
-      g.fillCircle(36, 21, 3);
-      g.lineStyle(3, 0x2c3e50, 1);
-      g.beginPath();
-      g.arc(27, 25, 6, 0.2, Math.PI - 0.2, false);
-      g.strokePath();
-
+      this.drawUniqueCharacter(g, char.id);
       g.generateTexture(`player_${char.id}`, 52, 64);
     });
 
@@ -150,5 +134,189 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture("checker_line", 28, 140);
 
     g.destroy();
+  }
+
+  drawUniqueCharacter(g, charId) {
+    const outline = 0x2c3e50;
+
+    if (charId === "cici") {
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(11, 0, 11, 24, 5);
+      g.fillRoundedRect(30, 0, 11, 24, 5);
+      g.fillStyle(0xf8efba, 1);      g.fillRoundedRect(13, 2, 7, 20, 4);
+      g.fillRoundedRect(32, 2, 7, 20, 4);
+      g.fillStyle(0xff9ff3, 1);      g.fillRoundedRect(15, 4, 3, 14, 2);
+      g.fillRoundedRect(34, 4, 3, 14, 2);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(12, 54, 11, 10, 4);
+      g.fillRoundedRect(29, 54, 11, 10, 4);
+      g.fillStyle(0xf8efba, 1);
+      g.fillRoundedRect(14, 55, 7, 7, 3);
+      g.fillRoundedRect(31, 55, 7, 7, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(9, 36, 34, 22, 10);
+      g.fillStyle(0x9b59b6, 1);
+      g.fillRoundedRect(11, 38, 30, 18, 8);
+      g.fillStyle(0xf1c40f, 1);      g.fillCircle(26, 46, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(7, 16, 38, 25, 12);
+      g.fillStyle(0xffffff, 1);
+      g.fillRoundedRect(9, 18, 34, 21, 10);
+
+      g.fillStyle(0x1e272e, 1);
+      g.fillCircle(19, 27, 3.5);
+      g.fillCircle(33, 27, 3.5);
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(20, 26, 1.2);
+      g.fillCircle(34, 26, 1.2);
+
+      g.fillStyle(0xff9ff3, 0.85);
+      g.fillCircle(14, 31, 3);
+      g.fillCircle(38, 31, 3);
+
+      g.fillStyle(0xe84393, 1);
+      g.fillTriangle(24, 30, 28, 30, 26, 33);
+      g.fillStyle(0xffffff, 1);
+      g.fillRect(24, 33, 4, 4);
+      g.lineStyle(1.5, outline, 1);
+      g.strokeRect(24, 33, 4, 4);
+    } else if (charId === "bobi") {
+      g.fillStyle(outline, 1);
+      g.fillCircle(12, 12, 8);
+      g.fillCircle(40, 12, 8);
+      g.fillStyle(0x8d5524, 1);      g.fillCircle(12, 12, 6);
+      g.fillCircle(40, 12, 6);
+      g.fillStyle(0xe0ac69, 1);      g.fillCircle(12, 12, 3);
+      g.fillCircle(40, 12, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(10, 53, 12, 11, 5);
+      g.fillRoundedRect(30, 53, 12, 11, 5);
+      g.fillStyle(0x8d5524, 1);
+      g.fillRoundedRect(12, 54, 8, 8, 3);
+      g.fillRoundedRect(32, 54, 8, 8, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(6, 34, 40, 23, 11);
+      g.fillStyle(0x3498db, 1);
+      g.fillRoundedRect(8, 36, 36, 19, 9);
+      g.fillStyle(0xe0ac69, 1);      g.fillRoundedRect(18, 38, 16, 15, 7);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(6, 12, 40, 27, 13);
+      g.fillStyle(0xa0522d, 1);
+      g.fillRoundedRect(8, 14, 36, 23, 11);
+
+      g.fillStyle(0xffeaa7, 1);
+      g.fillRoundedRect(17, 24, 18, 11, 5);
+
+      g.fillStyle(0x1e272e, 1);
+      g.fillCircle(17, 21, 3.2);
+      g.fillCircle(35, 21, 3.2);
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(18, 20, 1.2);
+      g.fillCircle(36, 20, 1.2);
+
+      g.fillStyle(0x2c3e50, 1);
+      g.fillRoundedRect(23, 25, 6, 4, 2);
+      g.lineStyle(2, 0x2c3e50, 1);
+      g.beginPath();
+      g.arc(26, 30, 4, 0.2, Math.PI - 0.2, false);
+      g.strokePath();
+    } else if (charId === "prof_panda") {
+      g.fillStyle(0x1e272e, 1);
+      g.fillCircle(12, 12, 8);
+      g.fillCircle(40, 12, 8);
+
+      g.fillStyle(0x1e272e, 1);
+      g.fillRoundedRect(11, 53, 12, 11, 5);
+      g.fillRoundedRect(29, 53, 12, 11, 5);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(7, 34, 38, 23, 10);
+      g.fillStyle(0x2ecc71, 1);
+      g.fillRoundedRect(9, 36, 34, 19, 8);
+      g.fillStyle(0xffffff, 1);      g.fillRect(21, 36, 10, 17);
+      g.fillStyle(0xe74c3c, 1);      g.fillTriangle(23, 37, 29, 37, 26, 49);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(6, 12, 40, 26, 13);
+      g.fillStyle(0xffffff, 1);
+      g.fillRoundedRect(8, 14, 36, 22, 11);
+
+      g.fillStyle(0x1e272e, 1);
+      g.fillCircle(18, 23, 5.5);
+      g.fillCircle(34, 23, 5.5);
+
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(18, 23, 2.2);
+      g.fillCircle(34, 23, 2.2);
+
+      g.lineStyle(2, 0xf1c40f, 1);
+      g.strokeCircle(18, 23, 6.5);
+      g.strokeCircle(34, 23, 6.5);
+      g.strokeLineShape(new Phaser.Geom.Line(24, 23, 28, 23));
+
+      g.fillStyle(0x1e272e, 1);
+      g.fillRoundedRect(23, 28, 6, 4, 2);
+    } else {
+      g.fillStyle(0x6e421c, 1);
+      g.fillRect(19, 3, 3, 10);
+      g.fillRect(30, 3, 3, 10);
+      g.fillRect(17, 5, 3, 3);
+      g.fillRect(32, 5, 3, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillTriangle(4, 10, 17, 12, 12, 21);
+      g.fillTriangle(48, 10, 35, 12, 40, 21);
+      g.fillStyle(0xe67e22, 1);
+      g.fillTriangle(6, 11, 16, 13, 12, 19);
+      g.fillTriangle(46, 11, 36, 13, 40, 19);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(13, 53, 10, 11, 4);
+      g.fillRoundedRect(29, 53, 10, 11, 4);
+      g.fillStyle(0xd35400, 1);
+      g.fillRoundedRect(15, 54, 6, 8, 3);
+      g.fillRoundedRect(31, 54, 6, 8, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(9, 35, 34, 21, 9);
+      g.fillStyle(0xe67e22, 1);
+      g.fillRoundedRect(11, 37, 30, 17, 8);
+      g.fillStyle(0xfff5e6, 1);      g.fillRoundedRect(18, 39, 16, 13, 6);
+
+      g.fillStyle(0xe74c3c, 1);
+      g.fillRoundedRect(11, 34, 30, 6, 3);
+
+      g.fillStyle(outline, 1);
+      g.fillRoundedRect(8, 11, 36, 26, 12);
+      g.fillStyle(0xf39c12, 1);
+      g.fillRoundedRect(10, 13, 32, 22, 10);
+
+      g.fillStyle(0xfff9db, 1);
+      g.fillCircle(23, 17, 2);
+      g.fillCircle(29, 17, 2);
+      g.fillCircle(26, 20, 1.8);
+
+      g.fillStyle(0x1e272e, 1);
+      g.fillCircle(18, 24, 3.4);
+      g.fillCircle(34, 24, 3.4);
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(19, 23, 1.2);
+      g.fillCircle(35, 23, 1.2);
+
+      g.fillStyle(0xfff5e6, 1);
+      g.fillRoundedRect(20, 26, 12, 8, 4);
+      g.fillStyle(0x2c3e50, 1);
+      g.fillCircle(26, 28, 2.5);
+      g.lineStyle(2, 0x2c3e50, 1);
+      g.beginPath();
+      g.arc(26, 30, 3.5, 0.2, Math.PI - 0.2, false);
+      g.strokePath();
+    }
   }
 }

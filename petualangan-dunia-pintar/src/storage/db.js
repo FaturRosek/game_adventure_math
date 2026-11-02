@@ -390,9 +390,6 @@ class LocalDatabase {
     });
   }
 
-  // ==========================================
-  // BANK SOAL KUSTOM (IMPOR JSON)
-  // ==========================================
   async getCustomQuestions() {
     await this.init();
     if (this.useFallback) {
@@ -434,9 +431,6 @@ class LocalDatabase {
     });
   }
 
-  // ==========================================
-  // EKSPOR & IMPOR BACKUP DATA (OFFLINE JSON)
-  // ==========================================
   async exportBackupData() {
     const profiles = await this.getAllProfiles();
     const settings = await this.getSettings();

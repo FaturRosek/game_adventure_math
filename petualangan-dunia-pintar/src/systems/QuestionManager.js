@@ -89,10 +89,6 @@ export class QuestionManager {
     return stats;
   }
 
-  /**
-   * Validasi dan impor array soal JSON dari Panel Tutor.
-   * Menolak soal dengan struktur tidak lengkap atau ID duplikat.
-   */
   async validateAndImportQuestions(jsonInput) {
     let parsed = jsonInput;
     if (typeof jsonInput === "string") {

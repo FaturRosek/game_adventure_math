@@ -158,9 +158,6 @@ export class UIManager {
     }
   }
 
-  // ==========================================
-  // 1. MAIN MENU
-  // ==========================================
   showMainMenu() {
     this.stopAllGameplayScenes();
 
@@ -218,9 +215,6 @@ export class UIManager {
     });
   }
 
-  // ==========================================
-  // 2. PROFIL PEMAIN
-  // ==========================================
   async showProfileMenu(redirectToPlay = false) {
     const profiles = await db.getAllProfiles();
     let selectedChar = "kiko";
@@ -389,9 +383,6 @@ export class UIManager {
     }
   }
 
-  // ==========================================
-  // 3. PILIHAN KELAS, MAPEL & MODE
-  // ==========================================
   showGradeSelection() {
     const gradeCardsHtml = GAME_CONFIG.classes
       .map(
@@ -558,9 +549,6 @@ export class UIManager {
       });
   }
 
-  // ==========================================
-  // 4. PENGATURAN UMUM & TENTANG GAME
-  // ==========================================
   showSettingsMenu() {
     this.container.innerHTML = `
       <div class="screen-overlay">
@@ -645,9 +633,6 @@ export class UIManager {
     });
   }
 
-  // ==========================================
-  // 5. ADVENTURE MODE & HASIL
-  // ==========================================
   startAdventureMode() {
     this.stopAllGameplayScenes();
     const charInfo = this.getCharacterInfo(this.activeProfile?.character);
@@ -949,9 +934,6 @@ export class UIManager {
     });
   }
 
-  // ==========================================
-  // 6. DUEL MODE (PERSIAPAN, HOT SEAT & HASIL)
-  // ==========================================
   showDuelSetupScreen() {
     this.stopAllGameplayScenes();
 
@@ -1595,9 +1577,6 @@ export class UIManager {
     });
   }
 
-  // ==========================================
-  // 7. PANEL TUTOR (AKSES PIN & 5 TAB LENGKAP)
-  // ==========================================
   showTutorPinGate() {
     if (this.tutorUnlocked) {
       this.showTutorPanel("dashboard");
@@ -1698,7 +1677,6 @@ export class UIManager {
 
     let tabContentHtml = "";
 
-    // TAB 1: DASHBOARD
     if (activeTab === "dashboard") {
       const summaryRows =
         profiles.length === 0
@@ -1762,7 +1740,6 @@ export class UIManager {
       `;
     }
 
-    // TAB 2: MANAJEMEN SISWA
     if (activeTab === "students") {
       const studentListHtml =
         profiles.length === 0
@@ -1818,7 +1795,6 @@ export class UIManager {
       `;
     }
 
-    // TAB 3: LAPORAN BELAJAR
     if (activeTab === "reports") {
       if (!targetProfile) {
         tabContentHtml = `<p style="font-weight:700; padding:16px;">Belum ada siswa untuk ditampilkan laporannya.</p>`;
@@ -1964,7 +1940,6 @@ export class UIManager {
       }
     }
 
-    // TAB 4: PENGELOLAAN BANK SOAL JSON
     if (activeTab === "questions") {
       const mtkStats = bankStats.bySubject.matematika;
       const ipasStats = bankStats.bySubject.ipas;
@@ -2046,7 +2021,6 @@ export class UIManager {
       `;
     }
 
-    // TAB 5: PENGATURAN TUTOR & CADANGAN DATA (BACKUP/RESTORE)
     if (activeTab === "settings") {
       tabContentHtml = `
         <div class="tutor-scroll-area" style="max-height: 360px;">
@@ -2132,7 +2106,6 @@ export class UIManager {
       });
     });
 
-    // Event Listener Tab Manajemen Siswa
     if (activeTab === "students") {
       this.container.querySelectorAll(".btn-view-report").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -2159,7 +2132,6 @@ export class UIManager {
       });
     }
 
-    // Event Listener Tab Laporan Belajar
     if (activeTab === "reports") {
       const selStudent = document.getElementById("sel-report-student");
       if (selStudent) {
@@ -2170,7 +2142,6 @@ export class UIManager {
       }
     }
 
-    // Event Listener Tab Bank Soal JSON
     if (activeTab === "questions") {
       const btnImportQ = document.getElementById("btn-process-import-q");
       const fileInpQ = document.getElementById("inp-import-json");
@@ -2209,7 +2180,6 @@ export class UIManager {
       }
     }
 
-    // Event Listener Tab Pengaturan & Backup
     if (activeTab === "settings") {
       document
         .getElementById("btn-save-pin")

@@ -736,9 +736,6 @@ html {
     font-weight: 700;
 }
 
-/* ==========================================
-   PANEL TUTOR STYLING (KARTUN RAMAH & RAPI)
-   ========================================== */
 .tutor-tabs-nav {
     display: flex;
     flex-wrap: wrap;
