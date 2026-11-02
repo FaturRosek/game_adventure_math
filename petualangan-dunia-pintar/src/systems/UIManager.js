@@ -687,10 +687,10 @@ export class UIManager {
               <strong>Petualangan Dunia Pintar (Hybrid Question Engine Edition)</strong> adalah game edukasi interaktif Kelas 3 SD untuk mata pelajaran <strong>Matematika</strong> dan <strong>IPAS</strong> yang berjalan 100% Offline.
             </p>
             <p style="margin-bottom: 8px;">
-              🧠 <strong>Hybrid Question System:</strong> Menggabungkan <em>Template Question Generator</em> (variasi angka, nama, benda, dan konteks otomatis tanpa batas) dan <em>Question Bank</em> tervalidasi.
+              🗺️ <strong>Adventure Mode (4 Pos = 8 Soal):</strong> Setiap peti, NPC, dan gerbang berisi 2 soal tantangan berurutan.
             </p>
             <p style="margin-bottom: 8px;">
-              🎯 <strong>Kesulitan Manual & Adaptif per Topik:</strong> Pada mode Adaptif, tingkat kesulitan menyesuaikan akurasi 5 soal terakhir siswa pada tiap topik di dalam batas yang ditentukan Tutor.
+              ⚔️ <strong>Duel Mode Sampai Garis Finis + Tie-Breaker Kecepatan:</strong> Permainan berlangsung terus sampai ada yang menyentuh garis finis (5 atau 10 langkah). Jika Tutor mencapai finis duluan, Murid tetap diberi giliran menyamakan kedudukan. Jika seri di garis finis, diadakan <strong>1 Soal Penentuan (Siapa Cepat & Tepat Dia Menang)</strong>!
             </p>
             <p>
               👨‍🏫 <strong>Panel Tutor:</strong> Dilengkapi analitik performa per topik, log perubahan adaptif, impor/ekspor Bank Soal JSON, pengujian otomatis (<em>Self-Test</em>), dan <em>Backup/Restore</em> data (PIN Bawaan: <strong>1234</strong>).
@@ -720,7 +720,7 @@ export class UIManager {
       subjectName: subInfo.name,
       coins: 0,
       correctCount: 0,
-      totalChallenges: 4,
+      totalChallenges: 8,
     });
 
     this.phaserGame.scene.start("AdventureScene", {
@@ -850,6 +850,9 @@ export class UIManager {
   }
 
   showQuestionModal({ questionData, triggerTitle, onComplete }) {
+    const existingModal = document.getElementById("active-quiz-modal");
+    if (existingModal) existingModal.remove();
+
     const letters = ["A", "B", "C", "D"];
     const modalWrapper = document.createElement("div");
     modalWrapper.className = "modal-backdrop";
@@ -897,7 +900,7 @@ export class UIManager {
         <div id="quiz-feedback-area" style="display: none;"></div>
 
         <div class="btn-group-horizontal" id="quiz-action-buttons" style="display: none; margin-top: 12px;">
-          <button id="btn-quiz-continue" class="btn-cartoon btn-green btn-small">Lanjutkan Petualangan ➡️</button>
+          <button id="btn-quiz-continue" class="btn-cartoon btn-green btn-small">Lanjutkan ➡️</button>
         </div>
       </div>
     `;
@@ -985,11 +988,11 @@ export class UIManager {
             </div>
             <div class="result-stat-row">
               <span>✅ Jawaban Soal Benar:</span>
-              <span style="color: #27ae60;">${resultData.correctCount} Soal</span>
+              <span style="color: #27ae60;">${resultData.correctCount} / 8 Soal</span>
             </div>
             <div class="result-stat-row">
               <span>❌ Jawaban Soal Salah:</span>
-              <span style="color: #c0392b;">${resultData.wrongCount} Soal</span>
+              <span style="color: #c0392b;">${resultData.wrongCount} Kali</span>
             </div>
             <div class="result-stat-row">
               <span>⭐ Bintang Diperoleh:</span>
@@ -1034,7 +1037,7 @@ export class UIManager {
         ? this.settings.manualDifficulty
         : "adaptif";
     let chosenBounds = this.settings.adaptiveBounds || "mudah-sulit";
-    let chosenRounds = 5;
+    let chosenTargetSteps = 5;
     let tutorChar = "prof_panda";
     let studentChar = this.activeProfile?.character || "kiko";
 
@@ -1073,7 +1076,7 @@ export class UIManager {
       this.container.innerHTML = `
         <div class="screen-overlay">
           <div class="cartoon-panel" style="max-width: 880px;">
-            <div class="game-logo-badge">⚔️ MODE KOMPETISI 1 LAYAR (HOT SEAT SETARA) ⚔️</div>
+            <div class="game-logo-badge">⚔️ MODE KOMPETISI 1 LAYAR (BALAPAN SAMPAI FINIS) ⚔️</div>
             <h2 class="panel-header-title" style="margin-bottom: 6px;">Persiapan Duel: Tutor vs Murid</h2>
 
             <div class="form-box">
@@ -1119,12 +1122,16 @@ export class UIManager {
                 }
 
                 <div class="form-group">
-                  <label for="duel-sel-rounds">🏁 Jumlah Ronde:</label>
+                  <label for="duel-sel-rounds">🏁 Target Jarak Garis Finis:</label>
                   <select id="duel-sel-rounds" class="input-cartoon">
-                    <option value="5" ${chosenRounds === 5 ? "selected" : ""}>5 Ronde (Cepat)</option>
-                    <option value="10" ${chosenRounds === 10 ? "selected" : ""}>10 Ronde (Maraton)</option>
+                    <option value="5" ${chosenTargetSteps === 5 ? "selected" : ""}>5 Langkah Benar (Lintasan Pendek)</option>
+                    <option value="10" ${chosenTargetSteps === 10 ? "selected" : ""}>10 Langkah Benar (Lintasan Panjang)</option>
                   </select>
                 </div>
+              </div>
+
+              <div style="background:#eef9ff; border:2px dashed #3498db; border-radius:12px; padding:8px 12px; margin-bottom:10px; font-size:0.86rem; font-weight:700; color:#2c3e50;">
+                💡 <strong>Aturan Balapan Sampai Finis:</strong> Soal terus diberikan tanpa batas sampai ada pemain yang menyentuh Garis Finis (${chosenTargetSteps} langkah benar). Jika Tutor menyentuh finis duluan, Murid tetap diberi giliran menyamakan kedudukan. Jika imbang di garis finis, diadakan <strong>1 Soal Penentuan (Siapa Cepat & Tepat Dia Menang)</strong>!
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px;">
@@ -1185,7 +1192,8 @@ export class UIManager {
       document
         .getElementById("duel-sel-rounds")
         .addEventListener("change", (e) => {
-          chosenRounds = Number(e.target.value);
+          chosenTargetSteps = Number(e.target.value);
+          renderSetupHTML();
         });
 
       this.container.querySelectorAll(".tutor-char-card").forEach((card) => {
@@ -1227,7 +1235,7 @@ export class UIManager {
             topic: chosenTopic,
             difficulty: chosenDifficulty,
             adaptiveBounds: chosenBounds,
-            rounds: chosenRounds,
+            rounds: chosenTargetSteps,
             tutorCharacter: tutorChar,
             studentCharacter: studentChar,
           });
@@ -1247,8 +1255,11 @@ export class UIManager {
       topic: config.topic,
       difficulty: config.difficulty,
       adaptiveBounds: config.adaptiveBounds || "mudah-sulit",
+      targetSteps: config.rounds,
       totalRounds: config.rounds,
       currentRound: 1,
+      isTieBreaker: false,
+      tieBreakerResult: null,
       tutorCharacter: config.tutorCharacter,
       studentCharacter: config.studentCharacter,
       studentName,
@@ -1259,12 +1270,16 @@ export class UIManager {
         wrong: 0,
         streak: 0,
         totalTimeMs: 0,
+        tieBreakerCorrect: false,
+        tieBreakerTimeMs: 0,
       },
       studentStats: {
         correct: 0,
         wrong: 0,
         streak: 0,
         totalTimeMs: 0,
+        tieBreakerCorrect: false,
+        tieBreakerTimeMs: 0,
         masteredSet: new Set(),
         reviewSet: new Set(),
       },
@@ -1307,13 +1322,44 @@ export class UIManager {
     );
     const subInfo = this.getSubjectInfo(s.subject);
 
-    const headingText = isTutor
-      ? "👨‍🏫 SEKARANG GILIRAN TUTOR!"
-      : `🧒 SEKARANG GILIRAN ${this.escapeHtml(s.studentName.toUpperCase())}!`;
+    const duelScene = this.phaserGame.scene.getScene("DuelScene");
+    const pos = duelScene
+      ? duelScene.getRacePositions()
+      : {
+          tutorStep: s.tutorStats.correct,
+          studentStep: s.studentStats.correct,
+        };
 
-    const instructionText = isTutor
-      ? "Serahkan laptop kepada Tutor. Pastikan layar siap untuk memulai ronde baru."
+    const isStudentEqualizerChance =
+      !isTutor &&
+      !s.isTieBreaker &&
+      pos.tutorStep >= s.targetSteps &&
+      pos.studentStep === s.targetSteps - 1;
+
+    let badgeHeader = `${subInfo.icon} ${subInfo.name.toUpperCase()} — RONDE KE-${s.currentRound} (TARGET FINIS: ${s.targetSteps} LANGKAH)`;
+    if (s.isTieBreaker) {
+      badgeHeader = `⚡BABAK PENENTUAN (SUDDEN DEATH TIE-BREAKER) — SIAPA CEPAT & TEPAT DIA MENANG!⚡`;
+    }
+
+    const headingText = isTutor
+      ? s.isTieBreaker
+        ? "⚡ GILIRAN TUTOR (SOAL PENENTUAN CEPAT)!"
+        : "👨‍🏫 SEKARANG GILIRAN TUTOR!"
+      : s.isTieBreaker
+        ? `⚡ GILIRAN ${this.escapeHtml(s.studentName.toUpperCase())} (SOAL PENENTUAN CEPAT)!`
+        : `🧒 SEKARANG GILIRAN ${this.escapeHtml(s.studentName.toUpperCase())}!`;
+
+    let instructionText = isTutor
+      ? "Serahkan laptop kepada Tutor. Pastikan layar siap untuk memulai ronde."
       : "Serahkan laptop kepada Murid. Soal Tutor sebelumnya telah disembunyikan sepenuhnya.";
+
+    if (isStudentEqualizerChance) {
+      instructionText = `🔥 Tutor sudah menyentuh garis finis! Ini kesempatan ${this.escapeHtml(s.studentName)} untuk menjawab BENAR agar menyamakan kedudukan dan memicu Babak Penentuan!`;
+    } else if (s.isTieBreaker) {
+      instructionText = isTutor
+        ? "Kedudukan seri di Garis Finis! Jawab 1 soal penentuan ini dengan BENAR dan SECEPAT MUNGKIN!"
+        : `Kedudukan seri di Garis Finis! Serahkan laptop kepada ${this.escapeHtml(s.studentName)}. Jawab 1 soal penentuan ini dengan BENAR dan SECEPAT MUNGKIN!`;
+    }
 
     const buttonLabel = isTutor
       ? "🚀 MULAI GILIRAN TUTOR"
@@ -1327,8 +1373,8 @@ export class UIManager {
     this.container.innerHTML = `
       <div class="hotseat-screen">
         <div class="hotseat-card">
-          <div class="game-logo-badge">
-            ${subInfo.icon} ${subInfo.name.toUpperCase()} — RONDE ${s.currentRound} DARI ${s.totalRounds}
+          <div class="game-logo-badge" style="${s.isTieBreaker ? "background:#ff4757; color:#fff;" : ""}">
+            ${this.escapeHtml(badgeHeader)}
           </div>
           <div style="margin-top: 8px;">
             <div class="hotseat-avatar-badge">${charInfo.emoji}</div>
@@ -1340,7 +1386,8 @@ export class UIManager {
             ${instructionText}
           </p>
           <div style="background: #eef9ff; border: 2px dashed #3498db; border-radius: 14px; padding: 10px; margin-bottom: 16px; font-weight: 700; font-size: 0.9rem;">
-            🔒 <strong>Anti-Meniru & Keadilan Setara:</strong> Topik ronde ini adalah <strong>${this.escapeHtml(roundTopicLabel)}</strong> dengan tingkat kesulitan setara <strong>${this.escapeHtml(roundDiffLabel)}</strong> untuk kedua pemain.
+            🔒 <strong>Posisi Saat Ini:</strong> Tutor (${pos.tutorStep}/${s.targetSteps}) vs ${this.escapeHtml(s.studentName)} (${pos.studentStep}/${s.targetSteps})<br/>
+            Topik Ronde Ini: <strong>${this.escapeHtml(roundTopicLabel)}</strong> | Kesulitan Setara: <strong>${this.escapeHtml(roundDiffLabel)}</strong>
           </div>
 
           <div class="btn-group-horizontal">
@@ -1379,7 +1426,7 @@ export class UIManager {
     const duelScene = this.phaserGame.scene.getScene("DuelScene");
     const posInfo = duelScene
       ? duelScene.getRacePositions()
-      : { tutorPct: 0, studentPct: 0 };
+      : { tutorStep: 0, studentStep: 0, tutorPct: 0, studentPct: 0 };
 
     const optionsHtml = qData.options
       .map(
@@ -1392,18 +1439,22 @@ export class UIManager {
       )
       .join("");
 
+    const roundBadgeText = s.isTieBreaker
+      ? "⚡ BABAK PENENTUAN CEPAT ⚡"
+      : `🏁 Ronde Ke-${s.currentRound} (Finis: ${s.targetSteps} Langkah)`;
+
     this.container.innerHTML = `
       <div class="hud-overlay" style="padding: 12px 18px;">
         <div class="hud-top-bar">
           <div class="hud-stats-group">
-            <div class="hud-pill" style="background: #fff9db;">
-              <span>🏁 Ronde <strong>${s.currentRound}/${s.totalRounds}</strong></span>
+            <div class="hud-pill" style="background: ${s.isTieBreaker ? "#ffeaa7" : "#fff9db"};">
+              <span><strong>${roundBadgeText}</strong></span>
             </div>
             <div class="hud-pill" style="background: ${isTutor ? "#d6eaf8" : "#fdebd0"};">
               <span>${charInfo.emoji} Giliran: <strong>${this.escapeHtml(playerName)}</strong></span>
             </div>
             <div class="hud-pill">
-              <span>👨‍🏫 Tutor: ${posInfo.tutorPct}% | 🧒 ${this.escapeHtml(s.studentName)}: ${posInfo.studentPct}%</span>
+              <span>👨‍🏫 Tutor: ${posInfo.tutorStep}/${s.targetSteps} (${posInfo.tutorPct}%) | 🧒 ${this.escapeHtml(s.studentName)}: ${posInfo.studentStep}/${s.targetSteps} (${posInfo.studentPct}%)</span>
             </div>
           </div>
           <button id="btn-duel-quit" class="btn-cartoon btn-red btn-small" style="pointer-events: auto;">
@@ -1415,7 +1466,7 @@ export class UIManager {
           <div class="quiz-panel" id="duel-question-card" style="max-width: 860px; padding: 16px 22px;">
             <div class="quiz-header-badges">
               <span class="status-badge badge-active">
-                ${charInfo.emoji} SOAL UNTUK ${this.escapeHtml(playerName.toUpperCase())}
+                ${charInfo.emoji} ${s.isTieBreaker ? "SOAL PENENTUAN KECEPATAN:" : "SOAL UNTUK"} ${this.escapeHtml(playerName.toUpperCase())}
               </span>
               <span class="status-badge" style="background: #e8f8f5; color: #117a65;">
                 ${this.escapeHtml(this.formatSourceBadge(qData.sourceType))}
@@ -1451,7 +1502,7 @@ export class UIManager {
         locked = true;
 
         const elapsedMs = Math.max(
-          200,
+          150,
           Math.round(performance.now() - turnStartTime),
         );
         const chosenAnswer = btn.dataset.answer;
@@ -1464,7 +1515,7 @@ export class UIManager {
         }
 
         s.answerLog.push({
-          round: s.currentRound,
+          round: s.isTieBreaker ? "TIE_BREAKER" : s.currentRound,
           role: turnRole,
           questionId: qData.id,
           topic: qData.topic,
@@ -1476,7 +1527,10 @@ export class UIManager {
 
         if (isTutor) {
           s.tutorStats.totalTimeMs += elapsedMs;
-          if (isCorrect) {
+          if (s.isTieBreaker) {
+            s.tutorStats.tieBreakerCorrect = isCorrect;
+            s.tutorStats.tieBreakerTimeMs = elapsedMs;
+          } else if (isCorrect) {
             s.tutorStats.correct += 1;
             s.tutorStats.streak += 1;
           } else {
@@ -1485,7 +1539,10 @@ export class UIManager {
           }
         } else {
           s.studentStats.totalTimeMs += elapsedMs;
-          if (isCorrect) {
+          if (s.isTieBreaker) {
+            s.studentStats.tieBreakerCorrect = isCorrect;
+            s.studentStats.tieBreakerTimeMs = elapsedMs;
+          } else if (isCorrect) {
             s.studentStats.correct += 1;
             s.studentStats.streak += 1;
             s.studentStats.masteredSet.add(qData.topic);
@@ -1512,6 +1569,7 @@ export class UIManager {
           }
         }
 
+        const timeSecStr = (elapsedMs / 1000).toFixed(2);
         const qCard = document.getElementById("duel-question-card");
         if (qCard) {
           qCard.innerHTML = `
@@ -1519,8 +1577,8 @@ export class UIManager {
               <h3 style="font-size: 1.4rem; font-weight: 900; color: ${isCorrect ? "#27ae60" : "#e67e22"};">
                 ${
                   isCorrect
-                    ? `🎉 JAWABAN BENAR! Karakter ${this.escapeHtml(playerName)} Bergerak Maju!`
-                    : `💪 Belum Tepat! Karakter ${this.escapeHtml(playerName)} Tetap Bertahan di Posisinya!`
+                    ? `🎉 JAWABAN BENAR! (${timeSecStr} detik)`
+                    : `💪 Belum Tepat! (${timeSecStr} detik)`
                 }
               </h3>
               <p style="margin-top: 6px; font-weight: 700; color: #576574;">
@@ -1528,6 +1586,22 @@ export class UIManager {
               </p>
             </div>
           `;
+        }
+
+        if (s.isTieBreaker) {
+          if (duelScene && isCorrect) {
+            const runnerX = duelScene.finishX;
+            const runnerY = isTutor ? duelScene.tutorY : duelScene.studentY;
+            duelScene.spawnTurboEffect(
+              runnerX,
+              runnerY,
+              `⚡ ${timeSecStr} dtk!`,
+            );
+          }
+          setTimeout(() => {
+            this.advanceDuelTurnState(turnRole);
+          }, 800);
+          return;
         }
 
         const currentStreak = isTutor
@@ -1539,24 +1613,29 @@ export class UIManager {
             role: turnRole,
             isCorrect,
             streak: currentStreak,
-            onComplete: (reachedFinish) => {
+            onComplete: () => {
               setTimeout(() => {
-                this.advanceDuelTurnState(turnRole, reachedFinish);
+                this.advanceDuelTurnState(turnRole);
               }, 650);
             },
           });
         } else {
-          this.advanceDuelTurnState(turnRole, false);
+          this.advanceDuelTurnState(turnRole);
         }
       });
     });
   }
 
-  advanceDuelTurnState(completedRole, reachedFinish) {
+  advanceDuelTurnState(completedRole) {
     const s = this.duelSession;
 
     if (completedRole === "tutor") {
       this.showHotSeatTransition("student");
+      return;
+    }
+
+    if (s.isTieBreaker) {
+      this.showDuelMatchResult();
       return;
     }
 
@@ -1568,16 +1647,22 @@ export class UIManager {
           studentStep: s.studentStats.correct,
         };
 
-    const someoneFinished =
-      pos.tutorStep >= s.totalRounds || pos.studentStep >= s.totalRounds;
-    const allRoundsDone = s.currentRound >= s.totalRounds;
+    const tutorFinished = pos.tutorStep >= s.targetSteps;
+    const studentFinished = pos.studentStep >= s.targetSteps;
 
-    if (someoneFinished || allRoundsDone || reachedFinish) {
-      this.showDuelMatchResult();
-    } else {
-      s.currentRound += 1;
+    if (tutorFinished && studentFinished) {
+      s.isTieBreaker = true;
       this.prepareNextDuelRound();
+      return;
     }
+
+    if (tutorFinished || studentFinished) {
+      this.showDuelMatchResult();
+      return;
+    }
+
+    s.currentRound += 1;
+    this.prepareNextDuelRound();
   }
 
   async showDuelMatchResult() {
@@ -1587,11 +1672,15 @@ export class UIManager {
     const pos = duelScene
       ? duelScene.getRacePositions()
       : {
-          tutorStep: s.tutorStats.correct,
-          studentStep: s.studentStats.correct,
-          tutorPct: Math.round((s.tutorStats.correct / s.totalRounds) * 100),
-          studentPct: Math.round(
-            (s.studentStats.correct / s.totalRounds) * 100,
+          tutorStep: Math.min(s.targetSteps, s.tutorStats.correct),
+          studentStep: Math.min(s.targetSteps, s.studentStats.correct),
+          tutorPct: Math.min(
+            100,
+            Math.round((s.tutorStats.correct / s.targetSteps) * 100),
+          ),
+          studentPct: Math.min(
+            100,
+            Math.round((s.studentStats.correct / s.targetSteps) * 100),
           ),
         };
 
@@ -1599,37 +1688,86 @@ export class UIManager {
     let bannerTitle = "🤝 PERTANDINGAN SERI! SAMA-SAMA HEBAT!";
     let encouragingMsg =
       "Luar biasa! Tutor dan Murid sama-sama tangguh di lintasan balap!";
+    let tieBreakerNoteHtml = "";
 
-    if (pos.studentStep > pos.tutorStep) {
+    if (s.isTieBreaker) {
+      const tOk = s.tutorStats.tieBreakerCorrect;
+      const sOk = s.studentStats.tieBreakerCorrect;
+      const tSec = (s.tutorStats.tieBreakerTimeMs / 1000).toFixed(2);
+      const sSec = (s.studentStats.tieBreakerTimeMs / 1000).toFixed(2);
+
+      if (sOk && !tOk) {
+        winner = "student";
+        bannerTitle = `🏆 PEMENANG TIE-BREAKER: ${s.studentName.toUpperCase()}!`;
+        encouragingMsg = `Luar biasa ${s.studentName}! Kamu berhasil menjawab soal penentuan dengan tepat!`;
+      } else if (tOk && !sOk) {
+        winner = "tutor";
+        bannerTitle = "🏆 PEMENANG TIE-BREAKER: TUTOR!";
+        encouragingMsg = `Pertandingan yang sangat sengit! ${s.studentName} berhasil memaksa Tutor hingga ke Babak Penentuan!`;
+      } else if (sOk && tOk) {
+        if (s.studentStats.tieBreakerTimeMs <= s.tutorStats.tieBreakerTimeMs) {
+          winner = "student";
+          bannerTitle = `⚡ MENANG ADU CEPAT: ${s.studentName.toUpperCase()}!`;
+          encouragingMsg = `Hebat sekali ${s.studentName}! Keduanya menjawab benar di Babak Penentuan, dan kamu menang karena menjawab lebih cepat (${sSec} detik vs ${tSec} detik)!`;
+        } else {
+          winner = "tutor";
+          bannerTitle = "⚡ MENANG ADU CEPAT: TUTOR!";
+          encouragingMsg = `Luar biasa ${s.studentName}! Kamu dan Tutor sama-sama menjawab benar di Babak Penentuan, hanya terpaut tipis di kecepatan waktu (${tSec} detik vs ${sSec} detik)!`;
+        }
+      } else {
+        if (s.studentStats.totalTimeMs <= s.tutorStats.totalTimeMs) {
+          winner = "student";
+          bannerTitle = `🏆 PEMENANG KECEPATAN TOTAL: ${s.studentName.toUpperCase()}!`;
+        } else {
+          winner = "tutor";
+          bannerTitle = "🏆 PEMENANG KECEPATAN TOTAL: TUTOR!";
+        }
+      }
+
+      tieBreakerNoteHtml = `
+        <div style="background:#fff3cd; border:3px solid #34495e; border-radius:14px; padding:10px; margin-bottom:10px; font-weight:800; font-size:0.92rem;">
+          ⚡ <strong>Hasil Babak Penentuan (Tie-Breaker):</strong>
+          🧒 ${this.escapeHtml(s.studentName)}: ${sOk ? "✅ Benar" : "❌ Salah"} (${sSec} dtk) &nbsp;|&nbsp;
+          👨‍🏫 Tutor: ${tOk ? "✅ Benar" : "❌ Salah"} (${tSec} dtk)
+        </div>
+      `;
+    } else if (pos.studentStep > pos.tutorStep) {
       winner = "student";
       bannerTitle = `🏆 PEMENANG: ${s.studentName.toUpperCase()}!`;
-      encouragingMsg = `Selamat ${s.studentName}! Kamu berhasil melesat memimpin balapan dengan sangat cerdas!`;
+      encouragingMsg = `Selamat ${s.studentName}! Kamu berhasil menyentuh Garis Finis lebih dulu!`;
     } else if (pos.tutorStep > pos.studentStep) {
       winner = "tutor";
       bannerTitle = "🏆 PEMENANG: TUTOR!";
-      encouragingMsg = `Usaha yang sangat hebat, ${s.studentName}! Kamu sudah menjawab banyak tantangan dengan berani. Yuk terus berlatih!`;
+      encouragingMsg = `Usaha yang sangat hebat, ${s.studentName}! Kamu sudah berjuang keras. Yuk tanding lagi!`;
     }
 
-    const tutorTotalAns = s.tutorStats.correct + s.tutorStats.wrong;
-    const studentTotalAns = s.studentStats.correct + s.studentStats.wrong;
+    const tutorTotalAns =
+      s.tutorStats.correct + s.tutorStats.wrong + (s.isTieBreaker ? 1 : 0);
+    const studentTotalAns =
+      s.studentStats.correct + s.studentStats.wrong + (s.isTieBreaker ? 1 : 0);
+
+    const tutorTotalCorrect =
+      s.tutorStats.correct + (s.tutorStats.tieBreakerCorrect ? 1 : 0);
+    const studentTotalCorrect =
+      s.studentStats.correct + (s.studentStats.tieBreakerCorrect ? 1 : 0);
 
     const tutorAcc =
       tutorTotalAns > 0
-        ? Math.round((s.tutorStats.correct / tutorTotalAns) * 100)
+        ? Math.round((tutorTotalCorrect / tutorTotalAns) * 100)
         : 0;
     const studentAcc =
       studentTotalAns > 0
-        ? Math.round((s.studentStats.correct / studentTotalAns) * 100)
+        ? Math.round((studentTotalCorrect / studentTotalAns) * 100)
         : 0;
 
     const tutorAvgSec =
       tutorTotalAns > 0
-        ? (s.tutorStats.totalTimeMs / tutorTotalAns / 1000).toFixed(1)
-        : "0.0";
+        ? (s.tutorStats.totalTimeMs / tutorTotalAns / 1000).toFixed(2)
+        : "0.00";
     const studentAvgSec =
       studentTotalAns > 0
-        ? (s.studentStats.totalTimeMs / studentTotalAns / 1000).toFixed(1)
-        : "0.0";
+        ? (s.studentStats.totalTimeMs / studentTotalAns / 1000).toFixed(2)
+        : "0.00";
 
     const masteredTopics = Array.from(s.studentStats.masteredSet);
     const reviewTopics = Array.from(s.studentStats.reviewSet);
@@ -1645,18 +1783,18 @@ export class UIManager {
         topic: s.topic,
         difficulty: s.difficulty,
         difficultyMode: s.difficulty === "adaptif" ? "adaptif" : "manual",
-        totalRounds: s.totalRounds,
+        totalRounds: s.currentRound,
         winner,
         studentStats: {
-          correct: s.studentStats.correct,
-          wrong: s.studentStats.wrong,
+          correct: studentTotalCorrect,
+          wrong: studentTotalAns - studentTotalCorrect,
           accuracy: studentAcc,
           avgTimeSec: Number(studentAvgSec),
           finalPositionPct: pos.studentPct,
         },
         tutorStats: {
-          correct: s.tutorStats.correct,
-          wrong: s.tutorStats.wrong,
+          correct: tutorTotalCorrect,
+          wrong: tutorTotalAns - tutorTotalCorrect,
           accuracy: tutorAcc,
           avgTimeSec: Number(tutorAvgSec),
           finalPositionPct: pos.tutorPct,
@@ -1671,33 +1809,33 @@ export class UIManager {
     this.container.innerHTML = `
       <div class="screen-overlay" style="background: rgba(20, 30, 48, 0.82);">
         <div class="cartoon-panel" style="max-width: 820px;">
-          <div class="game-logo-badge">🏁 HASIL AKHIR DUEL MODE 🏁</div>
+          <div class="game-logo-badge">🏁 HASIL AKHIR DUEL MODE (${s.currentRound} RONDE BERLANGSUNG) 🏁</div>
           <h2 class="panel-header-title" style="margin-bottom: 4px;">${this.escapeHtml(bannerTitle)}</h2>
           <p class="game-subtitle" style="margin-bottom: 10px; font-size: 0.98rem; color: #27ae60;">
             ${this.escapeHtml(encouragingMsg)}
           </p>
+
+          ${tieBreakerNoteHtml}
 
           <div class="duel-comparison-grid">
             <div class="duel-player-card" style="background: #fffdf2; border-color: #f39c12;">
               <div style="font-size: 1.15rem; font-weight: 900; color: #d35400; margin-bottom: 6px;">
                 🧒 Murid: ${this.escapeHtml(s.studentName)}
               </div>
-              <div class="result-stat-row"><span>📍 Posisi Akhir:</span><span>${pos.studentPct}% (${pos.studentStep}/${s.totalRounds})</span></div>
-              <div class="result-stat-row"><span>✅ Jawaban Benar:</span><span style="color:#27ae60;">${s.studentStats.correct}</span></div>
-              <div class="result-stat-row"><span>❌ Jawaban Salah:</span><span style="color:#c0392b;">${s.studentStats.wrong}</span></div>
+              <div class="result-stat-row"><span>📍 Posisi Finis:</span><span>${pos.studentPct}% (${pos.studentStep}/${s.targetSteps} Langkah)</span></div>
+              <div class="result-stat-row"><span>✅ Total Jawaban Benar:</span><span style="color:#27ae60;">${studentTotalCorrect} dari ${studentTotalAns} Soal</span></div>
               <div class="result-stat-row"><span>🎯 Akurasi:</span><span>${studentAcc}%</span></div>
-              <div class="result-stat-row" style="border:none;"><span>⏱️ Rata-rata Waktu:</span><span>${studentAvgSec} dtk</span></div>
+              <div class="result-stat-row" style="border:none;"><span>⏱️ Rata-rata Kecepatan:</span><span>${studentAvgSec} detik/soal</span></div>
             </div>
 
             <div class="duel-player-card" style="background: #f4f9fd; border-color: #3498db;">
               <div style="font-size: 1.15rem; font-weight: 900; color: #2980b9; margin-bottom: 6px;">
                 👨‍🏫 Tutor Pendamping
               </div>
-              <div class="result-stat-row"><span>📍 Posisi Akhir:</span><span>${pos.tutorPct}% (${pos.tutorStep}/${s.totalRounds})</span></div>
-              <div class="result-stat-row"><span>✅ Jawaban Benar:</span><span style="color:#27ae60;">${s.tutorStats.correct}</span></div>
-              <div class="result-stat-row"><span>❌ Jawaban Salah:</span><span style="color:#c0392b;">${s.tutorStats.wrong}</span></div>
+              <div class="result-stat-row"><span>📍 Posisi Finis:</span><span>${pos.tutorPct}% (${pos.tutorStep}/${s.targetSteps} Langkah)</span></div>
+              <div class="result-stat-row"><span>✅ Total Jawaban Benar:</span><span style="color:#27ae60;">${tutorTotalCorrect} dari ${tutorTotalAns} Soal</span></div>
               <div class="result-stat-row"><span>🎯 Akurasi:</span><span>${tutorAcc}%</span></div>
-              <div class="result-stat-row" style="border:none;"><span>⏱️ Rata-rata Waktu:</span><span>${tutorAvgSec} dtk</span></div>
+              <div class="result-stat-row" style="border:none;"><span>⏱️ Rata-rata Kecepatan:</span><span>${tutorAvgSec} detik/soal</span></div>
             </div>
           </div>
 
