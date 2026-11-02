@@ -1,13 +1,42 @@
 import mathGrade3Data from "../data/mathGrade3.json";
 import ipasGrade3Data from "../data/ipasGrade3.json";
+import { db } from "../storage/db.js";
 
 export class QuestionManager {
   constructor() {
+    this.baseBanks = {
+      matematika: [...mathGrade3Data],
+      ipas: [...ipasGrade3Data],
+    };
     this.banks = {
       matematika: [...mathGrade3Data],
       ipas: [...ipasGrade3Data],
     };
     this.usedQuestionIds = new Set();
+  }
+
+  async loadCustomQuestionsFromDB() {
+    const customList = await db.getCustomQuestions();
+    this.banks = {
+      matematika: [...this.baseBanks.matematika],
+      ipas: [...this.baseBanks.ipas],
+    };
+
+    const existingIds = new Set([
+      ...this.banks.matematika.map((q) => q.id),
+      ...this.banks.ipas.map((q) => q.id),
+    ]);
+
+    customList.forEach((q) => {
+      if (!q || !q.id || existingIds.has(q.id)) return;
+      const subjKey = String(q.subject || "").toLowerCase();
+      if (subjKey === "ipas") {
+        this.banks.ipas.push(q);
+      } else {
+        this.banks.matematika.push(q);
+      }
+      existingIds.add(q.id);
+    });
   }
 
   resetSession() {
@@ -19,6 +48,10 @@ export class QuestionManager {
     return this.banks[key] || this.banks.matematika;
   }
 
+  getAllQuestionsCombined() {
+    return [...this.banks.matematika, ...this.banks.ipas];
+  }
+
   getTopicsBySubject(subject = "matematika") {
     const bank = this.getSubjectBank(subject);
     const topicSet = new Set();
@@ -26,6 +59,169 @@ export class QuestionManager {
       if (q.topic) topicSet.add(q.topic);
     });
     return Array.from(topicSet);
+  }
+
+  getBankStatistics() {
+    const stats = {
+      total: 0,
+      bySubject: {
+        matematika: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
+        ipas: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
+      },
+    };
+
+    ["matematika", "ipas"].forEach((subj) => {
+      const list = this.banks[subj] || [];
+      stats.bySubject[subj].total = list.length;
+      stats.total += list.length;
+
+      list.forEach((q) => {
+        const diff = String(q.difficulty || "sedang").toLowerCase();
+        if (stats.bySubject[subj][diff] !== undefined) {
+          stats.bySubject[subj][diff] += 1;
+        }
+        const topic = q.topic || "Umum";
+        stats.bySubject[subj].topics[topic] =
+          (stats.bySubject[subj].topics[topic] || 0) + 1;
+      });
+    });
+
+    return stats;
+  }
+
+  /**
+   * Validasi dan impor array soal JSON dari Panel Tutor.
+   * Menolak soal dengan struktur tidak lengkap atau ID duplikat.
+   */
+  async validateAndImportQuestions(jsonInput) {
+    let parsed = jsonInput;
+    if (typeof jsonInput === "string") {
+      try {
+        parsed = JSON.parse(jsonInput);
+      } catch (e) {
+        return {
+          success: false,
+          addedCount: 0,
+          skippedDuplicateCount: 0,
+          errors: ["File bukan format JSON yang valid."],
+        };
+      }
+    }
+
+    const items = Array.isArray(parsed) ? parsed : [parsed];
+    if (items.length === 0) {
+      return {
+        success: false,
+        addedCount: 0,
+        skippedDuplicateCount: 0,
+        errors: ["Array JSON kosong."],
+      };
+    }
+
+    const existingIds = new Set(
+      this.getAllQuestionsCombined().map((q) => String(q.id).trim()),
+    );
+    const validToSave = [];
+    const errors = [];
+    let skippedDuplicateCount = 0;
+
+    items.forEach((item, idx) => {
+      const rowNum = idx + 1;
+      if (!item || typeof item !== "object") {
+        errors.push(`Baris #${rowNum}: Bukan objek soal yang valid.`);
+        return;
+      }
+
+      const id = String(item.id || "").trim();
+      const subject = String(item.subject || "").trim();
+      const topic = String(item.topic || "").trim();
+      const difficulty = String(item.difficulty || "")
+        .trim()
+        .toLowerCase();
+      const question = String(item.question || "").trim();
+      const correctAnswer = String(item.correctAnswer || "").trim();
+      const explanation = String(item.explanation || "").trim();
+      const options = item.options;
+
+      if (
+        !id ||
+        !subject ||
+        !topic ||
+        !difficulty ||
+        !question ||
+        !correctAnswer ||
+        !explanation
+      ) {
+        errors.push(
+          `Soal #${rowNum} (${id || "Tanpa ID"}): Field wajib (id, subject, topic, difficulty, question, correctAnswer, explanation) harus lengkap.`,
+        );
+        return;
+      }
+
+      if (existingIds.has(id)) {
+        skippedDuplicateCount += 1;
+        return;
+      }
+
+      const subjLower = subject.toLowerCase();
+      if (subjLower !== "matematika" && subjLower !== "ipas") {
+        errors.push(
+          `Soal ID "${id}": Mata pelajaran harus "Matematika" atau "IPAS".`,
+        );
+        return;
+      }
+
+      if (!["mudah", "sedang", "sulit"].includes(difficulty)) {
+        errors.push(
+          `Soal ID "${id}": Tingkat kesulitan harus mudah, sedang, atau sulit.`,
+        );
+        return;
+      }
+
+      if (!Array.isArray(options) || options.length < 2) {
+        errors.push(
+          `Soal ID "${id}": Pilihan jawaban (options) harus berupa array minimal 2 pilihan.`,
+        );
+        return;
+      }
+
+      const cleanOptions = options.map((o) => String(o).trim());
+      if (!cleanOptions.includes(correctAnswer)) {
+        errors.push(
+          `Soal ID "${id}": Kunci jawaban (${correctAnswer}) tidak ditemukan di dalam pilihan options.`,
+        );
+        return;
+      }
+
+      const normalizedQuestion = {
+        id,
+        grade: Number(item.grade) || 3,
+        subject: subjLower === "ipas" ? "IPAS" : "Matematika",
+        topic,
+        subtopic: String(item.subtopic || topic).trim(),
+        difficulty,
+        question,
+        options: cleanOptions,
+        correctAnswer,
+        explanation,
+        isCustom: true,
+      };
+
+      existingIds.add(id);
+      validToSave.push(normalizedQuestion);
+    });
+
+    if (validToSave.length > 0) {
+      await db.saveCustomQuestionsBatch(validToSave);
+      await this.loadCustomQuestionsFromDB();
+    }
+
+    return {
+      success: validToSave.length > 0,
+      addedCount: validToSave.length,
+      skippedDuplicateCount,
+      errors,
+    };
   }
 
   shuffleArray(arr) {
@@ -115,7 +311,7 @@ export class QuestionManager {
     const tutorQ = shuffled[0];
     this.usedQuestionIds.add(tutorQ.id);
 
-    let studentPool = shuffled
+    const studentPool = shuffled
       .slice(1)
       .filter((q) => q.id !== tutorQ.id && q.question !== tutorQ.question);
 

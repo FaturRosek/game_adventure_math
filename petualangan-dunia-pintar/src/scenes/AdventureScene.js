@@ -15,6 +15,7 @@ export class AdventureScene extends Phaser.Scene {
     this.correctAnswers = 0;
     this.wrongAnswers = 0;
     this.totalChallenges = 4;
+    this.answerHistory = [];
     this.isQuizOpen = false;
     this.levelCompleted = false;
     this.lastHitTime = 0;
@@ -365,9 +366,18 @@ export class AdventureScene extends Phaser.Scene {
     uiManager.showQuestionModal({
       questionData: qData,
       triggerTitle: title,
-      onComplete: (isCorrect) => {
+      onComplete: (isCorrect, chosenAnswer) => {
         this.physics.resume();
         this.isQuizOpen = false;
+
+        this.answerHistory.push({
+          questionId: qData.id,
+          topic: qData.topic,
+          difficulty: qData.difficulty,
+          chosenAnswer: chosenAnswer || "",
+          correctAnswer: qData.correctAnswer,
+          isCorrect,
+        });
 
         if (isCorrect) {
           this.correctAnswers += 1;
@@ -435,6 +445,10 @@ export class AdventureScene extends Phaser.Scene {
         ? "Juara Matematika Pulau Pintar"
         : "Penjelajah Matematika Pemberani";
 
+    const collectibleItem = isIpas
+      ? "Kristal Daun Zamrud IPAS"
+      : "Kompas Emas Angka Pintar";
+
     const levelTitle = isIpas
       ? "Petualangan IPAS: Ekspedisi Alam & Kehidupan"
       : "Petualangan Matematika: Lembah Bilangan & Hitungan";
@@ -448,6 +462,8 @@ export class AdventureScene extends Phaser.Scene {
       wrongCount: this.wrongAnswers,
       starsEarned: stars,
       badgeEarned: badge,
+      collectibleItem,
+      answerHistory: this.answerHistory,
     });
   }
 
