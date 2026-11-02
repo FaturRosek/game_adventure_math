@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { GAME_CONFIG } from "../config/gameConfig.js";
 import { questionManager } from "../systems/QuestionManager.js";
 import { uiManager } from "../systems/UIManager.js";
+import { db } from "../storage/db.js";
 
 export class AdventureScene extends Phaser.Scene {
   constructor() {
@@ -359,14 +360,27 @@ export class AdventureScene extends Phaser.Scene {
     this.touchState.right = false;
     this.touchState.jump = false;
 
-    const qData = questionManager.getNextQuestion(this.subject);
+    const qData = questionManager.getNextQuestion(this.subject, null, {
+      profile: uiManager.activeProfile || this.profile,
+      settings: uiManager.settings,
+    });
+
+    if (qData.error) {
+      this.physics.resume();
+      this.isQuizOpen = false;
+      uiManager.updateAdventureHUD({
+        hintText: `⚠️ ${qData.message}`,
+      });
+      return;
+    }
+
     const title = challengeObj.getData("title");
     const type = challengeObj.getData("type");
 
     uiManager.showQuestionModal({
       questionData: qData,
       triggerTitle: title,
-      onComplete: (isCorrect, chosenAnswer) => {
+      onComplete: async (isCorrect, chosenAnswer) => {
         this.physics.resume();
         this.isQuizOpen = false;
 
@@ -374,10 +388,28 @@ export class AdventureScene extends Phaser.Scene {
           questionId: qData.id,
           topic: qData.topic,
           difficulty: qData.difficulty,
+          sourceType: qData.sourceType || "question_bank",
           chosenAnswer: chosenAnswer || "",
           correctAnswer: qData.correctAnswer,
           isCorrect,
         });
+
+        if (uiManager.activeProfile) {
+          uiManager.activeProfile = await db.recordQuestionAttempt(
+            uiManager.activeProfile.id,
+            {
+              questionId: qData.id,
+              subject: this.subject,
+              topic: qData.topic,
+              difficulty: qData.difficulty,
+              sourceType: qData.sourceType,
+              isCorrect,
+              mode: "adventure",
+            },
+            uiManager.settings,
+          );
+          this.profile = uiManager.activeProfile;
+        }
 
         if (isCorrect) {
           this.correctAnswers += 1;
@@ -409,7 +441,8 @@ export class AdventureScene extends Phaser.Scene {
             coins: this.coinsCollected,
             correctCount: this.correctAnswers,
             totalChallenges: this.totalChallenges,
-            hintText: "💡 Dekati lagi objeknya jika ingin mencoba soal baru!",
+            hintText:
+              "💡 Dekati lagi objeknya untuk berlatih soal penguatan pada materi ini!",
           });
         }
 

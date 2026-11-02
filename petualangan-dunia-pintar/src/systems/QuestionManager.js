@@ -1,18 +1,23 @@
 import mathGrade3Data from "../data/mathGrade3.json";
 import ipasGrade3Data from "../data/ipasGrade3.json";
 import { db } from "../storage/db.js";
+import { hybridEngine } from "./HybridQuestionEngine.js";
 
 export class QuestionManager {
   constructor() {
     this.baseBanks = {
-      matematika: [...mathGrade3Data],
-      ipas: [...ipasGrade3Data],
+      matematika: mathGrade3Data.map((q) => ({
+        ...q,
+        sourceType: "question_bank",
+      })),
+      ipas: ipasGrade3Data.map((q) => ({ ...q, sourceType: "question_bank" })),
     };
     this.banks = {
-      matematika: [...mathGrade3Data],
-      ipas: [...ipasGrade3Data],
+      matematika: [...this.baseBanks.matematika],
+      ipas: [...this.baseBanks.ipas],
     };
     this.usedQuestionIds = new Set();
+    this.usedQuestionSignatures = new Set();
   }
 
   async loadCustomQuestionsFromDB() {
@@ -29,11 +34,15 @@ export class QuestionManager {
 
     customList.forEach((q) => {
       if (!q || !q.id || existingIds.has(q.id)) return;
+      const withSource = { ...q, sourceType: q.sourceType || "custom_bank" };
+      const check = hybridEngine.validateQuestionObject(withSource);
+      if (!check.valid) return;
+
       const subjKey = String(q.subject || "").toLowerCase();
       if (subjKey === "ipas") {
-        this.banks.ipas.push(q);
+        this.banks.ipas.push(withSource);
       } else {
-        this.banks.matematika.push(q);
+        this.banks.matematika.push(withSource);
       }
       existingIds.add(q.id);
     });
@@ -41,6 +50,7 @@ export class QuestionManager {
 
   resetSession() {
     this.usedQuestionIds.clear();
+    this.usedQuestionSignatures.clear();
   }
 
   getSubjectBank(subject = "matematika") {
@@ -64,6 +74,8 @@ export class QuestionManager {
   getBankStatistics() {
     const stats = {
       total: 0,
+      mathTemplateCount: hybridEngine.mathTemplates.length,
+      ipasTemplateCount: hybridEngine.ipasTemplates.length,
       bySubject: {
         matematika: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
         ipas: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
@@ -89,6 +101,16 @@ export class QuestionManager {
     return stats;
   }
 
+  exportQuestionBankPayload() {
+    return {
+      app: "Petualangan Dunia Pintar - Question Bank Export",
+      version: "1.0.0-hybrid",
+      exportedAt: new Date().toISOString(),
+      totalQuestions: this.getAllQuestionsCombined().length,
+      questions: this.getAllQuestionsCombined(),
+    };
+  }
+
   async validateAndImportQuestions(jsonInput) {
     let parsed = jsonInput;
     if (typeof jsonInput === "string") {
@@ -104,8 +126,14 @@ export class QuestionManager {
       }
     }
 
-    const items = Array.isArray(parsed) ? parsed : [parsed];
-    if (items.length === 0) {
+    const rawItems =
+      parsed && Array.isArray(parsed.questions)
+        ? parsed.questions
+        : Array.isArray(parsed)
+          ? parsed
+          : [parsed];
+
+    if (rawItems.length === 0) {
       return {
         success: false,
         addedCount: 0,
@@ -121,7 +149,7 @@ export class QuestionManager {
     const errors = [];
     let skippedDuplicateCount = 0;
 
-    items.forEach((item, idx) => {
+    rawItems.forEach((item, idx) => {
       const rowNum = idx + 1;
       if (!item || typeof item !== "object") {
         errors.push(`Baris #${rowNum}: Bukan objek soal yang valid.`);
@@ -129,79 +157,40 @@ export class QuestionManager {
       }
 
       const id = String(item.id || "").trim();
-      const subject = String(item.subject || "").trim();
-      const topic = String(item.topic || "").trim();
-      const difficulty = String(item.difficulty || "")
-        .trim()
-        .toLowerCase();
-      const question = String(item.question || "").trim();
-      const correctAnswer = String(item.correctAnswer || "").trim();
-      const explanation = String(item.explanation || "").trim();
-      const options = item.options;
-
-      if (
-        !id ||
-        !subject ||
-        !topic ||
-        !difficulty ||
-        !question ||
-        !correctAnswer ||
-        !explanation
-      ) {
-        errors.push(
-          `Soal #${rowNum} (${id || "Tanpa ID"}): Field wajib (id, subject, topic, difficulty, question, correctAnswer, explanation) harus lengkap.`,
-        );
-        return;
-      }
-
-      if (existingIds.has(id)) {
+      if (id && existingIds.has(id)) {
         skippedDuplicateCount += 1;
-        return;
-      }
-
-      const subjLower = subject.toLowerCase();
-      if (subjLower !== "matematika" && subjLower !== "ipas") {
-        errors.push(
-          `Soal ID "${id}": Mata pelajaran harus "Matematika" atau "IPAS".`,
-        );
-        return;
-      }
-
-      if (!["mudah", "sedang", "sulit"].includes(difficulty)) {
-        errors.push(
-          `Soal ID "${id}": Tingkat kesulitan harus mudah, sedang, atau sulit.`,
-        );
-        return;
-      }
-
-      if (!Array.isArray(options) || options.length < 2) {
-        errors.push(
-          `Soal ID "${id}": Pilihan jawaban (options) harus berupa array minimal 2 pilihan.`,
-        );
-        return;
-      }
-
-      const cleanOptions = options.map((o) => String(o).trim());
-      if (!cleanOptions.includes(correctAnswer)) {
-        errors.push(
-          `Soal ID "${id}": Kunci jawaban (${correctAnswer}) tidak ditemukan di dalam pilihan options.`,
-        );
         return;
       }
 
       const normalizedQuestion = {
         id,
         grade: Number(item.grade) || 3,
-        subject: subjLower === "ipas" ? "IPAS" : "Matematika",
-        topic,
-        subtopic: String(item.subtopic || topic).trim(),
-        difficulty,
-        question,
-        options: cleanOptions,
-        correctAnswer,
-        explanation,
+        subject:
+          String(item.subject || "").toLowerCase() === "ipas"
+            ? "IPAS"
+            : "Matematika",
+        topic: String(item.topic || "").trim(),
+        subtopic: String(item.subtopic || item.topic || "").trim(),
+        difficulty: String(item.difficulty || "")
+          .trim()
+          .toLowerCase(),
+        question: String(item.question || "").trim(),
+        options: Array.isArray(item.options)
+          ? item.options.map((o) => String(o).trim())
+          : [],
+        correctAnswer: String(item.correctAnswer || "").trim(),
+        explanation: String(item.explanation || "").trim(),
+        sourceType: "custom_bank",
         isCustom: true,
       };
+
+      const check = hybridEngine.validateQuestionObject(normalizedQuestion);
+      if (!check.valid) {
+        errors.push(
+          `Soal #${rowNum} (${id || "Tanpa ID"}): ${check.errors.join(", ")}`,
+        );
+        return;
+      }
 
       existingIds.add(id);
       validToSave.push(normalizedQuestion);
@@ -220,305 +209,233 @@ export class QuestionManager {
     };
   }
 
-  shuffleArray(arr) {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }
+  pickAdventureTopic(
+    subject = "matematika",
+    profile = null,
+    explicitTopic = null,
+  ) {
+    if (explicitTopic && explicitTopic !== "semua") return explicitTopic;
+    const subjKey = String(subject).toLowerCase();
+    const allTopics = this.getTopicsBySubject(subjKey);
 
-  getNextQuestion(subject = "matematika", topicFilter = null) {
-    const bank = this.getSubjectBank(subject);
-    let available = bank.filter((q) => !this.usedQuestionIds.has(q.id));
+    if (profile && profile.topicPerformance) {
+      const remedialTopics = Object.values(profile.topicPerformance)
+        .filter(
+          (tp) =>
+            tp.subject === subjKey && (tp.needsReview || tp.wrong > tp.correct),
+        )
+        .map((tp) => tp.topic);
 
-    if (topicFilter && topicFilter !== "semua") {
-      const byTopic = available.filter(
-        (q) => q.topic.toLowerCase() === topicFilter.toLowerCase(),
-      );
-      if (byTopic.length > 0) {
-        available = byTopic;
+      if (remedialTopics.length > 0 && Math.random() < 0.65) {
+        return hybridEngine.pickRandom(remedialTopics);
       }
     }
 
-    let poolExhaustedNotice = false;
-    if (available.length === 0) {
-      poolExhaustedNotice = true;
-      this.usedQuestionIds.clear();
-      available = [...bank];
+    return hybridEngine.pickRandom(allTopics);
+  }
+
+  getNextQuestion(subject = "matematika", topicFilter = null, options = {}) {
+    const subjKey = String(subject).toLowerCase();
+    const profile = options.profile || null;
+    const settings = options.settings || {};
+
+    const chosenTopic = this.pickAdventureTopic(subjKey, profile, topicFilter);
+    const diffResolution = options.forceDifficulty
+      ? {
+          difficulty: options.forceDifficulty,
+          mode: settings.difficultyMode || "manual",
+          reason: "Tingkat kesulitan ditentukan pada sesi ini",
+        }
+      : hybridEngine.resolveTargetDifficulty({
+          settings,
+          profile,
+          subject: subjKey,
+          topic: chosenTopic,
+        });
+
+    const targetDiff = diffResolution.difficulty;
+    const preferTemplateProb = subjKey === "matematika" ? 0.6 : 0.35;
+
+    let selectedQuestion = null;
+
+    if (Math.random() < preferTemplateProb) {
+      selectedQuestion = this.tryGenerateUniqueFromTemplate(
+        subjKey,
+        chosenTopic,
+        targetDiff,
+      );
     }
 
-    const shuffledPool = this.shuffleArray(available);
-    const picked = shuffledPool[0];
-    this.usedQuestionIds.add(picked.id);
+    if (!selectedQuestion) {
+      selectedQuestion = this.pickValidFromBank(
+        subjKey,
+        chosenTopic,
+        targetDiff,
+      );
+    }
+
+    if (!selectedQuestion) {
+      selectedQuestion = this.tryGenerateUniqueFromTemplate(
+        subjKey,
+        chosenTopic,
+        targetDiff,
+      );
+    }
+
+    if (!selectedQuestion) {
+      selectedQuestion =
+        this.pickValidFromBank(subjKey, null, targetDiff) ||
+        this.pickValidFromBank(subjKey, null, null);
+    }
+
+    if (!selectedQuestion) {
+      return {
+        error: true,
+        message: "Tidak ada soal valid yang tersedia untuk kriteria ini.",
+      };
+    }
+
+    this.usedQuestionIds.add(selectedQuestion.id);
+    this.usedQuestionSignatures.add(selectedQuestion.question);
 
     return {
-      ...picked,
-      options: this.shuffleArray(picked.options),
-      poolExhaustedNotice,
+      ...selectedQuestion,
+      options: hybridEngine.shuffleArray(selectedQuestion.options),
+      adaptiveMeta: diffResolution,
     };
+  }
+
+  tryGenerateUniqueFromTemplate(subject, topic, difficulty) {
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const candidate = hybridEngine.generateFromTemplate({
+        subject,
+        topic,
+        difficulty,
+      });
+      if (
+        candidate &&
+        !this.usedQuestionIds.has(candidate.id) &&
+        !this.usedQuestionSignatures.has(candidate.question)
+      ) {
+        const check = hybridEngine.validateQuestionObject(candidate);
+        if (check.valid) return candidate;
+      }
+    }
+    return null;
+  }
+
+  pickValidFromBank(subject, topic = null, difficulty = null) {
+    const bank = this.getSubjectBank(subject);
+    let pool = bank.filter(
+      (q) =>
+        !this.usedQuestionIds.has(q.id) &&
+        !this.usedQuestionSignatures.has(q.question),
+    );
+
+    if (topic && topic !== "semua") {
+      const byTopic = pool.filter(
+        (q) => q.topic.toLowerCase() === topic.toLowerCase(),
+      );
+      if (byTopic.length > 0) pool = byTopic;
+      else return null;
+    }
+
+    if (difficulty && difficulty !== "semua") {
+      const byDiff = pool.filter(
+        (q) => q.difficulty.toLowerCase() === difficulty.toLowerCase(),
+      );
+      if (byDiff.length > 0) pool = byDiff;
+      else return null;
+    }
+
+    const shuffled = hybridEngine.shuffleArray(pool);
+    for (const item of shuffled) {
+      const normalized = {
+        ...item,
+        sourceType: item.sourceType || "question_bank",
+      };
+      const check = hybridEngine.validateQuestionObject(normalized);
+      if (check.valid) {
+        return normalized;
+      }
+    }
+    return null;
   }
 
   getDuelQuestionPair({
     subject = "matematika",
     topic = "semua",
-    difficulty = "semua",
+    difficulty = "adaptif",
+    profile = null,
+    settings = {},
   }) {
     const subjKey = String(subject).toLowerCase();
-    const bank = this.getSubjectBank(subjKey);
+    const roundTopic =
+      topic && topic !== "semua"
+        ? topic
+        : hybridEngine.pickRandom(this.getTopicsBySubject(subjKey));
 
-    let candidates = bank.filter((q) => !this.usedQuestionIds.has(q.id));
+    let roundDifficulty = difficulty;
+    let adaptiveMeta = {
+      mode: "manual",
+      difficulty: roundDifficulty,
+      reason: "Manual",
+    };
 
-    if (topic && topic !== "semua") {
-      const topicMatches = candidates.filter(
-        (q) => q.topic.toLowerCase() === topic.toLowerCase(),
-      );
-      if (topicMatches.length >= 2) {
-        candidates = topicMatches;
-      }
+    if (
+      !roundDifficulty ||
+      roundDifficulty === "adaptif" ||
+      roundDifficulty === "semua"
+    ) {
+      adaptiveMeta = hybridEngine.resolveTargetDifficulty({
+        settings: { ...settings, difficultyMode: "adaptif" },
+        profile,
+        subject: subjKey,
+        topic: roundTopic,
+      });
+      roundDifficulty = adaptiveMeta.difficulty;
     }
 
-    if (difficulty && difficulty !== "semua") {
-      const diffMatches = candidates.filter(
-        (q) => q.difficulty.toLowerCase() === difficulty.toLowerCase(),
-      );
-      if (diffMatches.length >= 2) {
-        candidates = diffMatches;
-      }
-    }
+    const tutorQ = this.getNextQuestion(subjKey, roundTopic, {
+      profile,
+      settings,
+      forceDifficulty: roundDifficulty,
+    });
 
-    if (candidates.length < 2) {
-      if (subjKey === "matematika") {
-        return this.generateValidatedMathPair(topic, difficulty);
-      } else {
-        this.usedQuestionIds.clear();
-        candidates = [...bank];
-        if (topic && topic !== "semua") {
-          const tMatch = candidates.filter(
-            (q) => q.topic.toLowerCase() === topic.toLowerCase(),
-          );
-          if (tMatch.length >= 2) candidates = tMatch;
-        }
-      }
-    }
-
-    const shuffled = this.shuffleArray(candidates);
-    const tutorQ = shuffled[0];
-    this.usedQuestionIds.add(tutorQ.id);
-
-    const studentPool = shuffled
-      .slice(1)
-      .filter((q) => q.id !== tutorQ.id && q.question !== tutorQ.question);
-
-    const sameTopicAndDiff = studentPool.filter(
-      (q) => q.topic === tutorQ.topic && q.difficulty === tutorQ.difficulty,
-    );
-    const sameTopicOnly = studentPool.filter((q) => q.topic === tutorQ.topic);
-    const sameDiffOnly = studentPool.filter(
-      (q) => q.difficulty === tutorQ.difficulty,
+    let studentQ = this.getNextQuestion(
+      tutorQ.subject || subjKey,
+      tutorQ.topic || roundTopic,
+      {
+        profile,
+        settings,
+        forceDifficulty: tutorQ.difficulty || roundDifficulty,
+      },
     );
 
-    let studentQ = null;
-    if (sameTopicAndDiff.length > 0) {
-      studentQ = sameTopicAndDiff[0];
-    } else if (sameTopicOnly.length > 0) {
-      studentQ = sameTopicOnly[0];
-    } else if (subjKey === "matematika") {
-      studentQ = this.createEquivalentMathTwin(tutorQ);
-    } else if (sameDiffOnly.length > 0) {
-      studentQ = sameDiffOnly[0];
-    } else {
-      studentQ = studentPool[0];
-    }
-
-    this.usedQuestionIds.add(studentQ.id);
-
-    return {
-      tutorQuestion: {
-        ...tutorQ,
-        options: this.shuffleArray(tutorQ.options),
-      },
-      studentQuestion: {
-        ...studentQ,
-        options: this.shuffleArray(studentQ.options),
-      },
-    };
-  }
-
-  createEquivalentMathTwin(referenceQ) {
-    const topic = referenceQ.topic;
-    const diff = referenceQ.difficulty || "sedang";
-    const uniqueId = `MTK3_DYN_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-
-    if (topic === "Penjumlahan") {
-      const a = 215 + Math.floor(Math.random() * 250);
-      const b = 124 + Math.floor(Math.random() * 210);
-      const ans = a + b;
-      return {
-        id: uniqueId,
-        grade: 3,
-        subject: "Matematika",
-        topic: "Penjumlahan",
-        subtopic: "Penjumlahan Bilangan Ratusan",
-        difficulty: diff,
-        question: `Hasil penjumlahan dari ${a} + ${b} adalah ...`,
-        options: this.buildNumericOptions(ans, 10),
-        correctAnswer: String(ans),
-        explanation: `Jika dijumlahkan bersusun: ${a} + ${b} = ${ans}.`,
-      };
-    }
-
-    if (topic === "Pengurangan") {
-      const a = 540 + Math.floor(Math.random() * 320);
-      const b = 185 + Math.floor(Math.random() * 220);
-      const ans = a - b;
-      return {
-        id: uniqueId,
-        grade: 3,
-        subject: "Matematika",
-        topic: "Pengurangan",
-        subtopic: "Pengurangan Bilangan Ratusan",
-        difficulty: diff,
-        question: `Hasil pengurangan dari ${a} - ${b} adalah ...`,
-        options: this.buildNumericOptions(ans, 10),
-        correctAnswer: String(ans),
-        explanation: `Jika dikurangkan bersusun: ${a} - ${b} = ${ans}.`,
-      };
-    }
-
-    if (topic === "Perkalian") {
-      const a = 11 + Math.floor(Math.random() * 8);
-      const b = 4 + Math.floor(Math.random() * 5);
-      const ans = a * b;
-      return {
-        id: uniqueId,
-        grade: 3,
-        subject: "Matematika",
-        topic: "Perkalian",
-        subtopic: "Perkalian Puluhan",
-        difficulty: diff,
-        question: `Hasil perkalian dari ${a} × ${b} adalah ...`,
-        options: this.buildNumericOptions(ans, 6),
-        correctAnswer: String(ans),
-        explanation: `${a} dikalikan ${b} sama dengan ${ans}.`,
-      };
-    }
-
-    if (topic === "Pembagian") {
-      const divisor = 6 + Math.floor(Math.random() * 4);
-      const quotient = 6 + Math.floor(Math.random() * 6);
-      const dividend = divisor * quotient;
-      return {
-        id: uniqueId,
-        grade: 3,
-        subject: "Matematika",
-        topic: "Pembagian",
-        subtopic: "Pembagian Dasar",
-        difficulty: diff,
-        question: `Hasil pembagian dari ${dividend} : ${divisor} adalah ...`,
-        options: this.buildNumericOptions(quotient, 1),
-        correctAnswer: String(quotient),
-        explanation: `Karena ${divisor} × ${quotient} = ${dividend}, maka ${dividend} : ${divisor} = ${quotient}.`,
-      };
-    }
-
-    if (topic === "Bangun Datar") {
-      const side = 8 + Math.floor(Math.random() * 9);
-      const keliling = side * 4;
-      return {
-        id: uniqueId,
-        grade: 3,
-        subject: "Matematika",
-        topic: "Bangun Datar",
-        subtopic: "Keliling Persegi",
-        difficulty: diff,
-        question: `Sebuah papan tulis berbentuk persegi memiliki panjang sisi ${side} cm. Berapa cm keliling papan tulis tersebut?`,
-        options: [
-          `${keliling} cm`,
-          `${side * 3} cm`,
-          `${side * 2} cm`,
-          `${keliling + 8} cm`,
-        ],
-        correctAnswer: `${keliling} cm`,
-        explanation: `Keliling persegi = 4 × sisi = 4 × ${side} cm = ${keliling} cm.`,
-      };
-    }
-
-    if (topic === "Pengukuran") {
-      const meter = 2 + Math.floor(Math.random() * 5);
-      const cmMore = (1 + Math.floor(Math.random() * 8)) * 10;
-      const totalCm = meter * 100 + cmMore;
-      return {
-        id: uniqueId,
-        grade: 3,
-        subject: "Matematika",
-        topic: "Pengukuran",
-        subtopic: "Konversi Panjang",
-        difficulty: diff,
-        question: `Panjang pita Siti adalah ${meter} meter lebih ${cmMore} cm. Jika diubah ke sentimeter (cm), panjang pita Siti adalah ...`,
-        options: [
-          `${totalCm} cm`,
-          `${meter * 10 + cmMore} cm`,
-          `${totalCm + 100} cm`,
-          `${meter}${cmMore}0 cm`,
-        ],
-        correctAnswer: `${totalCm} cm`,
-        explanation: `${meter} meter = ${meter * 100} cm. Ditambah ${cmMore} cm menjadi ${totalCm} cm.`,
-      };
-    }
-
-    const boxes = 4 + Math.floor(Math.random() * 4);
-    const perBox = 12 + Math.floor(Math.random() * 5);
-    const given = 5 + Math.floor(Math.random() * 6);
-    const remain = boxes * perBox - given;
-    return {
-      id: uniqueId,
-      grade: 3,
-      subject: "Matematika",
-      topic: referenceQ.topic || "Soal Cerita",
-      subtopic: "Soal Cerita Hitung Campuran",
-      difficulty: diff,
-      question: `Ibu membeli ${boxes} kotak pensil. Setiap kotak berisi ${perBox} batang pensil. Jika ${given} pensil diberikan kepada adik, berapa sisa pensil Ibu?`,
-      options: [
-        `${remain} batang`,
-        `${remain + 10} batang`,
-        `${remain - 4} batang`,
-        `${boxes * perBox} batang`,
-      ],
-      correctAnswer: `${remain} batang`,
-      explanation: `Total pensil = ${boxes} × ${perBox} = ${boxes * perBox} batang. Dikurangi ${given} menjadi ${remain} batang.`,
-    };
-  }
-
-  generateValidatedMathPair(topic = "semua", difficulty = "sedang") {
-    const chosenTopic = topic && topic !== "semua" ? topic : "Penjumlahan";
-    const baseRef = {
-      topic: chosenTopic,
-      difficulty: difficulty && difficulty !== "semua" ? difficulty : "sedang",
-    };
-    const q1 = this.createEquivalentMathTwin(baseRef);
-    let q2 = this.createEquivalentMathTwin(baseRef);
-    while (q2.question === q1.question) {
-      q2 = this.createEquivalentMathTwin(baseRef);
-    }
-    return {
-      tutorQuestion: { ...q1, options: this.shuffleArray(q1.options) },
-      studentQuestion: { ...q2, options: this.shuffleArray(q2.options) },
-    };
-  }
-
-  buildNumericOptions(correctNum, step = 5) {
-    const set = new Set([String(correctNum)]);
-    const offsets = [step, -step, step * 2, -step * 2, step + 2, -step - 1];
-    for (const off of offsets) {
-      const candidate = correctNum + off;
-      if (candidate > 0) {
-        set.add(String(candidate));
+    if (studentQ.question === tutorQ.question) {
+      const twin = this.tryGenerateUniqueFromTemplate(
+        subjKey,
+        tutorQ.topic || roundTopic,
+        tutorQ.difficulty || roundDifficulty,
+      );
+      if (twin) {
+        this.usedQuestionIds.add(twin.id);
+        this.usedQuestionSignatures.add(twin.question);
+        studentQ = {
+          ...twin,
+          options: hybridEngine.shuffleArray(twin.options),
+          adaptiveMeta,
+        };
       }
-      if (set.size >= 4) break;
     }
-    return Array.from(set);
+
+    return {
+      roundDifficulty: tutorQ.difficulty || roundDifficulty,
+      roundTopic: tutorQ.topic || roundTopic,
+      adaptiveMeta,
+      tutorQuestion: tutorQ,
+      studentQuestion: studentQ,
+    };
   }
 }
 

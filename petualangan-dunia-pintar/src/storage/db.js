@@ -74,10 +74,37 @@ class LocalDatabase {
     });
   }
 
+  ensureProfileAnalyticsStructure(profile) {
+    if (!profile) return null;
+    profile.coins = profile.coins || 0;
+    profile.stars = profile.stars || 0;
+    profile.totalScore = profile.totalScore || 0;
+    profile.badges = profile.badges || [];
+    profile.collectibles = profile.collectibles || [];
+    profile.completedLevels = profile.completedLevels || [];
+    profile.adventureHistory = profile.adventureHistory || [];
+    profile.duelHistory = profile.duelHistory || [];
+
+    profile.totalQuestionsAnswered = profile.totalQuestionsAnswered || 0;
+    profile.totalCorrect = profile.totalCorrect || 0;
+    profile.totalWrong = profile.totalWrong || 0;
+    profile.subjectPerformance = profile.subjectPerformance || {
+      matematika: { answered: 0, correct: 0, wrong: 0 },
+      ipas: { answered: 0, correct: 0, wrong: 0 },
+    };
+    profile.topicPerformance = profile.topicPerformance || {};
+    profile.questionHistory = profile.questionHistory || [];
+    profile.adaptiveChanges = profile.adaptiveChanges || [];
+    profile.topicsToReview = profile.topicsToReview || [];
+    return profile;
+  }
+
   async getAllProfiles() {
     await this.init();
     if (this.useFallback) {
-      const list = Array.from(this.memoryFallback.profiles.values());
+      const list = Array.from(this.memoryFallback.profiles.values()).map((p) =>
+        this.ensureProfileAnalyticsStructure(p),
+      );
       return list.sort((a, b) => b.createdAt - a.createdAt);
     }
 
@@ -88,7 +115,9 @@ class LocalDatabase {
         const request = store.getAll();
 
         request.onsuccess = () => {
-          const list = request.result || [];
+          const list = (request.result || []).map((p) =>
+            this.ensureProfileAnalyticsStructure(p),
+          );
           list.sort((a, b) => b.createdAt - a.createdAt);
           resolve(list);
         };
@@ -103,7 +132,8 @@ class LocalDatabase {
     if (!id) return null;
     await this.init();
     if (this.useFallback) {
-      return this.memoryFallback.profiles.get(id) || null;
+      const found = this.memoryFallback.profiles.get(id) || null;
+      return this.ensureProfileAnalyticsStructure(found);
     }
 
     return new Promise((resolve) => {
@@ -112,7 +142,8 @@ class LocalDatabase {
         const store = tx.objectStore(STORE_PROFILES);
         const request = store.get(id);
 
-        request.onsuccess = () => resolve(request.result || null);
+        request.onsuccess = () =>
+          resolve(this.ensureProfileAnalyticsStructure(request.result || null));
         request.onerror = () => resolve(null);
       } catch (e) {
         resolve(null);
@@ -122,7 +153,7 @@ class LocalDatabase {
 
   async createProfile({ name, grade = 3, character = "kiko" }) {
     await this.init();
-    const newProfile = {
+    const newProfile = this.ensureProfileAnalyticsStructure({
       id:
         "prof_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
       name: name.trim(),
@@ -136,9 +167,20 @@ class LocalDatabase {
       completedLevels: [],
       adventureHistory: [],
       duelHistory: [],
+      totalQuestionsAnswered: 0,
+      totalCorrect: 0,
+      totalWrong: 0,
+      subjectPerformance: {
+        matematika: { answered: 0, correct: 0, wrong: 0 },
+        ipas: { answered: 0, correct: 0, wrong: 0 },
+      },
+      topicPerformance: {},
+      questionHistory: [],
+      adaptiveChanges: [],
+      topicsToReview: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
-    };
+    });
 
     await this.saveProfile(newProfile);
     this.setActiveProfileId(newProfile.id);
@@ -147,7 +189,9 @@ class LocalDatabase {
 
   async saveProfile(profileData) {
     await this.init();
+    this.ensureProfileAnalyticsStructure(profileData);
     profileData.updatedAt = Date.now();
+
     if (this.useFallback) {
       this.memoryFallback.profiles.set(profileData.id, { ...profileData });
       return profileData;
@@ -166,6 +210,135 @@ class LocalDatabase {
         resolve(profileData);
       }
     });
+  }
+
+  async recordQuestionAttempt(profileId, attemptData, settings = null) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return null;
+
+    const currentSettings = settings || (await this.getSettings());
+    const subjKey = String(attemptData.subject || "matematika").toLowerCase();
+    const topicName = attemptData.topic || "Umum";
+    const topicKey = `${subjKey}:${topicName}`;
+    const isCorrect = Boolean(attemptData.isCorrect);
+    const difficultyUsed = String(
+      attemptData.difficulty || "mudah",
+    ).toLowerCase();
+
+    profile.totalQuestionsAnswered += 1;
+    if (isCorrect) profile.totalCorrect += 1;
+    else profile.totalWrong += 1;
+
+    if (!profile.subjectPerformance[subjKey]) {
+      profile.subjectPerformance[subjKey] = {
+        answered: 0,
+        correct: 0,
+        wrong: 0,
+      };
+    }
+    profile.subjectPerformance[subjKey].answered += 1;
+    if (isCorrect) profile.subjectPerformance[subjKey].correct += 1;
+    else profile.subjectPerformance[subjKey].wrong += 1;
+
+    if (!profile.topicPerformance[topicKey]) {
+      profile.topicPerformance[topicKey] = {
+        subject: subjKey,
+        topic: topicName,
+        answered: 0,
+        correct: 0,
+        wrong: 0,
+        recentResults: [],
+        currentDifficulty: currentSettings.initialAdaptiveDifficulty || "mudah",
+        needsReview: false,
+        lastPlayedAt: Date.now(),
+      };
+    }
+
+    const tPerf = profile.topicPerformance[topicKey];
+    tPerf.answered += 1;
+    if (isCorrect) tPerf.correct += 1;
+    else tPerf.wrong += 1;
+    tPerf.lastPlayedAt = Date.now();
+
+    tPerf.recentResults.push(isCorrect);
+    if (tPerf.recentResults.length > 10) {
+      tPerf.recentResults = tPerf.recentResults.slice(-10);
+    }
+
+    const order = ["mudah", "sedang", "sulit"];
+    const bound = currentSettings.adaptiveBounds || "mudah-sulit";
+    const allowed =
+      bound === "mudah-sedang"
+        ? ["mudah", "sedang"]
+        : bound === "sedang-sulit"
+          ? ["sedang", "sulit"]
+          : ["mudah", "sedang", "sulit"];
+
+    let oldDiff = tPerf.currentDifficulty || "mudah";
+    if (!allowed.includes(oldDiff)) oldDiff = allowed[0];
+
+    if (tPerf.recentResults.length >= 5) {
+      const last5 = tPerf.recentResults.slice(-5);
+      const correct5 = last5.filter(Boolean).length;
+      const acc5 = Math.round((correct5 / 5) * 100);
+      const idx = order.indexOf(oldDiff);
+
+      let nextDiff = oldDiff;
+      if (acc5 >= 80 && idx < order.length - 1) {
+        nextDiff = order[idx + 1];
+        tPerf.needsReview = false;
+      } else if (acc5 < 40 && idx > 0) {
+        nextDiff = order[idx - 1];
+        tPerf.needsReview = true;
+      } else if (acc5 < 40) {
+        tPerf.needsReview = true;
+      } else if (acc5 >= 60) {
+        tPerf.needsReview = false;
+      }
+
+      if (!allowed.includes(nextDiff)) {
+        nextDiff = oldDiff;
+      }
+
+      if (nextDiff !== oldDiff) {
+        tPerf.currentDifficulty = nextDiff;
+        profile.adaptiveChanges.push({
+          topicKey,
+          subject: subjKey,
+          topic: topicName,
+          fromDifficulty: oldDiff,
+          toDifficulty: nextDiff,
+          accuracy5: acc5,
+          changedAt: Date.now(),
+        });
+        tPerf.recentResults = [];
+      } else {
+        tPerf.currentDifficulty = oldDiff;
+      }
+    } else if (!isCorrect && tPerf.wrong > tPerf.correct) {
+      tPerf.needsReview = true;
+    }
+
+    profile.topicsToReview = Object.values(profile.topicPerformance)
+      .filter((tp) => tp.needsReview || tp.wrong > tp.correct)
+      .map((tp) => `${tp.subject.toUpperCase()}: ${tp.topic}`);
+
+    profile.questionHistory.push({
+      questionId: attemptData.questionId,
+      subject: subjKey,
+      topic: topicName,
+      difficulty: difficultyUsed,
+      sourceType: attemptData.sourceType || "question_bank",
+      isCorrect,
+      mode: attemptData.mode || "adventure",
+      answeredAt: Date.now(),
+    });
+    if (profile.questionHistory.length > 120) {
+      profile.questionHistory = profile.questionHistory.slice(-120);
+    }
+
+    await this.saveProfile(profile);
+    return profile;
   }
 
   async deleteProfile(profileId) {
@@ -204,6 +377,17 @@ class LocalDatabase {
     profile.completedLevels = [];
     profile.adventureHistory = [];
     profile.duelHistory = [];
+    profile.totalQuestionsAnswered = 0;
+    profile.totalCorrect = 0;
+    profile.totalWrong = 0;
+    profile.subjectPerformance = {
+      matematika: { answered: 0, correct: 0, wrong: 0 },
+      ipas: { answered: 0, correct: 0, wrong: 0 },
+    };
+    profile.topicPerformance = {};
+    profile.questionHistory = [];
+    profile.adaptiveChanges = [];
+    profile.topicsToReview = [];
 
     return await this.saveProfile(profile);
   }
@@ -226,17 +410,14 @@ class LocalDatabase {
     profile.stars = (profile.stars || 0) + (result.starsEarned || 0);
     profile.totalScore = (profile.totalScore || 0) + scoreEarned;
 
-    profile.completedLevels = profile.completedLevels || [];
     if (result.levelId && !profile.completedLevels.includes(result.levelId)) {
       profile.completedLevels.push(result.levelId);
     }
 
-    profile.badges = profile.badges || [];
     if (result.badgeEarned && !profile.badges.includes(result.badgeEarned)) {
       profile.badges.push(result.badgeEarned);
     }
 
-    profile.collectibles = profile.collectibles || [];
     if (
       result.collectibleItem &&
       !profile.collectibles.includes(result.collectibleItem)
@@ -244,7 +425,6 @@ class LocalDatabase {
       profile.collectibles.push(result.collectibleItem);
     }
 
-    profile.adventureHistory = profile.adventureHistory || [];
     profile.adventureHistory.push({
       id:
         "adv_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
@@ -278,7 +458,6 @@ class LocalDatabase {
     profile.stars = (profile.stars || 0) + bonusStars;
     profile.totalScore = (profile.totalScore || 0) + scoreEarned;
 
-    profile.badges = profile.badges || [];
     if (
       duelSummary.badgeEarned &&
       !profile.badges.includes(duelSummary.badgeEarned)
@@ -286,7 +465,6 @@ class LocalDatabase {
       profile.badges.push(duelSummary.badgeEarned);
     }
 
-    profile.duelHistory = profile.duelHistory || [];
     profile.duelHistory.push({
       matchId:
         "duel_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
@@ -295,6 +473,7 @@ class LocalDatabase {
       subject: duelSummary.subject,
       topic: duelSummary.topic,
       difficulty: duelSummary.difficulty,
+      difficultyMode: duelSummary.difficultyMode || "adaptif",
       totalRounds: duelSummary.totalRounds,
       winner: duelSummary.winner,
       studentStats: duelSummary.studentStats,
@@ -343,12 +522,17 @@ class LocalDatabase {
       soundEffects: true,
       showTouchControls: true,
       tutorPin: "1234",
+      difficultyMode: "adaptif",
+      manualDifficulty: "sedang",
+      adaptiveBounds: "mudah-sulit",
+      initialAdaptiveDifficulty: "mudah",
     };
 
     if (this.useFallback) {
-      return (
-        this.memoryFallback.settings.get("game_settings") || defaultSettings
-      );
+      return {
+        ...defaultSettings,
+        ...(this.memoryFallback.settings.get("game_settings") || {}),
+      };
     }
 
     return new Promise((resolve) => {
@@ -438,7 +622,7 @@ class LocalDatabase {
 
     return {
       app: "Petualangan Dunia Pintar",
-      version: "1.0.0",
+      version: "1.0.0-hybrid",
       exportedAt: new Date().toISOString(),
       profiles,
       settings,
