@@ -182,8 +182,7 @@ export class UIManager {
         <div class="cartoon-panel">
           <div class="game-logo-badge">🌟 GAME EDUKASI ANAK INDONESIA 🌟</div>
           <h1 class="game-title">PETUALANGAN<br/>DUNIA PINTAR</h1>
-          <p class="game-subtitle">Belajar Matematika & IPAS dengan Sistem Soal Dinamis Hybrid!</p>
-
+          
           ${this.renderProfileBanner()}
 
           <div class="btn-group-vertical">
@@ -575,6 +574,7 @@ export class UIManager {
 
     const levelCardsHtml = GAME_CONFIG.adventureLevels
       .map((lvl) => {
+        const minCorrect = Math.ceil(lvl.totalQuestions * 0.8);
         const state = subjProgress?.levels?.[lvl.id] || {
           unlocked: lvl.id === "easy",
           completed: false,
@@ -590,20 +590,27 @@ export class UIManager {
         let statusLabel = "🔒 Terkunci";
         let badgeClass = "badge-soon";
         if (isCompleted) {
-          statusLabel = "✅ Selesai (Bisa Diulang)";
+          statusLabel = "✅ Lulus (Bisa Diulang)";
           badgeClass = "badge-active";
         } else if (isUnlocked) {
           statusLabel = "🔓 Terbuka";
           badgeClass = "badge-active";
         }
 
+        const targetInfoText =
+          lvl.id === "easy"
+            ? "5 soal, minimal 4 benar (80%)"
+            : lvl.id === "medium"
+              ? "7 soal, minimal 6 benar (minimal 80%)"
+              : "10 soal, minimal 8 benar (80%)";
+
         const progressDetailHtml = isUnlocked
           ? isCompleted
             ? `<div style="font-size:0.84rem; font-weight:800; color:#1e8449; background:#e8f8f5; padding:6px 10px; border-radius:10px; width:100%;">
-               🏆 Terbaik: Benar ${state.correctAnswers}/${lvl.totalQuestions} (${state.bestAccuracy || state.accuracy || 0}%)
+               🏆 Rekor Terbaik: ${state.correctAnswers}/${lvl.totalQuestions} Benar (${state.bestAccuracy || state.accuracy || 0}%)
              </div>`
-            : `<div style="font-size:0.84rem; font-weight:700; color:#2980b9; background:#eef9ff; padding:6px 10px; border-radius:10px; width:100%;">
-               🎯 Siap Dimainkan: Tepat ${lvl.totalQuestions} Soal
+            : `<div style="font-size:0.84rem; font-weight:800; color:#2980b9; background:#eef9ff; padding:6px 10px; border-radius:10px; width:100%;">
+               🎯 Target Lulus: Minimal ${minCorrect} dari ${lvl.totalQuestions} soal benar
              </div>`
           : `<div style="font-size:0.84rem; font-weight:800; color:#c0392b; background:#fadbd8; padding:6px 10px; border-radius:10px; width:100%;">
              🔒 ${this.escapeHtml(lvl.unlockRequirementText)}
@@ -615,8 +622,8 @@ export class UIManager {
              data-unlocked="${isUnlocked}">
           <div class="card-icon">${isUnlocked ? lvl.icon : "🔒"}</div>
           <div class="card-title">${this.escapeHtml(lvl.name)}</div>
-          <div style="font-weight:900; font-size:0.95rem; color:#d35400;">
-            📝 Jumlah Soal: ${lvl.totalQuestions} Soal
+          <div style="font-weight:900; font-size:0.92rem; color:#d35400;">
+            📝 ${this.escapeHtml(targetInfoText)}
           </div>
           <div class="card-desc">${this.escapeHtml(lvl.desc)}</div>
           ${progressDetailHtml}
@@ -633,10 +640,16 @@ export class UIManager {
         <div class="cartoon-panel" style="max-width: 880px;">
           ${this.renderProfileBanner()}
           <div class="game-logo-badge">${subInfo.icon} ADVENTURE ${subInfo.name.toUpperCase()}</div>
-          <h2 class="panel-header-title">🗺️ Pilih Level Adventure ${this.escapeHtml(subInfo.name)}</h2>
-          <p class="game-subtitle" style="margin-bottom: 10px;">
-            Selesaikan setiap level secara berurutan! Progres ${this.escapeHtml(subInfo.name)} terpisah dari mata pelajaran lainnya.
-          </p>
+          <h2 class="panel-header-title" style="margin-bottom: 6px;">🗺️ Pilih Level Adventure ${this.escapeHtml(subInfo.name)}</h2>
+
+          <div style="background:#fff9db; border:3px solid #f39c12; border-radius:18px; padding:10px 16px; margin: 0 auto 12px; max-width: 760px; text-align:left; font-size:0.92rem; font-weight:800; color:#2c3e50; box-shadow: 0 4px 0 rgba(0,0,0,0.08);">
+            <div style="color:#d35400; font-size:0.98rem; margin-bottom:4px;">⭐ Syarat Membuka Level Berikutnya (Minimal Nilai 80%):</div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:6px;">
+              <div>🌱 <strong>Mudah:</strong> 5 soal, minimal <strong>4 benar (80%)</strong></div>
+              <div>⚡ <strong>Sedang:</strong> 7 soal, minimal <strong>6 benar (minimal 80%)</strong></div>
+              <div>🔥 <strong>Sulit:</strong> 10 soal, minimal <strong>8 benar (80%)</strong></div>
+            </div>
+          </div>
 
           <div id="adv-level-notice" style="display:none; background:#fadbd8; color:#78281f; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;"></div>
 
@@ -664,7 +677,11 @@ export class UIManager {
         if (!isUnlocked) {
           this.playTone("wrong");
           if (noticeEl && lvlCfg) {
-            noticeEl.textContent = `🔒 ${lvlCfg.unlockRequirementText}`;
+            const prevName =
+              levelKey === "medium"
+                ? "Level Mudah (minimal 4/5 benar)"
+                : "Level Sedang (minimal 6/7 benar)";
+            noticeEl.textContent = `🔒 Level ini masih terkunci! Selesaikan ${prevName} terlebih dahulu untuk membukanya.`;
             noticeEl.style.display = "block";
           }
           return;
@@ -1096,37 +1113,72 @@ export class UIManager {
   }
 
   async showAdventureResult(resultData) {
-    this.playTone("correct");
+    const levelKey = resultData.levelKey || "easy";
+    const requiredCount =
+      Number(resultData.totalQuestions) ||
+      (levelKey === "easy" ? 5 : levelKey === "medium" ? 7 : 10);
+
+    const minCorrectRequired = Math.ceil(requiredCount * 0.8);
+    const correctCount = Number(resultData.correctCount) || 0;
+    const wrongCount = Number(resultData.wrongCount) || 0;
+    const accuracyPct =
+      requiredCount > 0 ? Math.round((correctCount / requiredCount) * 100) : 0;
+
+    const isPassed = correctCount >= minCorrectRequired && accuracyPct >= 80;
+
+    this.playTone(isPassed ? "correct" : "wrong");
+
+    const normalizedResult = {
+      ...resultData,
+      levelKey,
+      totalQuestions: requiredCount,
+      correctCount,
+      wrongCount,
+      accuracy: accuracyPct,
+      starsEarned: isPassed ? (correctCount === requiredCount ? 3 : 2) : 0,
+    };
 
     if (this.activeProfile) {
       this.activeProfile = await db.recordAdventureResult(
         this.activeProfile.id,
-        resultData,
+        normalizedResult,
       );
     }
 
-    const starIcons =
-      "⭐".repeat(resultData.starsEarned) +
-      "☆".repeat(3 - resultData.starsEarned);
+    const earnedStars = isPassed ? normalizedResult.starsEarned : 0;
+    const starIcons = "⭐".repeat(earnedStars) + "☆".repeat(3 - earnedStars);
     const subInfo = this.getSubjectInfo(resultData.subject);
 
-    let unlockBannerHtml = "";
-    if (resultData.levelKey === "easy") {
-      unlockBannerHtml = `
-        <div style="background:#d4efdf; color:#145a32; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;">
-          🔓 Selamat! <strong>Level Sedang (${this.escapeHtml(subInfo.name)})</strong> sekarang telah TERBUKA!
+    const topBadgeText = isPassed ? "🏆 LEVEL LULUS! 🏆" : "⚠️ BELUM LULUS ⚠️";
+    const topBadgeStyle = isPassed
+      ? "background: #2ecc71; color: #ffffff;"
+      : "background: #e74c3c; color: #ffffff;";
+
+    let statusBannerHtml = "";
+    if (!isPassed) {
+      statusBannerHtml = `
+        <div style="background:#fadbd8; color:#78281f; border:3px solid #34495e; border-radius:16px; padding:12px 16px; font-weight:800; margin-bottom:12px; font-size:0.98rem; line-height:1.45;">
+          Belum mencapai target! Kamu harus menjawab minimal <strong>${minCorrectRequired} dari ${requiredCount} soal</strong> dengan benar. Yuk, coba lagi!
         </div>
       `;
-    } else if (resultData.levelKey === "medium") {
-      unlockBannerHtml = `
-        <div style="background:#d4efdf; color:#145a32; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;">
-          🔓 Selamat! <strong>Level Sulit (${this.escapeHtml(subInfo.name)})</strong> sekarang telah TERBUKA!
+    } else if (levelKey === "easy") {
+      statusBannerHtml = `
+        <div style="background:#d4efdf; color:#145a32; border:3px solid #34495e; border-radius:16px; padding:12px 16px; font-weight:800; margin-bottom:12px; font-size:0.98rem; line-height:1.45;">
+          🎉 <strong>LEVEL LULUS (${accuracyPct}%)!</strong> Selamat, kamu berhasil menjawab ${correctCount} dari ${requiredCount} soal dengan benar.<br/>
+          🔓 <strong>Level Sedang (${this.escapeHtml(subInfo.name)}) sekarang telah TERBUKA!</strong>
         </div>
       `;
-    } else if (resultData.levelKey === "hard") {
-      unlockBannerHtml = `
-        <div style="background:#fff3cd; color:#856404; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;">
-          👑 Luar Biasa! Kamu telah menamatkan seluruh level Adventure ${this.escapeHtml(subInfo.name)}!
+    } else if (levelKey === "medium") {
+      statusBannerHtml = `
+        <div style="background:#d4efdf; color:#145a32; border:3px solid #34495e; border-radius:16px; padding:12px 16px; font-weight:800; margin-bottom:12px; font-size:0.98rem; line-height:1.45;">
+          🎉 <strong>LEVEL LULUS (${accuracyPct}%)!</strong> Selamat, kamu berhasil menjawab ${correctCount} dari ${requiredCount} soal dengan benar.<br/>
+          🔓 <strong>Level Sulit (${this.escapeHtml(subInfo.name)}) sekarang telah TERBUKA!</strong>
+        </div>
+      `;
+    } else {
+      statusBannerHtml = `
+        <div style="background:#fff3cd; color:#856404; border:3px solid #34495e; border-radius:16px; padding:12px 16px; font-weight:800; margin-bottom:12px; font-size:0.98rem; line-height:1.45;">
+          👑 <strong>LEVEL LULUS (${accuracyPct}%)!</strong> Luar biasa, kamu berhasil menjawab ${correctCount} dari ${requiredCount} soal dengan benar dan menamatkan Level Sulit ${this.escapeHtml(subInfo.name)}!
         </div>
       `;
     }
@@ -1134,47 +1186,60 @@ export class UIManager {
     this.container.innerHTML = `
       <div class="screen-overlay">
         <div class="cartoon-panel" style="max-width: 640px;">
-          <div class="game-logo-badge">🏆 LEVEL SELESAI! 🏆</div>
-          <h2 class="panel-header-title" style="margin-bottom: 4px;">${this.escapeHtml(resultData.levelTitle)}</h2>
+          <div class="game-logo-badge" style="${topBadgeStyle}">${topBadgeText}</div>
+          <h2 class="panel-header-title" style="margin-bottom: 4px; color: ${isPassed ? "#27ae60" : "#c0392b"};">
+            ${isPassed ? "LEVEL LULUS" : "BELUM LULUS"}
+          </h2>
+          <div style="font-weight:800; font-size:1rem; color:#2c3e50; margin-bottom:2px;">
+            ${this.escapeHtml(resultData.levelTitle)}
+          </div>
           <div class="stars-display">${starIcons}</div>
 
-          ${unlockBannerHtml}
+          ${statusBannerHtml}
 
           <div class="result-stats-box">
             <div class="result-stat-row">
-              <span>📝 Jumlah Soal Dikerjakan:</span>
-              <span>${resultData.totalQuestions} / ${resultData.totalQuestions} Soal</span>
+              <span>📝 Jumlah Soal:</span>
+              <span>${requiredCount}/${requiredCount} Soal</span>
             </div>
             <div class="result-stat-row">
-              <span>✅ Jawaban Soal Benar:</span>
-              <span style="color: #27ae60;">${resultData.correctCount} Soal</span>
+              <span>✅ Jawaban Benar:</span>
+              <span style="color: #27ae60;">${correctCount} Soal (Target Minimal: ${minCorrectRequired})</span>
             </div>
             <div class="result-stat-row">
-              <span>❌ Jawaban Soal Salah:</span>
-              <span style="color: #c0392b;">${resultData.wrongCount} Soal</span>
+              <span>❌ Jawaban Salah:</span>
+              <span style="color: #c0392b;">${wrongCount} Soal</span>
             </div>
             <div class="result-stat-row">
-              <span>🎯 Akurasi Jawaban:</span>
-              <span style="color: #2980b9;">${resultData.accuracy || 0}%</span>
+              <span>🎯 Akurasi:</span>
+              <span style="color: ${isPassed ? "#27ae60" : "#c0392b"};">${accuracyPct}% (Syarat Lulus: 80%)</span>
             </div>
             <div class="result-stat-row">
               <span>⏱️ Waktu Penyelesaian:</span>
               <span>${resultData.durationSec || 0} detik</span>
             </div>
             <div class="result-stat-row">
-              <span>🪙 Total Koin Diperoleh:</span>
-              <span style="color: #d35400;">+${resultData.coinsEarned} Koin</span>
+              <span>🪙 Koin Diperoleh:</span>
+              <span style="color: #d35400;">+${resultData.coinsEarned || 0} Koin</span>
             </div>
             <div class="result-stat-row" style="border-bottom: none;">
-              <span>🏅 Badge Penghargaan:</span>
-              <span style="color: #8e44ad;">${this.escapeHtml(resultData.badgeEarned)}</span>
+              <span>📌 Status Level:</span>
+              <span style="color: ${isPassed ? "#27ae60" : "#c0392b"};">
+                ${isPassed ? "✅ LEVEL LULUS" : "❌ BELUM LULUS (Ulangi Level)"}
+              </span>
             </div>
           </div>
 
           <div class="btn-group-horizontal">
-            <button id="btn-play-again" class="btn-cartoon btn-green btn-small">🔄 Ulangi Level Ini</button>
-            <button id="btn-select-adv-level" class="btn-cartoon btn-blue btn-small">🗺️ Pilih Level Adventure</button>
-            <button id="btn-back-menu" class="btn-cartoon btn-gray btn-small">🏠 Menu Utama</button>
+            <button id="btn-play-again" class="btn-cartoon btn-green btn-small">
+              🔄 ${isPassed ? "Main Lagi" : "Ulangi Level Ini"}
+            </button>
+            <button id="btn-select-adv-level" class="btn-cartoon btn-blue btn-small">
+              🗺️ Menu Level Adventure
+            </button>
+            <button id="btn-back-menu" class="btn-cartoon btn-gray btn-small">
+              🏠 Menu Utama
+            </button>
           </div>
         </div>
       </div>
@@ -1182,7 +1247,7 @@ export class UIManager {
 
     document.getElementById("btn-play-again").addEventListener("click", () => {
       this.playTone("click");
-      this.startAdventureMode(resultData.levelKey);
+      this.startAdventureMode(levelKey);
     });
 
     document
