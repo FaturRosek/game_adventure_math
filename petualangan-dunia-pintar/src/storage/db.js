@@ -470,28 +470,35 @@ class LocalDatabase {
     const requiredCount =
       levelKey === "easy" ? 5 : levelKey === "medium" ? 7 : 10;
 
-    const totalAnswered = (result.correctCount || 0) + (result.wrongCount || 0);
-    const isFullyCompleted = totalAnswered >= requiredCount;
+    const minCorrectRequired = Math.ceil(requiredCount * 0.8);
+    const correctCount = result.correctCount || 0;
+    const wrongCount = result.wrongCount || 0;
+    const totalAnswered = correctCount + wrongCount;
 
-    const scoreEarned =
-      (result.correctCount || 0) * 100 + (result.coinsEarned || 0) * 2;
+    const isFullyAnswered = totalAnswered >= requiredCount;
+    const isPassed = isFullyAnswered && correctCount >= minCorrectRequired;
+
+    const scoreEarned = correctCount * 100 + (result.coinsEarned || 0) * 2;
     profile.coins = (profile.coins || 0) + (result.coinsEarned || 0);
-    profile.stars = (profile.stars || 0) + (result.starsEarned || 0);
+    profile.stars =
+      (profile.stars || 0) + (isPassed ? result.starsEarned || 0 : 0);
     profile.totalScore = (profile.totalScore || 0) + scoreEarned;
 
-    const uniqueLevelRecordId = `${subjKey}_${levelKey}`;
-    if (
-      isFullyCompleted &&
-      !profile.completedLevels.includes(uniqueLevelRecordId)
-    ) {
-      profile.completedLevels.push(uniqueLevelRecordId);
+    const uniqueLevelId = `${subjKey}_${levelKey}`;
+    if (isPassed && !profile.completedLevels.includes(uniqueLevelId)) {
+      profile.completedLevels.push(uniqueLevelId);
     }
 
-    if (result.badgeEarned && !profile.badges.includes(result.badgeEarned)) {
+    if (
+      isPassed &&
+      result.badgeEarned &&
+      !profile.badges.includes(result.badgeEarned)
+    ) {
       profile.badges.push(result.badgeEarned);
     }
 
     if (
+      isPassed &&
       result.collectibleItem &&
       !profile.collectibles.includes(result.collectibleItem)
     ) {
@@ -501,38 +508,25 @@ class LocalDatabase {
     const subjProg = this.getSubjectAdventureProgress(profile, subjKey);
     const lvlRecord = subjProg.levels[levelKey];
 
-    if (lvlRecord && isFullyCompleted) {
-      const sessionAccuracy =
-        requiredCount > 0
-          ? Math.round(((result.correctCount || 0) / requiredCount) * 100)
-          : 0;
-      const durationSec = Number(result.durationSec) || 0;
-
+    if (lvlRecord && isFullyAnswered) {
+      const acc = Math.round((correctCount / requiredCount) * 100);
       lvlRecord.unlocked = true;
-      lvlRecord.completed = true;
       lvlRecord.playCount = (lvlRecord.playCount || 0) + 1;
       lvlRecord.totalQuestions = requiredCount;
       lvlRecord.questionsAnswered = requiredCount;
-      lvlRecord.correctAnswers = result.correctCount || 0;
-      lvlRecord.wrongAnswers = result.wrongCount || 0;
-      lvlRecord.accuracy = sessionAccuracy;
-      lvlRecord.bestAccuracy = Math.max(
-        lvlRecord.bestAccuracy || 0,
-        sessionAccuracy,
-      );
-      lvlRecord.lastTimeSec = durationSec;
-      if (durationSec > 0) {
-        lvlRecord.bestTimeSec =
-          lvlRecord.bestTimeSec === null
-            ? durationSec
-            : Math.min(lvlRecord.bestTimeSec, durationSec);
-      }
+      lvlRecord.correctAnswers = correctCount;
+      lvlRecord.wrongAnswers = wrongCount;
+      lvlRecord.accuracy = acc;
+      lvlRecord.bestAccuracy = Math.max(lvlRecord.bestAccuracy || 0, acc);
       lvlRecord.lastPlayedAt = Date.now();
 
-      if (levelKey === "easy") {
-        subjProg.levels.medium.unlocked = true;
-      } else if (levelKey === "medium") {
-        subjProg.levels.hard.unlocked = true;
+      if (isPassed) {
+        lvlRecord.completed = true;
+        if (levelKey === "easy") {
+          subjProg.levels.medium.unlocked = true;
+        } else if (levelKey === "medium") {
+          subjProg.levels.hard.unlocked = true;
+        }
       }
 
       if (
@@ -546,25 +540,27 @@ class LocalDatabase {
     profile.adventureHistory.push({
       id:
         "adv_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
-      levelId: uniqueLevelRecordId,
+      levelId: uniqueLevelId,
       levelKey,
       difficulty: result.difficulty || lvlRecord?.difficulty || "mudah",
-      levelTitle: result.levelTitle || uniqueLevelRecordId,
+      levelTitle: result.levelTitle || uniqueLevelId,
       subject: subjKey,
       totalQuestions: requiredCount,
       questionsAnswered: totalAnswered,
+      passed: isPassed,
+      minCorrectRequired,
       coinsEarned: result.coinsEarned || 0,
       scoreEarned,
-      correctCount: result.correctCount || 0,
-      wrongCount: result.wrongCount || 0,
+      correctCount,
+      wrongCount,
       accuracy:
         requiredCount > 0
-          ? Math.round(((result.correctCount || 0) / requiredCount) * 100)
+          ? Math.round((correctCount / requiredCount) * 100)
           : 0,
       durationSec: Number(result.durationSec) || 0,
-      starsEarned: result.starsEarned || 1,
-      badgeEarned: result.badgeEarned || "",
-      collectibleItem: result.collectibleItem || "",
+      starsEarned: isPassed ? result.starsEarned || 1 : 0,
+      badgeEarned: isPassed ? result.badgeEarned || "" : "",
+      collectibleItem: isPassed ? result.collectibleItem || "" : "",
       answerHistory: result.answerHistory || [],
       playedAt: Date.now(),
     });
