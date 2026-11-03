@@ -1,3 +1,5 @@
+import { GAME_CONFIG } from "../config/gameConfig.js";
+
 const DB_NAME = "PetualanganDuniaPintarDB";
 const DB_VERSION = 2;
 const STORE_PROFILES = "profiles";
@@ -74,6 +76,65 @@ class LocalDatabase {
     });
   }
 
+  createDefaultSubjectAdventureProgress(studentId, subjectId) {
+    return {
+      studentId,
+      subjectId,
+      mode: "adventure",
+      levels: {
+        easy: {
+          levelId: "easy",
+          difficulty: "mudah",
+          unlocked: true,
+          completed: false,
+          playCount: 0,
+          totalQuestions: 5,
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          wrongAnswers: 0,
+          accuracy: 0,
+          bestAccuracy: 0,
+          lastTimeSec: 0,
+          bestTimeSec: null,
+          lastPlayedAt: null,
+        },
+        medium: {
+          levelId: "medium",
+          difficulty: "sedang",
+          unlocked: false,
+          completed: false,
+          playCount: 0,
+          totalQuestions: 7,
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          wrongAnswers: 0,
+          accuracy: 0,
+          bestAccuracy: 0,
+          lastTimeSec: 0,
+          bestTimeSec: null,
+          lastPlayedAt: null,
+        },
+        hard: {
+          levelId: "hard",
+          difficulty: "sulit",
+          unlocked: false,
+          completed: false,
+          playCount: 0,
+          totalQuestions: 10,
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          wrongAnswers: 0,
+          accuracy: 0,
+          bestAccuracy: 0,
+          lastTimeSec: 0,
+          bestTimeSec: null,
+          lastPlayedAt: null,
+        },
+      },
+      incompleteSession: null,
+    };
+  }
+
   ensureProfileAnalyticsStructure(profile) {
     if (!profile) return null;
     profile.coins = profile.coins || 0;
@@ -88,15 +149,61 @@ class LocalDatabase {
     profile.totalQuestionsAnswered = profile.totalQuestionsAnswered || 0;
     profile.totalCorrect = profile.totalCorrect || 0;
     profile.totalWrong = profile.totalWrong || 0;
-    profile.subjectPerformance = profile.subjectPerformance || {
-      matematika: { answered: 0, correct: 0, wrong: 0 },
-      ipas: { answered: 0, correct: 0, wrong: 0 },
-    };
+    profile.subjectPerformance = profile.subjectPerformance || {};
     profile.topicPerformance = profile.topicPerformance || {};
     profile.questionHistory = profile.questionHistory || [];
     profile.adaptiveChanges = profile.adaptiveChanges || [];
     profile.topicsToReview = profile.topicsToReview || [];
+
+    profile.adventureProgress = profile.adventureProgress || {};
+    const activeSubjects = GAME_CONFIG.subjects.map((s) => s.id);
+    activeSubjects.forEach((subjId) => {
+      if (!profile.subjectPerformance[subjId]) {
+        profile.subjectPerformance[subjId] = {
+          answered: 0,
+          correct: 0,
+          wrong: 0,
+        };
+      }
+      if (
+        !profile.adventureProgress[subjId] ||
+        !profile.adventureProgress[subjId].levels
+      ) {
+        profile.adventureProgress[subjId] =
+          this.createDefaultSubjectAdventureProgress(profile.id, subjId);
+      } else {
+        const def = this.createDefaultSubjectAdventureProgress(
+          profile.id,
+          subjId,
+        );
+        ["easy", "medium", "hard"].forEach((lvlKey) => {
+          profile.adventureProgress[subjId].levels[lvlKey] = {
+            ...def.levels[lvlKey],
+            ...(profile.adventureProgress[subjId].levels[lvlKey] || {}),
+          };
+        });
+        profile.adventureProgress[subjId].levels.easy.unlocked = true;
+        if (profile.adventureProgress[subjId].levels.easy.completed) {
+          profile.adventureProgress[subjId].levels.medium.unlocked = true;
+        }
+        if (profile.adventureProgress[subjId].levels.medium.completed) {
+          profile.adventureProgress[subjId].levels.hard.unlocked = true;
+        }
+      }
+    });
+
     return profile;
+  }
+
+  getSubjectAdventureProgress(profile, subjectId) {
+    if (!profile) return null;
+    this.ensureProfileAnalyticsStructure(profile);
+    const subjKey = String(subjectId || "matematika").toLowerCase();
+    if (!profile.adventureProgress[subjKey]) {
+      profile.adventureProgress[subjKey] =
+        this.createDefaultSubjectAdventureProgress(profile.id, subjKey);
+    }
+    return profile.adventureProgress[subjKey];
   }
 
   async getAllProfiles() {
@@ -153,9 +260,10 @@ class LocalDatabase {
 
   async createProfile({ name, grade = 3, character = "kiko" }) {
     await this.init();
+    const newId =
+      "prof_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
     const newProfile = this.ensureProfileAnalyticsStructure({
-      id:
-        "prof_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+      id: newId,
       name: name.trim(),
       grade: Number(grade),
       character,
@@ -170,14 +278,12 @@ class LocalDatabase {
       totalQuestionsAnswered: 0,
       totalCorrect: 0,
       totalWrong: 0,
-      subjectPerformance: {
-        matematika: { answered: 0, correct: 0, wrong: 0 },
-        ipas: { answered: 0, correct: 0, wrong: 0 },
-      },
+      subjectPerformance: {},
       topicPerformance: {},
       questionHistory: [],
       adaptiveChanges: [],
       topicsToReview: [],
+      adventureProgress: {},
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -341,68 +447,31 @@ class LocalDatabase {
     return profile;
   }
 
-  async deleteProfile(profileId) {
-    await this.init();
-    if (this.getActiveProfileId() === profileId) {
-      localStorage.removeItem(ACTIVE_PROFILE_KEY);
-    }
-
-    if (this.useFallback) {
-      this.memoryFallback.profiles.delete(profileId);
-      return true;
-    }
-
-    return new Promise((resolve) => {
-      try {
-        const tx = this.db.transaction(STORE_PROFILES, "readwrite");
-        const store = tx.objectStore(STORE_PROFILES);
-        const req = store.delete(profileId);
-        req.onsuccess = () => resolve(true);
-        req.onerror = () => resolve(false);
-      } catch (e) {
-        resolve(false);
-      }
-    });
-  }
-
-  async resetProfileProgress(profileId) {
+  async saveIncompleteAdventureSession(profileId, subjectId, sessionSnapshot) {
     const profile = await this.getProfileById(profileId);
     if (!profile) return null;
 
-    profile.coins = 0;
-    profile.stars = 0;
-    profile.totalScore = 0;
-    profile.badges = [];
-    profile.collectibles = [];
-    profile.completedLevels = [];
-    profile.adventureHistory = [];
-    profile.duelHistory = [];
-    profile.totalQuestionsAnswered = 0;
-    profile.totalCorrect = 0;
-    profile.totalWrong = 0;
-    profile.subjectPerformance = {
-      matematika: { answered: 0, correct: 0, wrong: 0 },
-      ipas: { answered: 0, correct: 0, wrong: 0 },
+    const subjProg = this.getSubjectAdventureProgress(profile, subjectId);
+    subjProg.incompleteSession = {
+      ...sessionSnapshot,
+      savedAt: Date.now(),
     };
-    profile.topicPerformance = {};
-    profile.questionHistory = [];
-    profile.adaptiveChanges = [];
-    profile.topicsToReview = [];
 
-    return await this.saveProfile(profile);
-  }
-
-  async resetAllProfilesProgress() {
-    const profiles = await this.getAllProfiles();
-    for (const p of profiles) {
-      await this.resetProfileProgress(p.id);
-    }
-    return true;
+    await this.saveProfile(profile);
+    return profile;
   }
 
   async recordAdventureResult(profileId, result) {
     const profile = await this.getProfileById(profileId);
     if (!profile) return null;
+
+    const subjKey = String(result.subject || "matematika").toLowerCase();
+    const levelKey = result.levelKey || "easy";
+    const requiredCount =
+      levelKey === "easy" ? 5 : levelKey === "medium" ? 7 : 10;
+
+    const totalAnswered = (result.correctCount || 0) + (result.wrongCount || 0);
+    const isFullyCompleted = totalAnswered >= requiredCount;
 
     const scoreEarned =
       (result.correctCount || 0) * 100 + (result.coinsEarned || 0) * 2;
@@ -410,8 +479,12 @@ class LocalDatabase {
     profile.stars = (profile.stars || 0) + (result.starsEarned || 0);
     profile.totalScore = (profile.totalScore || 0) + scoreEarned;
 
-    if (result.levelId && !profile.completedLevels.includes(result.levelId)) {
-      profile.completedLevels.push(result.levelId);
+    const uniqueLevelRecordId = `${subjKey}_${levelKey}`;
+    if (
+      isFullyCompleted &&
+      !profile.completedLevels.includes(uniqueLevelRecordId)
+    ) {
+      profile.completedLevels.push(uniqueLevelRecordId);
     }
 
     if (result.badgeEarned && !profile.badges.includes(result.badgeEarned)) {
@@ -425,16 +498,70 @@ class LocalDatabase {
       profile.collectibles.push(result.collectibleItem);
     }
 
+    const subjProg = this.getSubjectAdventureProgress(profile, subjKey);
+    const lvlRecord = subjProg.levels[levelKey];
+
+    if (lvlRecord && isFullyCompleted) {
+      const sessionAccuracy =
+        requiredCount > 0
+          ? Math.round(((result.correctCount || 0) / requiredCount) * 100)
+          : 0;
+      const durationSec = Number(result.durationSec) || 0;
+
+      lvlRecord.unlocked = true;
+      lvlRecord.completed = true;
+      lvlRecord.playCount = (lvlRecord.playCount || 0) + 1;
+      lvlRecord.totalQuestions = requiredCount;
+      lvlRecord.questionsAnswered = requiredCount;
+      lvlRecord.correctAnswers = result.correctCount || 0;
+      lvlRecord.wrongAnswers = result.wrongCount || 0;
+      lvlRecord.accuracy = sessionAccuracy;
+      lvlRecord.bestAccuracy = Math.max(
+        lvlRecord.bestAccuracy || 0,
+        sessionAccuracy,
+      );
+      lvlRecord.lastTimeSec = durationSec;
+      if (durationSec > 0) {
+        lvlRecord.bestTimeSec =
+          lvlRecord.bestTimeSec === null
+            ? durationSec
+            : Math.min(lvlRecord.bestTimeSec, durationSec);
+      }
+      lvlRecord.lastPlayedAt = Date.now();
+
+      if (levelKey === "easy") {
+        subjProg.levels.medium.unlocked = true;
+      } else if (levelKey === "medium") {
+        subjProg.levels.hard.unlocked = true;
+      }
+
+      if (
+        subjProg.incompleteSession &&
+        subjProg.incompleteSession.levelKey === levelKey
+      ) {
+        subjProg.incompleteSession = null;
+      }
+    }
+
     profile.adventureHistory.push({
       id:
         "adv_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
-      levelId: result.levelId,
-      levelTitle: result.levelTitle || result.levelId,
-      subject: result.subject || "matematika",
+      levelId: uniqueLevelRecordId,
+      levelKey,
+      difficulty: result.difficulty || lvlRecord?.difficulty || "mudah",
+      levelTitle: result.levelTitle || uniqueLevelRecordId,
+      subject: subjKey,
+      totalQuestions: requiredCount,
+      questionsAnswered: totalAnswered,
       coinsEarned: result.coinsEarned || 0,
       scoreEarned,
       correctCount: result.correctCount || 0,
       wrongCount: result.wrongCount || 0,
+      accuracy:
+        requiredCount > 0
+          ? Math.round(((result.correctCount || 0) / requiredCount) * 100)
+          : 0,
+      durationSec: Number(result.durationSec) || 0,
       starsEarned: result.starsEarned || 1,
       badgeEarned: result.badgeEarned || "",
       collectibleItem: result.collectibleItem || "",
@@ -486,6 +613,63 @@ class LocalDatabase {
 
     await this.saveProfile(profile);
     return profile;
+  }
+
+  async deleteProfile(profileId) {
+    await this.init();
+    if (this.getActiveProfileId() === profileId) {
+      localStorage.removeItem(ACTIVE_PROFILE_KEY);
+    }
+
+    if (this.useFallback) {
+      this.memoryFallback.profiles.delete(profileId);
+      return true;
+    }
+
+    return new Promise((resolve) => {
+      try {
+        const tx = this.db.transaction(STORE_PROFILES, "readwrite");
+        const store = tx.objectStore(STORE_PROFILES);
+        const req = store.delete(profileId);
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => resolve(false);
+      } catch (e) {
+        resolve(false);
+      }
+    });
+  }
+
+  async resetProfileProgress(profileId) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return null;
+
+    profile.coins = 0;
+    profile.stars = 0;
+    profile.totalScore = 0;
+    profile.badges = [];
+    profile.collectibles = [];
+    profile.completedLevels = [];
+    profile.adventureHistory = [];
+    profile.duelHistory = [];
+    profile.totalQuestionsAnswered = 0;
+    profile.totalCorrect = 0;
+    profile.totalWrong = 0;
+    profile.subjectPerformance = {};
+    profile.topicPerformance = {};
+    profile.questionHistory = [];
+    profile.adaptiveChanges = [];
+    profile.topicsToReview = [];
+    profile.adventureProgress = {};
+
+    return await this.saveProfile(profile);
+  }
+
+  async resetAllProfilesProgress() {
+    const profiles = await this.getAllProfiles();
+    for (const p of profiles) {
+      await this.resetProfileProgress(p.id);
+    }
+    return true;
   }
 
   setActiveProfileId(id) {
@@ -622,7 +806,7 @@ class LocalDatabase {
 
     return {
       app: "Petualangan Dunia Pintar",
-      version: "1.0.0-hybrid",
+      version: "1.0.0-adventure-levels",
       exportedAt: new Date().toISOString(),
       profiles,
       settings,

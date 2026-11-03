@@ -19,6 +19,7 @@ export class UIManager {
     };
     this.selectedGrade = 3;
     this.selectedSubject = "matematika";
+    this.selectedAdventureLevelKey = "easy";
     this.audioCtx = null;
     this.duelSession = null;
     this.tutorUnlocked = false;
@@ -127,17 +128,11 @@ export class UIManager {
       `;
     }
     const char = this.getCharacterInfo(this.activeProfile.character);
-    const diffModeLabel =
-      this.settings.difficultyMode === "manual"
-        ? `Manual (${(this.settings.manualDifficulty || "sedang").toUpperCase()})`
-        : `Adaptif (${this.settings.adaptiveBounds || "mudah-sulit"})`;
-
     return `
       <div class="active-profile-pill">
         <span>${char.emoji} <strong>${this.escapeHtml(this.activeProfile.name)}</strong> (Kelas ${this.activeProfile.grade})</span>
         <span>| 🪙 ${this.activeProfile.coins || 0}</span>
         <span>| ⭐ ${this.activeProfile.stars || 0}</span>
-        <span>| 🎯 ${this.escapeHtml(diffModeLabel)}</span>
       </div>
     `;
   }
@@ -472,7 +467,7 @@ export class UIManager {
         <div class="cartoon-panel">
           ${this.renderProfileBanner()}
           <h2 class="panel-header-title">📚 Pilih Mata Pelajaran (Kelas ${this.selectedGrade})</h2>
-          <p class="game-subtitle">Matematika dan IPAS dilengkapi Sistem Soal Dinamis Hybrid!</p>
+          <p class="game-subtitle">Setiap mata pelajaran memiliki progres petualangan masing-masing!</p>
 
           <div class="selection-grid">
             ${subjectCardsHtml}
@@ -551,7 +546,7 @@ export class UIManager {
         this.playTone("click");
         const modeId = card.dataset.id;
         if (modeId === "adventure") {
-          this.startAdventureMode();
+          this.showAdventureLevelSelection();
         } else if (modeId === "duel") {
           this.showDuelSetupScreen();
         }
@@ -566,13 +561,136 @@ export class UIManager {
       });
   }
 
+  async showAdventureLevelSelection() {
+    this.stopAllGameplayScenes();
+    if (this.activeProfile) {
+      this.activeProfile = await db.getProfileById(this.activeProfile.id);
+    }
+
+    const subInfo = this.getSubjectInfo(this.selectedSubject);
+    const subjProgress = db.getSubjectAdventureProgress(
+      this.activeProfile,
+      this.selectedSubject,
+    );
+
+    const levelCardsHtml = GAME_CONFIG.adventureLevels
+      .map((lvl) => {
+        const state = subjProgress?.levels?.[lvl.id] || {
+          unlocked: lvl.id === "easy",
+          completed: false,
+          totalQuestions: lvl.totalQuestions,
+          correctAnswers: 0,
+          wrongAnswers: 0,
+          bestAccuracy: 0,
+        };
+
+        const isUnlocked = Boolean(state.unlocked);
+        const isCompleted = Boolean(state.completed);
+
+        let statusLabel = "🔒 Terkunci";
+        let badgeClass = "badge-soon";
+        if (isCompleted) {
+          statusLabel = "✅ Selesai (Bisa Diulang)";
+          badgeClass = "badge-active";
+        } else if (isUnlocked) {
+          statusLabel = "🔓 Terbuka";
+          badgeClass = "badge-active";
+        }
+
+        const progressDetailHtml = isUnlocked
+          ? isCompleted
+            ? `<div style="font-size:0.84rem; font-weight:800; color:#1e8449; background:#e8f8f5; padding:6px 10px; border-radius:10px; width:100%;">
+               🏆 Terbaik: Benar ${state.correctAnswers}/${lvl.totalQuestions} (${state.bestAccuracy || state.accuracy || 0}%)
+             </div>`
+            : `<div style="font-size:0.84rem; font-weight:700; color:#2980b9; background:#eef9ff; padding:6px 10px; border-radius:10px; width:100%;">
+               🎯 Siap Dimainkan: Tepat ${lvl.totalQuestions} Soal
+             </div>`
+          : `<div style="font-size:0.84rem; font-weight:800; color:#c0392b; background:#fadbd8; padding:6px 10px; border-radius:10px; width:100%;">
+             🔒 ${this.escapeHtml(lvl.unlockRequirementText)}
+           </div>`;
+
+        return `
+        <div class="choice-card adv-level-card ${isUnlocked ? "" : "card-disabled"} ${isCompleted ? "selected" : ""}"
+             data-level="${lvl.id}"
+             data-unlocked="${isUnlocked}">
+          <div class="card-icon">${isUnlocked ? lvl.icon : "🔒"}</div>
+          <div class="card-title">${this.escapeHtml(lvl.name)}</div>
+          <div style="font-weight:900; font-size:0.95rem; color:#d35400;">
+            📝 Jumlah Soal: ${lvl.totalQuestions} Soal
+          </div>
+          <div class="card-desc">${this.escapeHtml(lvl.desc)}</div>
+          ${progressDetailHtml}
+          <span class="status-badge ${badgeClass}" style="margin-top:4px;">
+            ${statusLabel}
+          </span>
+        </div>
+      `;
+      })
+      .join("");
+
+    this.container.innerHTML = `
+      <div class="screen-overlay">
+        <div class="cartoon-panel" style="max-width: 880px;">
+          ${this.renderProfileBanner()}
+          <div class="game-logo-badge">${subInfo.icon} ADVENTURE ${subInfo.name.toUpperCase()}</div>
+          <h2 class="panel-header-title">🗺️ Pilih Level Adventure ${this.escapeHtml(subInfo.name)}</h2>
+          <p class="game-subtitle" style="margin-bottom: 10px;">
+            Selesaikan setiap level secara berurutan! Progres ${this.escapeHtml(subInfo.name)} terpisah dari mata pelajaran lainnya.
+          </p>
+
+          <div id="adv-level-notice" style="display:none; background:#fadbd8; color:#78281f; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;"></div>
+
+          <div class="selection-grid-3">
+            ${levelCardsHtml}
+          </div>
+
+          <div class="btn-group-horizontal">
+            <button id="btn-back-mode-sel" class="btn-cartoon btn-gray btn-small">⬅️ Kembali ke Pilihan Mode</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const noticeEl = document.getElementById("adv-level-notice");
+
+    this.container.querySelectorAll(".adv-level-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const levelKey = card.dataset.level;
+        const isUnlocked = card.dataset.unlocked === "true";
+        const lvlCfg = GAME_CONFIG.adventureLevels.find(
+          (l) => l.id === levelKey,
+        );
+
+        if (!isUnlocked) {
+          this.playTone("wrong");
+          if (noticeEl && lvlCfg) {
+            noticeEl.textContent = `🔒 ${lvlCfg.unlockRequirementText}`;
+            noticeEl.style.display = "block";
+          }
+          return;
+        }
+
+        this.playTone("click");
+        this.selectedAdventureLevelKey = levelKey;
+        this.startAdventureMode(levelKey);
+      });
+    });
+
+    document
+      .getElementById("btn-back-mode-sel")
+      .addEventListener("click", () => {
+        this.playTone("click");
+        this.showModeSelection();
+      });
+  }
+
   showSettingsMenu() {
     const isManual = this.settings.difficultyMode === "manual";
 
     this.container.innerHTML = `
       <div class="screen-overlay">
         <div class="cartoon-panel" style="max-width: 640px;">
-          <h2 class="panel-header-title">⚙️ Pengaturan Permainan & Kesulitan</h2>
+          <h2 class="panel-header-title">⚙️ Pengaturan Permainan & Kesulitan Duel</h2>
 
           <div class="result-stats-box" style="max-width: 100%;">
             <div class="result-stat-row" style="align-items: center;">
@@ -588,7 +706,7 @@ export class UIManager {
               </button>
             </div>
             <div class="result-stat-row" style="align-items: center;">
-              <span>🎯 Mode Tingkat Kesulitan Soal</span>
+              <span>🎯 Mode Kesulitan Default (Duel)</span>
               <select id="sel-quick-diff-mode" class="input-cartoon" style="max-width: 240px;">
                 <option value="adaptif" ${!isManual ? "selected" : ""}>🤖 Adaptif (Sesuai Performa)</option>
                 <option value="manual" ${isManual ? "selected" : ""}>🖐️ Manual (Pilihan Tutor)</option>
@@ -684,16 +802,16 @@ export class UIManager {
           <h2 class="panel-header-title">📖 Tentang Petualangan Dunia Pintar</h2>
           <div class="form-box" style="font-size: 0.96rem; line-height: 1.55; font-weight: 700;">
             <p style="margin-bottom: 8px;">
-              <strong>Petualangan Dunia Pintar (Hybrid Question Engine Edition)</strong> adalah game edukasi interaktif Kelas 3 SD untuk mata pelajaran <strong>Matematika</strong> dan <strong>IPAS</strong> yang berjalan 100% Offline.
+              <strong>Petualangan Dunia Pintar</strong> adalah game edukasi interaktif Kelas 3 SD untuk mata pelajaran <strong>Matematika</strong> dan <strong>IPAS</strong> yang berjalan 100% Offline.
             </p>
             <p style="margin-bottom: 8px;">
-              🗺️ <strong>Adventure Mode (4 Pos = 8 Soal):</strong> Setiap peti, NPC, dan gerbang berisi 2 soal tantangan berurutan.
+              🗺️ <strong>Adventure Mode Bertahap Per Mapel:</strong> Setiap mata pelajaran memiliki 3 level terpisah: <strong>Level Mudah (5 Soal)</strong>, <strong>Level Sedang (7 Soal)</strong>, dan <strong>Level Sulit (10 Soal)</strong> yang terbuka secara berurutan.
             </p>
             <p style="margin-bottom: 8px;">
-              ⚔️ <strong>Duel Mode Sampai Garis Finis + Tie-Breaker Kecepatan:</strong> Permainan berlangsung terus sampai ada yang menyentuh garis finis (5 atau 10 langkah). Jika Tutor mencapai finis duluan, Murid tetap diberi giliran menyamakan kedudukan. Jika seri di garis finis, diadakan <strong>1 Soal Penentuan (Siapa Cepat & Tepat Dia Menang)</strong>!
+              ⚔️ <strong>Duel Mode (Hot Seat):</strong> Kompetisi 1 lawan 1 bersama Tutor sampai garis finis dengan sistem <em>Anti-Meniru</em> dan <em>Tie-Breaker</em> kecepatan.
             </p>
             <p>
-              👨‍🏫 <strong>Panel Tutor:</strong> Dilengkapi analitik performa per topik, log perubahan adaptif, impor/ekspor Bank Soal JSON, pengujian otomatis (<em>Self-Test</em>), dan <em>Backup/Restore</em> data (PIN Bawaan: <strong>1234</strong>).
+              👨‍🏫 <strong>Panel Tutor:</strong> Dilengkapi pemantauan status level Adventure per mapel, analitik performa per topik, impor/ekspor Bank Soal JSON, dan <em>Backup/Restore</em> data (PIN Bawaan: <strong>1234</strong>).
             </p>
           </div>
           <div class="btn-group-horizontal">
@@ -709,8 +827,15 @@ export class UIManager {
     });
   }
 
-  startAdventureMode() {
+  startAdventureMode(levelKey = null) {
     this.stopAllGameplayScenes();
+    const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || "easy";
+    this.selectedAdventureLevelKey = chosenLevelKey;
+
+    const levelMeta =
+      GAME_CONFIG.adventureLevels.find((l) => l.id === chosenLevelKey) ||
+      GAME_CONFIG.adventureLevels[0];
+
     const charInfo = this.getCharacterInfo(this.activeProfile?.character);
     const subInfo = this.getSubjectInfo(this.selectedSubject);
 
@@ -718,23 +843,20 @@ export class UIManager {
       characterEmoji: charInfo.emoji,
       playerName: this.activeProfile?.name || "Petualang",
       subjectName: subInfo.name,
+      levelName: levelMeta.name,
       coins: 0,
-      correctCount: 0,
-      totalChallenges: 8,
+      answeredCount: 0,
+      totalChallenges: levelMeta.totalQuestions,
     });
 
     this.phaserGame.scene.start("AdventureScene", {
       profile: this.activeProfile,
       subject: this.selectedSubject,
+      levelKey: chosenLevelKey,
     });
   }
 
   renderAdventureHUD(stats) {
-    const modeLabel =
-      this.settings.difficultyMode === "manual"
-        ? `Manual: ${(this.settings.manualDifficulty || "sedang").toUpperCase()}`
-        : `Adaptif (${this.settings.adaptiveBounds || "mudah-sulit"})`;
-
     this.container.innerHTML = `
       <div class="hud-overlay" id="adventure-hud">
         <div class="hud-top-bar">
@@ -743,13 +865,13 @@ export class UIManager {
               <span>${stats.characterEmoji} ${this.escapeHtml(stats.playerName)}</span>
             </div>
             <div class="hud-pill" style="background: #eef9ff;">
-              <span>📘 ${this.escapeHtml(stats.subjectName)} (${this.escapeHtml(modeLabel)})</span>
+              <span>📘 ${this.escapeHtml(stats.subjectName)} — ${this.escapeHtml(stats.levelName)}</span>
             </div>
             <div class="hud-pill" style="background: #fff9db;">
               <span>🪙 Koin: <span id="hud-coin-val">${stats.coins}</span></span>
             </div>
             <div class="hud-pill" style="background: #e8f8f5;">
-              <span>🧩 Misi: <span id="hud-quest-val">${stats.correctCount}/${stats.totalChallenges}</span></span>
+              <span>🧩 Soal Dikerjakan: <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span></span>
             </div>
           </div>
 
@@ -758,7 +880,7 @@ export class UIManager {
           </button>
         </div>
 
-        <div id="hud-hint-banner" style="align-self: center; background: rgba(44,62,80,0.9); color: #fff; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 1rem; display: none;">
+        <div id="hud-hint-banner" style="align-self: center; background: rgba(44,62,80,0.92); color: #fff; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 1rem; display: none;">
         </div>
 
         ${
@@ -777,22 +899,38 @@ export class UIManager {
       </div>
     `;
 
-    document.getElementById("btn-hud-exit").addEventListener("click", () => {
-      this.playTone("click");
-      this.showModeSelection();
-    });
+    document
+      .getElementById("btn-hud-exit")
+      .addEventListener("click", async () => {
+        this.playTone("click");
+        const advScene = this.phaserGame?.scene.getScene("AdventureScene");
+        if (advScene && this.activeProfile && !advScene.levelCompleted) {
+          this.activeProfile = await db.saveIncompleteAdventureSession(
+            this.activeProfile.id,
+            this.selectedSubject,
+            {
+              levelKey: advScene.levelKey,
+              questionsAnswered: advScene.questionsAnswered,
+              totalChallenges: advScene.totalChallenges,
+              correctAnswers: advScene.correctAnswers,
+              wrongAnswers: advScene.wrongAnswers,
+            },
+          );
+        }
+        this.showAdventureLevelSelection();
+      });
 
     this.bindTouchButtons();
   }
 
-  updateAdventureHUD({ coins, correctCount, totalChallenges, hintText }) {
+  updateAdventureHUD({ coins, answeredCount, totalChallenges, hintText }) {
     const coinEl = document.getElementById("hud-coin-val");
     const questEl = document.getElementById("hud-quest-val");
     const hintEl = document.getElementById("hud-hint-banner");
 
     if (coinEl && coins !== undefined) coinEl.textContent = coins;
-    if (questEl && correctCount !== undefined) {
-      questEl.textContent = `${correctCount}/${totalChallenges}`;
+    if (questEl && answeredCount !== undefined) {
+      questEl.textContent = `${answeredCount}/${totalChallenges}`;
     }
     if (hintEl) {
       if (hintText) {
@@ -870,10 +1008,7 @@ export class UIManager {
       .join("");
 
     const sourceBadgeText = this.formatSourceBadge(questionData.sourceType);
-    const modeBadgeText =
-      questionData.adaptiveMeta?.mode === "adaptif"
-        ? `🤖 Adaptif: ${questionData.difficulty.toUpperCase()}`
-        : `🖐️ Manual: ${questionData.difficulty.toUpperCase()}`;
+    const diffBadgeText = `Level: ${(questionData.difficulty || "mudah").toUpperCase()}`;
 
     modalWrapper.innerHTML = `
       <div class="quiz-panel">
@@ -885,7 +1020,7 @@ export class UIManager {
             ${this.escapeHtml(sourceBadgeText)}
           </span>
           <span class="status-badge" style="background: #fff3cd; color: #856404;">
-            ${this.escapeHtml(questionData.topic)} | ${this.escapeHtml(modeBadgeText)}
+            ${this.escapeHtml(questionData.topic)} | ${this.escapeHtml(diffBadgeText)}
           </span>
         </div>
 
@@ -973,44 +1108,73 @@ export class UIManager {
     const starIcons =
       "⭐".repeat(resultData.starsEarned) +
       "☆".repeat(3 - resultData.starsEarned);
+    const subInfo = this.getSubjectInfo(resultData.subject);
+
+    let unlockBannerHtml = "";
+    if (resultData.levelKey === "easy") {
+      unlockBannerHtml = `
+        <div style="background:#d4efdf; color:#145a32; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;">
+          🔓 Selamat! <strong>Level Sedang (${this.escapeHtml(subInfo.name)})</strong> sekarang telah TERBUKA!
+        </div>
+      `;
+    } else if (resultData.levelKey === "medium") {
+      unlockBannerHtml = `
+        <div style="background:#d4efdf; color:#145a32; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;">
+          🔓 Selamat! <strong>Level Sulit (${this.escapeHtml(subInfo.name)})</strong> sekarang telah TERBUKA!
+        </div>
+      `;
+    } else if (resultData.levelKey === "hard") {
+      unlockBannerHtml = `
+        <div style="background:#fff3cd; color:#856404; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;">
+          👑 Luar Biasa! Kamu telah menamatkan seluruh level Adventure ${this.escapeHtml(subInfo.name)}!
+        </div>
+      `;
+    }
 
     this.container.innerHTML = `
       <div class="screen-overlay">
-        <div class="cartoon-panel" style="max-width: 620px;">
+        <div class="cartoon-panel" style="max-width: 640px;">
           <div class="game-logo-badge">🏆 LEVEL SELESAI! 🏆</div>
           <h2 class="panel-header-title" style="margin-bottom: 4px;">${this.escapeHtml(resultData.levelTitle)}</h2>
           <div class="stars-display">${starIcons}</div>
 
+          ${unlockBannerHtml}
+
           <div class="result-stats-box">
+            <div class="result-stat-row">
+              <span>📝 Jumlah Soal Dikerjakan:</span>
+              <span>${resultData.totalQuestions} / ${resultData.totalQuestions} Soal</span>
+            </div>
+            <div class="result-stat-row">
+              <span>✅ Jawaban Soal Benar:</span>
+              <span style="color: #27ae60;">${resultData.correctCount} Soal</span>
+            </div>
+            <div class="result-stat-row">
+              <span>❌ Jawaban Soal Salah:</span>
+              <span style="color: #c0392b;">${resultData.wrongCount} Soal</span>
+            </div>
+            <div class="result-stat-row">
+              <span>🎯 Akurasi Jawaban:</span>
+              <span style="color: #2980b9;">${resultData.accuracy || 0}%</span>
+            </div>
+            <div class="result-stat-row">
+              <span>⏱️ Waktu Penyelesaian:</span>
+              <span>${resultData.durationSec || 0} detik</span>
+            </div>
             <div class="result-stat-row">
               <span>🪙 Total Koin Diperoleh:</span>
               <span style="color: #d35400;">+${resultData.coinsEarned} Koin</span>
             </div>
-            <div class="result-stat-row">
-              <span>✅ Jawaban Soal Benar:</span>
-              <span style="color: #27ae60;">${resultData.correctCount} / 8 Soal</span>
-            </div>
-            <div class="result-stat-row">
-              <span>❌ Jawaban Soal Salah:</span>
-              <span style="color: #c0392b;">${resultData.wrongCount} Kali</span>
-            </div>
-            <div class="result-stat-row">
-              <span>⭐ Bintang Diperoleh:</span>
-              <span style="color: #f39c12;">${resultData.starsEarned} / 3 Bintang</span>
-            </div>
-            <div class="result-stat-row">
+            <div class="result-stat-row" style="border-bottom: none;">
               <span>🏅 Badge Penghargaan:</span>
               <span style="color: #8e44ad;">${this.escapeHtml(resultData.badgeEarned)}</span>
-            </div>
-            <div class="result-stat-row" style="border-bottom: none;">
-              <span>💎 Item Koleksi:</span>
-              <span style="color: #16a085;">${this.escapeHtml(resultData.collectibleItem || "-")}</span>
             </div>
           </div>
 
           <div class="btn-group-horizontal">
-            <button id="btn-play-again" class="btn-cartoon btn-green">🔄 Main Lagi</button>
-            <button id="btn-back-menu" class="btn-cartoon btn-blue">🏠 Kembali ke Menu</button>
+            <button id="btn-play-again" class="btn-cartoon btn-green btn-small">🔄 Ulangi Level Ini</button>
+            <button id="btn-select-adv-level" class="btn-cartoon btn-blue btn-small">🗺️ Pilih Level Adventure</button>
+            <button id="btn-back-menu" class="btn-cartoon btn-gray btn-small">🏠 Menu Utama</button>
           </div>
         </div>
       </div>
@@ -1018,8 +1182,15 @@ export class UIManager {
 
     document.getElementById("btn-play-again").addEventListener("click", () => {
       this.playTone("click");
-      this.startAdventureMode();
+      this.startAdventureMode(resultData.levelKey);
     });
+
+    document
+      .getElementById("btn-select-adv-level")
+      .addEventListener("click", () => {
+        this.playTone("click");
+        this.showAdventureLevelSelection();
+      });
 
     document.getElementById("btn-back-menu").addEventListener("click", () => {
       this.playTone("click");
@@ -1935,6 +2106,60 @@ export class UIManager {
     });
   }
 
+  renderSubjectAdventureTableForTutor(profile, subjectId, subjectTitle) {
+    const subjProg = db.getSubjectAdventureProgress(profile, subjectId);
+    const rowsHtml = GAME_CONFIG.adventureLevels
+      .map((lvl) => {
+        const st = subjProg?.levels?.[lvl.id] || {
+          unlocked: lvl.id === "easy",
+          completed: false,
+          totalQuestions: lvl.totalQuestions,
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          wrongAnswers: 0,
+          accuracy: 0,
+        };
+
+        let badgeHtml = `<span style="color:#c0392b; font-weight:800;">🔒 Terkunci</span>`;
+        if (st.completed) {
+          badgeHtml = `<span style="color:#27ae60; font-weight:900;">✅ Selesai (${st.playCount || 1}x)</span>`;
+        } else if (st.unlocked) {
+          badgeHtml = `<span style="color:#2980b9; font-weight:800;">🔓 Terbuka</span>`;
+        }
+
+        return `
+        <tr>
+          <td><strong>${lvl.icon} ${this.escapeHtml(lvl.name)}</strong></td>
+          <td>${badgeHtml}</td>
+          <td>${st.questionsAnswered || 0} / ${lvl.totalQuestions} Soal</td>
+          <td>✅ ${st.correctAnswers || 0} / ❌ ${st.wrongAnswers || 0}</td>
+          <td><strong>${st.accuracy || 0}%</strong></td>
+        </tr>
+      `;
+      })
+      .join("");
+
+    return `
+      <div style="margin-bottom: 12px;">
+        <div style="font-weight: 900; margin-bottom: 4px; color: #2c3e50;">${subjectTitle}</div>
+        <table class="tutor-table">
+          <thead>
+            <tr>
+              <th>Level Adventure</th>
+              <th>Status Level</th>
+              <th>Soal Dikerjakan</th>
+              <th>Benar / Salah</th>
+              <th>Akurasi Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   async showTutorPanel(activeTab = "dashboard", selectedStudentId = null) {
     const profiles = await db.getAllProfiles();
     const bankStats = questionManager.getBankStatistics();
@@ -1976,7 +2201,14 @@ export class UIManager {
           : profiles
               .map((p) => {
                 const char = this.getCharacterInfo(p.character);
-                const advCount = (p.adventureHistory || []).length;
+                const mtkProg = db.getSubjectAdventureProgress(p, "matematika");
+                const ipasProg = db.getSubjectAdventureProgress(p, "ipas");
+
+                const countCompleted = (prog) =>
+                  ["easy", "medium", "hard"].filter(
+                    (k) => prog?.levels?.[k]?.completed,
+                  ).length;
+
                 const duelCount = (p.duelHistory || []).length;
                 const totAns = (p.totalCorrect || 0) + (p.totalWrong || 0);
                 const acc =
@@ -1987,10 +2219,10 @@ export class UIManager {
               <tr>
                 <td><strong>${char.emoji} ${this.escapeHtml(p.name)}</strong></td>
                 <td>Kelas ${p.grade}</td>
-                <td>${totAns} Soal (${acc}%)</td>
-                <td>${advCount}x Main</td>
+                <td>${countCompleted(mtkProg)}/3 Level Selesai</td>
+                <td>${countCompleted(ipasProg)}/3 Level Selesai</td>
                 <td>${duelCount}x Duel</td>
-                <td>🪙 ${p.coins || 0} | ⭐ ${p.stars || 0}</td>
+                <td>${totAns} Soal (${acc}%)</td>
               </tr>
             `;
               })
@@ -2017,16 +2249,16 @@ export class UIManager {
         </div>
 
         <div class="tutor-scroll-area">
-          <div style="font-weight: 900; margin-bottom: 6px;">📊 Ringkasan Progres Seluruh Siswa:</div>
+          <div style="font-weight: 900; margin-bottom: 6px;">📊 Ringkasan Progres Seluruh Siswa (Adventure Terpisah Per Mapel & Duel):</div>
           <table class="tutor-table">
             <thead>
               <tr>
                 <th>Nama Siswa</th>
                 <th>Kelas</th>
-                <th>Soal Dijawab (Akurasi)</th>
-                <th>Adventure</th>
-                <th>Duel</th>
-                <th>Koin & Bintang</th>
+                <th>Adventure Matematika</th>
+                <th>Adventure IPAS</th>
+                <th>Mode Duel</th>
+                <th>Total Soal (Akurasi)</th>
               </tr>
             </thead>
             <tbody>
@@ -2111,24 +2343,16 @@ export class UIManager {
         const sTotal = sCorrect + sWrong;
         const sAcc = sTotal > 0 ? Math.round((sCorrect / sTotal) * 100) : 0;
 
-        const mtkPerf = targetProfile.subjectPerformance?.matematika || {
-          answered: 0,
-          correct: 0,
-          wrong: 0,
-        };
-        const ipasPerf = targetProfile.subjectPerformance?.ipas || {
-          answered: 0,
-          correct: 0,
-          wrong: 0,
-        };
-        const mtkAcc =
-          mtkPerf.answered > 0
-            ? Math.round((mtkPerf.correct / mtkPerf.answered) * 100)
-            : 0;
-        const ipasAcc =
-          ipasPerf.answered > 0
-            ? Math.round((ipasPerf.correct / ipasPerf.answered) * 100)
-            : 0;
+        const advTablesHtml = GAME_CONFIG.subjects
+          .filter((s) => s.active)
+          .map((s) =>
+            this.renderSubjectAdventureTableForTutor(
+              targetProfile,
+              s.id,
+              `${s.icon} Progres Adventure ${s.name} (Terpisah dari Mapel Lain & Mode Duel):`,
+            ),
+          )
+          .join("");
 
         const topicEntries = Object.values(
           targetProfile.topicPerformance || {},
@@ -2155,18 +2379,20 @@ export class UIManager {
                 })
                 .join("");
 
-        const adaptiveLogRows =
-          (targetProfile.adaptiveChanges || []).length === 0
-            ? `<tr><td colspan="4" style="text-align:center;">Belum ada perubahan tingkat kesulitan adaptif (butuh minimal 5 soal pada satu topik).</td></tr>`
-            : [...targetProfile.adaptiveChanges]
+        const duelRows =
+          (targetProfile.duelHistory || []).length === 0
+            ? `<tr><td colspan="5" style="text-align:center;">Belum ada riwayat pertandingan Duel.</td></tr>`
+            : [...targetProfile.duelHistory]
                 .reverse()
+                .slice(0, 10)
                 .map(
-                  (chg) => `
+                  (d) => `
               <tr>
-                <td>${this.formatDate(chg.changedAt)}</td>
-                <td>${this.escapeHtml(chg.subject.toUpperCase())} — ${this.escapeHtml(chg.topic)}</td>
-                <td><strong>${this.escapeHtml(chg.fromDifficulty.toUpperCase())} ➡️ ${this.escapeHtml(chg.toDifficulty.toUpperCase())}</strong></td>
-                <td>Akurasi 5 soal terakhir: ${chg.accuracy5}%</td>
+                <td>${this.formatDate(d.playedAt)}</td>
+                <td>${this.escapeHtml((d.subject || "").toUpperCase())} (${this.escapeHtml(d.topic)})</td>
+                <td>✅ ${d.studentStats?.correct || 0} / ❌ ${d.studentStats?.wrong || 0} (${d.studentStats?.accuracy || 0}%)</td>
+                <td>Murid ${d.studentStats?.finalPositionPct || 0}% vs Tutor ${d.tutorStats?.finalPositionPct || 0}%</td>
+                <td><strong>${d.winner === "student" ? "🏆 Murid" : d.winner === "tutor" ? "👨‍🏫 Tutor" : "🤝 Seri"}</strong></td>
               </tr>
             `,
                 )
@@ -2180,32 +2406,19 @@ export class UIManager {
             </select>
           </div>
 
-          <div class="tutor-kpi-grid" style="margin-bottom:10px;">
-            <div class="tutor-kpi-card">
-              <div class="tutor-kpi-val" style="color:#27ae60;">${sCorrect} / ${sWrong}</div>
-              <div class="tutor-kpi-label">✅ Benar / ❌ Salah (${sAcc}%)</div>
-            </div>
-            <div class="tutor-kpi-card">
-              <div class="tutor-kpi-val" style="color:#2980b9;">${mtkPerf.answered} Soal</div>
-              <div class="tutor-kpi-label">📐 Matematika (${mtkAcc}%)</div>
-            </div>
-            <div class="tutor-kpi-card">
-              <div class="tutor-kpi-val" style="color:#16a085;">${ipasPerf.answered} Soal</div>
-              <div class="tutor-kpi-label">🌿 IPAS (${ipasAcc}%)</div>
-            </div>
-          </div>
+          <div class="tutor-scroll-area" style="max-height: 330px;">
+            ${advTablesHtml}
 
-          <div class="tutor-scroll-area" style="max-height: 260px;">
             <div class="topic-eval-box" style="margin-top:0; margin-bottom:10px;">
               <div>
-                📖 <strong>Materi yang Perlu Diulang / Penguatan pada Sesi Berikutnya:</strong>
+                📖 <strong>Materi yang Perlu Diulang / Penguatan (Total Akurasi Siswa: ${sAcc}%):</strong>
                 <span style="color:#d35400;">
                   ${(targetProfile.topicsToReview || []).length > 0 ? this.escapeHtml(targetProfile.topicsToReview.join(", ")) : "Tidak ada topik yang tertinggal!"}
                 </span>
               </div>
             </div>
 
-            <div style="font-weight:900; margin: 8px 0 4px;">🎯 Performa Per Topik & Tingkat Kesulitan Adaptif Saat Ini:</div>
+            <div style="font-weight:900; margin: 8px 0 4px;">🎯 Performa Per Topik & Tingkat Kesulitan Adaptif:</div>
             <table class="tutor-table" style="margin-bottom: 12px;">
               <thead>
                 <tr><th>Mapel</th><th>Topik</th><th>Dijawab</th><th>Akurasi</th><th>Level Adaptif</th><th>Status</th></tr>
@@ -2213,12 +2426,12 @@ export class UIManager {
               <tbody>${topicPerfRows}</tbody>
             </table>
 
-            <div style="font-weight:900; margin: 8px 0 4px;">🔄 Riwayat Perubahan Tingkat Kesulitan Adaptif:</div>
+            <div style="font-weight:900; margin: 8px 0 4px;">⚔️ Riwayat Pertandingan Duel (Terpisah dari Progres Adventure):</div>
             <table class="tutor-table">
               <thead>
-                <tr><th>Waktu</th><th>Topik</th><th>Perubahan Level</th><th>Keterangan</th></tr>
+                <tr><th>Waktu</th><th>Mapel & Topik</th><th>Benar/Salah (Akurasi)</th><th>Posisi Finis</th><th>Pemenang</th></tr>
               </thead>
-              <tbody>${adaptiveLogRows}</tbody>
+              <tbody>${duelRows}</tbody>
             </table>
           </div>
         `;
@@ -2319,7 +2532,7 @@ export class UIManager {
         <div class="tutor-scroll-area" style="max-height: 360px;">
           <div class="form-box" style="background:#eef9ff; border-color:#3498db; margin-top:0; margin-bottom:12px;">
             <div style="font-weight:900; font-size:1.05rem; color:#2980b9; margin-bottom:8px;">
-              🎯 Konfigurasi Tingkat Kesulitan Hybrid (Manual & Adaptif)
+              🎯 Konfigurasi Tingkat Kesulitan Duel (Manual & Adaptif)
             </div>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:10px;">
               <div class="form-group">
@@ -2406,14 +2619,14 @@ export class UIManager {
       <div class="screen-overlay">
         <div class="cartoon-panel" style="max-width: 940px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-            <h2 class="panel-header-title" style="margin-bottom:0;">👨‍🏫 Panel Tutor & Hybrid Question Engine</h2>
+            <h2 class="panel-header-title" style="margin-bottom:0;">👨‍🏫 Panel Tutor & Progres Adventure Per Mapel</h2>
             <button id="btn-close-tutor" class="btn-cartoon btn-gray btn-small">🏠 Kembali ke Menu Utama</button>
           </div>
 
           <div class="tutor-tabs-nav">
             <button class="tutor-tab-btn ${activeTab === "dashboard" ? "active" : ""}" data-tab="dashboard">📊 Dashboard</button>
             <button class="tutor-tab-btn ${activeTab === "students" ? "active" : ""}" data-tab="students">👦 Manajemen Siswa</button>
-            <button class="tutor-tab-btn ${activeTab === "reports" ? "active" : ""}" data-tab="reports">📈 Laporan & Adaptif</button>
+            <button class="tutor-tab-btn ${activeTab === "reports" ? "active" : ""}" data-tab="reports">📈 Laporan Adventure & Duel</button>
             <button class="tutor-tab-btn ${activeTab === "questions" ? "active" : ""}" data-tab="questions">📚 Bank Soal & Generator</button>
             <button class="tutor-tab-btn ${activeTab === "settings" ? "active" : ""}" data-tab="settings">⚙️ Pengaturan & Backup</button>
           </div>

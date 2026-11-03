@@ -12,15 +12,26 @@ export class AdventureScene extends Phaser.Scene {
   init(data) {
     this.profile = data?.profile || null;
     this.subject = data?.subject || "matematika";
+    this.levelKey = data?.levelKey || "easy";
+
+    const levelMeta =
+      GAME_CONFIG.adventureLevels.find((l) => l.id === this.levelKey) ||
+      GAME_CONFIG.adventureLevels[0];
+
+    this.levelMeta = levelMeta;
+    this.levelDifficulty = levelMeta.difficulty;
+    this.totalChallenges = levelMeta.totalQuestions;
+    this.boxDistribution = [...levelMeta.boxDistribution];
+
     this.coinsCollected = 0;
+    this.questionsAnswered = 0;
     this.correctAnswers = 0;
     this.wrongAnswers = 0;
-    this.questionsPerBox = 2;
-    this.totalChallenges = 8;
     this.answerHistory = [];
     this.isQuizOpen = false;
     this.levelCompleted = false;
     this.lastHitTime = 0;
+    this.sessionStartTime = performance.now();
 
     this.touchState = {
       left: false,
@@ -146,11 +157,11 @@ export class AdventureScene extends Phaser.Scene {
     }
 
     const bannerTitle = isIpas
-      ? "🌿 Ekspedisi Alam IPAS: Gunakan A / D / Panah & SPACE untuk Melompat!"
-      : "📐 Pulau Matematika: Gunakan A / D / Panah & SPACE untuk Melompat!";
+      ? `🌿 Adventure IPAS (${this.levelMeta.name} — ${this.totalChallenges} Soal): Selesaikan semua pos menuju Finis!`
+      : `📐 Adventure Matematika (${this.levelMeta.name} — ${this.totalChallenges} Soal): Selesaikan semua pos menuju Finis!`;
 
     this.addFloatingLabel(
-      260,
+      340,
       worldH - 190,
       bannerTitle,
       isIpas ? "#16a085" : "#f39c12",
@@ -244,6 +255,7 @@ export class AdventureScene extends Phaser.Scene {
 
   spawnSubjectChallenges(worldH, isIpas) {
     const labelSubject = isIpas ? "IPAS" : "Matematika";
+    const [qBox1, qBox2, qBox3, qBox4] = this.boxDistribution;
 
     const chest1 = this.challengesGroup.create(
       820,
@@ -253,7 +265,7 @@ export class AdventureScene extends Phaser.Scene {
     const label1 = this.addFloatingLabel(
       820,
       worldH - 345,
-      `❓ Peti ${labelSubject} 1 (0/2)`,
+      `❓ Peti ${labelSubject} 1 (0/${qBox1})`,
       "#d35400",
     );
     chest1.setData({
@@ -261,8 +273,8 @@ export class AdventureScene extends Phaser.Scene {
       baseName: `Peti ${labelSubject} 1`,
       title: `📦 Peti Pengetahuan ${labelSubject} 1`,
       type: "chest",
-      solvedCount: 0,
-      requiredCount: this.questionsPerBox,
+      answeredCount: 0,
+      requiredCount: qBox1,
       solved: false,
       labelObj: label1,
     });
@@ -271,7 +283,7 @@ export class AdventureScene extends Phaser.Scene {
     const label2 = this.addFloatingLabel(
       1680,
       worldH - 155,
-      `🦉 Misi ${labelSubject} (0/2)`,
+      `🦉 Misi ${labelSubject} (0/${qBox2})`,
       "#8e44ad",
     );
     owlNpc.setData({
@@ -279,8 +291,8 @@ export class AdventureScene extends Phaser.Scene {
       baseName: `Misi ${labelSubject}`,
       title: `🦉 Misi Burung Hantu (${labelSubject})`,
       type: "npc",
-      solvedCount: 0,
-      requiredCount: this.questionsPerBox,
+      answeredCount: 0,
+      requiredCount: qBox2,
       solved: false,
       labelObj: label2,
     });
@@ -293,7 +305,7 @@ export class AdventureScene extends Phaser.Scene {
     const label3 = this.addFloatingLabel(
       2250,
       worldH - 355,
-      `❓ Peti ${labelSubject} 2 (0/2)`,
+      `❓ Peti ${labelSubject} 2 (0/${qBox3})`,
       "#d35400",
     );
     chest2.setData({
@@ -301,8 +313,8 @@ export class AdventureScene extends Phaser.Scene {
       baseName: `Peti ${labelSubject} 2`,
       title: `📦 Peti Harta Karun ${labelSubject} 2`,
       type: "chest",
-      solvedCount: 0,
-      requiredCount: this.questionsPerBox,
+      answeredCount: 0,
+      requiredCount: qBox3,
       solved: false,
       labelObj: label3,
     });
@@ -315,7 +327,7 @@ export class AdventureScene extends Phaser.Scene {
     this.gateLabel = this.addFloatingLabel(
       2950,
       worldH - 215,
-      `🔒 Gerbang ${labelSubject} (0/2)`,
+      `🔒 Gerbang ${labelSubject} (0/${qBox4})`,
       "#c0392b",
     );
     this.gateObject.setData({
@@ -323,8 +335,8 @@ export class AdventureScene extends Phaser.Scene {
       baseName: `Gerbang ${labelSubject}`,
       title: `🚪 Gerbang Kunci ${labelSubject}`,
       type: "gate",
-      solvedCount: 0,
-      requiredCount: this.questionsPerBox,
+      answeredCount: 0,
+      requiredCount: qBox4,
       solved: false,
       labelObj: this.gateLabel,
     });
@@ -339,7 +351,7 @@ export class AdventureScene extends Phaser.Scene {
     uiManager.playTone("coin");
     uiManager.updateAdventureHUD({
       coins: this.coinsCollected,
-      correctCount: this.correctAnswers,
+      answeredCount: this.questionsAnswered,
       totalChallenges: this.totalChallenges,
     });
   }
@@ -356,7 +368,7 @@ export class AdventureScene extends Phaser.Scene {
     this.cameras.main.shake(140, 0.006);
     uiManager.updateAdventureHUD({
       coins: this.coinsCollected,
-      correctCount: this.correctAnswers,
+      answeredCount: this.questionsAnswered,
       totalChallenges: this.totalChallenges,
       hintText: "⚠️ Hati-hati rintangan berduri! Ayo lompati!",
     });
@@ -381,18 +393,21 @@ export class AdventureScene extends Phaser.Scene {
   }
 
   presentNextQuestionInBox(player, challengeObj) {
-    const solvedCount = challengeObj.getData("solvedCount") || 0;
-    const requiredCount = challengeObj.getData("requiredCount") || 2;
-    const currentStepNumber = solvedCount + 1;
+    const boxAnswered = challengeObj.getData("answeredCount") || 0;
+    const requiredCount = challengeObj.getData("requiredCount") || 1;
+    const currentStepInBox = boxAnswered + 1;
 
     const qData = questionManager.getNextQuestion(this.subject, null, {
       profile: uiManager.activeProfile || this.profile,
       settings: uiManager.settings,
+      forceDifficulty: this.levelDifficulty,
+      modeLabel: `Level ${this.levelDifficulty.toUpperCase()}`,
     });
 
     if (qData.error) {
       this.physics.resume();
       this.isQuizOpen = false;
+      player.setX(player.x - 45);
       uiManager.updateAdventureHUD({
         hintText: `⚠️ ${qData.message}`,
       });
@@ -403,11 +418,23 @@ export class AdventureScene extends Phaser.Scene {
     const type = challengeObj.getData("type");
     const baseName = challengeObj.getData("baseName");
     const labelObj = challengeObj.getData("labelObj");
+    const globalNumber = this.questionsAnswered + 1;
 
     uiManager.showQuestionModal({
       questionData: qData,
-      triggerTitle: `${baseTitle} — Soal ${currentStepNumber}/${requiredCount}`,
+      triggerTitle: `${baseTitle} (Pos ${currentStepInBox}/${requiredCount} • Total Soal Ke-${globalNumber}/${this.totalChallenges})`,
       onComplete: async (isCorrect, chosenAnswer) => {
+        const updatedBoxAnswered = boxAnswered + 1;
+        challengeObj.setData("answeredCount", updatedBoxAnswered);
+
+        this.questionsAnswered += 1;
+        if (isCorrect) {
+          this.correctAnswers += 1;
+          this.coinsCollected += 25;
+        } else {
+          this.wrongAnswers += 1;
+        }
+
         this.answerHistory.push({
           questionId: qData.id,
           topic: qData.topic,
@@ -435,73 +462,63 @@ export class AdventureScene extends Phaser.Scene {
           this.profile = uiManager.activeProfile;
         }
 
-        if (isCorrect) {
-          const newSolvedCount = solvedCount + 1;
-          challengeObj.setData("solvedCount", newSolvedCount);
-          this.correctAnswers += 1;
-          this.coinsCollected += 25;
+        uiManager.updateAdventureHUD({
+          coins: this.coinsCollected,
+          answeredCount: this.questionsAnswered,
+          totalChallenges: this.totalChallenges,
+        });
 
-          uiManager.updateAdventureHUD({
-            coins: this.coinsCollected,
-            correctCount: this.correctAnswers,
-            totalChallenges: this.totalChallenges,
-          });
-
-          if (newSolvedCount < requiredCount) {
-            if (labelObj) {
-              labelObj.setText(
-                `⏳ ${baseName} (${newSolvedCount}/${requiredCount})`,
-              );
-            }
-            uiManager.updateAdventureHUD({
-              coins: this.coinsCollected,
-              correctCount: this.correctAnswers,
-              totalChallenges: this.totalChallenges,
-              hintText: `✅ Soal ${newSolvedCount}/${requiredCount} Benar! Lanjut ke soal berikutnya di pos ini...`,
-            });
-            this.presentNextQuestionInBox(player, challengeObj);
-            return;
+        if (updatedBoxAnswered < requiredCount) {
+          if (labelObj) {
+            labelObj.setText(
+              `⏳ ${baseName} (${updatedBoxAnswered}/${requiredCount})`,
+            );
           }
-
-          this.physics.resume();
-          this.isQuizOpen = false;
-          challengeObj.setData("solved", true);
-
-          if (type === "chest") {
-            challengeObj.setTexture("chest_open");
-            if (labelObj) labelObj.setText(`✅ ${baseName} (2/2 Selesai)`);
-          } else if (type === "gate") {
-            if (this.gateCollider) {
-              this.physics.world.removeCollider(this.gateCollider);
-            }
-            challengeObj.disableBody(true, true);
-            if (labelObj) labelObj.setText("🔓 Gerbang Terbuka! (2/2)");
-          } else if (type === "npc") {
-            challengeObj.setTint(0xbadc58);
-            if (labelObj) labelObj.setText(`✅ ${baseName} (2/2 Selesai)`);
-          }
-
-          uiManager.updateAdventureHUD({
-            coins: this.coinsCollected,
-            correctCount: this.correctAnswers,
-            totalChallenges: this.totalChallenges,
-            hintText: "🌟 Hebat! Pos tantangan ini tuntas (2/2 Soal)!",
-          });
-        } else {
-          this.physics.resume();
-          this.isQuizOpen = false;
-          this.wrongAnswers += 1;
-          player.setX(player.x - 45);
-
-          uiManager.updateAdventureHUD({
-            coins: this.coinsCollected,
-            correctCount: this.correctAnswers,
-            totalChallenges: this.totalChallenges,
-            hintText: `💡 Dekati lagi untuk menyelesaikan sisa soal di pos ini (${solvedCount}/${requiredCount})!`,
-          });
+          this.presentNextQuestionInBox(player, challengeObj);
+          return;
         }
 
-        this.time.delayedCall(2500, () => {
+        this.physics.resume();
+        this.isQuizOpen = false;
+        challengeObj.setData("solved", true);
+
+        if (type === "chest") {
+          challengeObj.setTexture("chest_open");
+          if (labelObj)
+            labelObj.setText(
+              `✅ ${baseName} (${requiredCount}/${requiredCount} Selesai)`,
+            );
+        } else if (type === "gate") {
+          if (this.gateCollider) {
+            this.physics.world.removeCollider(this.gateCollider);
+          }
+          challengeObj.disableBody(true, true);
+          if (labelObj)
+            labelObj.setText(
+              `🔓 Gerbang Terbuka! (${requiredCount}/${requiredCount})`,
+            );
+        } else if (type === "npc") {
+          challengeObj.setTint(0xbadc58);
+          if (labelObj)
+            labelObj.setText(
+              `✅ ${baseName} (${requiredCount}/${requiredCount} Selesai)`,
+            );
+        }
+
+        const remainingTotal = this.totalChallenges - this.questionsAnswered;
+        const statusMsg =
+          remainingTotal > 0
+            ? `🌟 Pos selesai! Masih ada ${remainingTotal} soal lagi di pos lainnya sebelum ke Garis Finis.`
+            : `🏁 Seluruh ${this.totalChallenges} soal telah dikerjakan! Ayo menuju Bendera Finis!`;
+
+        uiManager.updateAdventureHUD({
+          coins: this.coinsCollected,
+          answeredCount: this.questionsAnswered,
+          totalChallenges: this.totalChallenges,
+          hintText: statusMsg,
+        });
+
+        this.time.delayedCall(3000, () => {
           uiManager.updateAdventureHUD({ hintText: "" });
         });
       },
@@ -510,42 +527,64 @@ export class AdventureScene extends Phaser.Scene {
 
   handleReachFinish() {
     if (this.levelCompleted || this.isQuizOpen) return;
+
+    if (this.questionsAnswered < this.totalChallenges) {
+      const kurang = this.totalChallenges - this.questionsAnswered;
+      uiManager.playTone("wrong");
+      this.player.setX(this.player.x - 60);
+      uiManager.updateAdventureHUD({
+        coins: this.coinsCollected,
+        answeredCount: this.questionsAnswered,
+        totalChallenges: this.totalChallenges,
+        hintText: `🔒 Kamu baru mengerjakan ${this.questionsAnswered}/${this.totalChallenges} soal! Selesaikan ${kurang} soal lagi di pos sebelumnya untuk menamatkan level ini!`,
+      });
+      this.time.delayedCall(3500, () => {
+        uiManager.updateAdventureHUD({ hintText: "" });
+      });
+      return;
+    }
+
     this.levelCompleted = true;
     this.physics.pause();
 
     this.coinsCollected += 30;
+    const durationSec = Math.max(
+      1,
+      Math.round((performance.now() - this.sessionStartTime) / 1000),
+    );
+    const accuracyPct = Math.round(
+      (this.correctAnswers / this.totalChallenges) * 100,
+    );
 
     let stars = 1;
-    if (this.correctAnswers >= 7) {
+    if (accuracyPct >= 80) {
       stars = 3;
-    } else if (this.correctAnswers >= 4) {
+    } else if (accuracyPct >= 55) {
       stars = 2;
     }
 
     const isIpas = this.subject === "ipas";
-    const badge = isIpas
-      ? stars === 3
-        ? "Ilmuwan Cilik Alam & Sosial"
-        : "Penjelajah Lingkungan IPAS"
-      : stars === 3
-        ? "Juara Matematika Pulau Pintar"
-        : "Penjelajah Matematika Pemberani";
+    const subjLabel = isIpas ? "IPAS" : "Matematika";
+    const badge = `${this.levelMeta.name} ${subjLabel} (${stars}⭐)`;
 
     const collectibleItem = isIpas
-      ? "Kristal Daun Zamrud IPAS"
-      : "Kompas Emas Angka Pintar";
+      ? `Kristal ${this.levelMeta.name} IPAS`
+      : `Kompas ${this.levelMeta.name} Matematika`;
 
-    const levelTitle = isIpas
-      ? "Petualangan IPAS: Ekspedisi Alam & Kehidupan"
-      : "Petualangan Matematika: Lembah Bilangan & Hitungan";
+    const levelTitle = `Adventure ${subjLabel} — ${this.levelMeta.name} (${this.totalChallenges} Soal)`;
 
     uiManager.showAdventureResult({
-      levelId: isIpas ? "ipas3_level_1" : "mtk3_level_1",
+      levelId: `${this.subject}_${this.levelKey}`,
+      levelKey: this.levelKey,
+      difficulty: this.levelDifficulty,
       levelTitle,
       subject: this.subject,
+      totalQuestions: this.totalChallenges,
       coinsEarned: this.coinsCollected,
       correctCount: this.correctAnswers,
       wrongCount: this.wrongAnswers,
+      accuracy: accuracyPct,
+      durationSec,
       starsEarned: stars,
       badgeEarned: badge,
       collectibleItem,

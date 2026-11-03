@@ -75,7 +75,7 @@ export const GAME_CONFIG = {
       icon: "🗺️",
       active: true,
       statusText: "Aktif",
-      desc: "Jelajahi dunia pulau pintar, kumpulkan koin, dan pecahkan teka-teki!",
+      desc: "Jelajahi dunia pulau pintar, pilih Level Mudah, Sedang, atau Sulit!",
     },
     {
       id: "duel",
@@ -84,6 +84,41 @@ export const GAME_CONFIG = {
       active: true,
       statusText: "Aktif",
       desc: "Balapan seru 1 lawan 1 bersama Tutor di satu layar (Hot Seat)!",
+    },
+  ],
+
+  adventureLevels: [
+    {
+      id: "easy",
+      difficulty: "mudah",
+      name: "Level Mudah",
+      icon: "🌱",
+      totalQuestions: 5,
+      boxDistribution: [1, 1, 1, 2],
+      unlockRequirementText: "Terbuka sejak awal petualangan",
+      desc: "Tepat 5 soal dasar untuk memulai petualangan!",
+    },
+    {
+      id: "medium",
+      difficulty: "sedang",
+      name: "Level Sedang",
+      icon: "⚡",
+      totalQuestions: 7,
+      boxDistribution: [2, 2, 1, 2],
+      unlockRequirementText:
+        "Selesaikan Level Mudah untuk membuka Level Sedang.",
+      desc: "Tepat 7 soal tantangan menengah!",
+    },
+    {
+      id: "hard",
+      difficulty: "sulit",
+      name: "Level Sulit",
+      icon: "🔥",
+      totalQuestions: 10,
+      boxDistribution: [2, 3, 2, 3],
+      unlockRequirementText:
+        "Selesaikan Level Sedang untuk membuka Level Sulit.",
+      desc: "Tepat 10 soal tingkat lanjut untuk sang juara!",
     },
   ],
 };

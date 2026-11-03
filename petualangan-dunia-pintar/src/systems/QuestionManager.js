@@ -243,8 +243,9 @@ export class QuestionManager {
     const diffResolution = options.forceDifficulty
       ? {
           difficulty: options.forceDifficulty,
-          mode: settings.difficultyMode || "manual",
-          reason: "Tingkat kesulitan ditentukan pada sesi ini",
+          mode:
+            options.modeLabel || settings.difficultyMode || "level_adventure",
+          reason: `Mengikuti tingkat kesulitan level (${options.forceDifficulty})`,
         }
       : hybridEngine.resolveTargetDifficulty({
           settings,
@@ -254,44 +255,35 @@ export class QuestionManager {
         });
 
     const targetDiff = diffResolution.difficulty;
-    const preferTemplateProb = subjKey === "matematika" ? 0.6 : 0.35;
+    const preferTemplateProb = subjKey === "matematika" ? 0.55 : 0.35;
 
     let selectedQuestion = null;
 
-    if (Math.random() < preferTemplateProb) {
-      selectedQuestion = this.tryGenerateUniqueFromTemplate(
-        subjKey,
-        chosenTopic,
-        targetDiff,
-      );
-    }
-
-    if (!selectedQuestion) {
-      selectedQuestion = this.pickValidFromBank(
-        subjKey,
-        chosenTopic,
-        targetDiff,
-      );
-    }
-
-    if (!selectedQuestion) {
-      selectedQuestion = this.tryGenerateUniqueFromTemplate(
-        subjKey,
-        chosenTopic,
-        targetDiff,
-      );
+    if (Math.random() >= preferTemplateProb) {
+      selectedQuestion =
+        this.pickValidFromBank(subjKey, chosenTopic, targetDiff) ||
+        this.pickValidFromBank(subjKey, null, targetDiff);
     }
 
     if (!selectedQuestion) {
       selectedQuestion =
-        this.pickValidFromBank(subjKey, null, targetDiff) ||
-        this.pickValidFromBank(subjKey, null, null);
+        this.tryGenerateUniqueFromTemplate(subjKey, chosenTopic, targetDiff) ||
+        this.tryGenerateUniqueFromTemplate(subjKey, null, targetDiff);
+    }
+
+    if (!selectedQuestion) {
+      selectedQuestion = this.pickValidFromBank(subjKey, null, targetDiff);
+    }
+
+    if (!selectedQuestion) {
+      selectedQuestion = this.pickValidFromBank(subjKey, null, null);
     }
 
     if (!selectedQuestion) {
       return {
         error: true,
-        message: "Tidak ada soal valid yang tersedia untuk kriteria ini.",
+        poolExhaustedError: true,
+        message: `Stok soal unik untuk mata pelajaran ${subjKey.toUpperCase()} (${targetDiff.toUpperCase()}) tidak mencukupi tanpa pengulangan. Silakan tambah soal di Panel Tutor.`,
       };
     }
 
@@ -300,13 +292,14 @@ export class QuestionManager {
 
     return {
       ...selectedQuestion,
+      difficulty: targetDiff,
       options: hybridEngine.shuffleArray(selectedQuestion.options),
       adaptiveMeta: diffResolution,
     };
   }
 
   tryGenerateUniqueFromTemplate(subject, topic, difficulty) {
-    for (let attempt = 0; attempt < 6; attempt++) {
+    for (let attempt = 0; attempt < 12; attempt++) {
       const candidate = hybridEngine.generateFromTemplate({
         subject,
         topic,
