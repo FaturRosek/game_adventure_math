@@ -1,0 +1,180 @@
+[
+  {
+    "id": "BING3_001",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Greetings and Introductions",
+    "subtopic": "Sapaan Harian",
+    "difficulty": "mudah",
+    "question": "Saat bertemu guru pada pagi hari (jam 07.00 pagi), sapaan Bahasa Inggris yang tepat adalah ...",
+    "options": ["Good morning", "Good night", "Good afternoon", "Goodbye"],
+    "correctAnswer": "Good morning",
+    "explanation": "'Good morning' artinya 'Selamat pagi'. 'Good afternoon' untuk siang/sore, dan 'Good night' untuk selamat tidur."
+  },
+  {
+    "id": "BING3_002",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Greetings and Introductions",
+    "subtopic": "Perkenalan Diri",
+    "difficulty": "sedang",
+    "question": "Lengkapilah percakapan berikut! Rina: 'Hello, how are you?' (Halo, apa kabarmu?) — Budi: '...'",
+    "options": ["I am fine, thank you.", "My name is Budi.", "Good night, Rina.", "See you tomorrow."],
+    "correctAnswer": "I am fine, thank you.",
+    "explanation": "Pertanyaan 'How are you?' (Apa kabarmu?) dijawab dengan 'I am fine, thank you' (Kabar saya baik, terima kasih)."
+  },
+  {
+    "id": "BING3_003",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Alphabet and Spelling",
+    "subtopic": "Mengeja Kosakata Sederhana",
+    "difficulty": "sedang",
+    "question": "Susunan huruf yang benar untuk menulis kata 'BUKU' dalam Bahasa Inggris adalah ...",
+    "options": ["B - O - O - K", "B - O - K - O", "B - U - K - U", "B - A - C - K"],
+    "correctAnswer": "B - O - O - K",
+    "explanation": "Bahasa Inggris dari buku adalah 'BOOK', dieja dengan huruf B - O - O - K."
+  },
+  {
+    "id": "BING3_004",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Numbers",
+    "subtopic": "Angka 1 sampai 100",
+    "difficulty": "mudah",
+    "question": "Bahasa Inggris dari angka 15 (lima belas) adalah ...",
+    "options": ["Fifteen", "Fifty", "Five", "Fourteen"],
+    "correctAnswer": "Fifteen",
+    "explanation": "15 dalam Bahasa Inggris adalah 'Fifteen', sedangkan 'Fifty' artinya 50 dan 'Fourteen' artinya 14."
+  },
+  {
+    "id": "BING3_005",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Colors",
+    "subtopic": "Warna Dasar dan Benda Sekitar",
+    "difficulty": "mudah",
+    "question": "'The sky is blue and the grass is green.' Arti kata 'blue' dan 'green' pada kalimat tersebut adalah ...",
+    "options": ["Biru dan Hijau", "Merah dan Kuning", "Hitam dan Putih", "Ungu dan Cokelat"],
+    "correctAnswer": "Biru dan Hijau",
+    "explanation": "'Blue' artinya biru (warna langit), dan 'green' artinya hijau (warna rumput)."
+  },
+  {
+    "id": "BING3_006",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Animals",
+    "subtopic": "Mengenal Nama Hewan dan Ciri-cirinya",
+    "difficulty": "mudah",
+    "question": "It has a long trunk and big ears. It is the largest land animal (Hewan ini memiliki belalai panjang dan telinga besar). What animal is it?",
+    "options": ["Elephant (Gajah)", "Rabbit (Kelinci)", "Cat (Kucing)", "Chicken (Ayam)"],
+    "correctAnswer": "Elephant (Gajah)",
+    "explanation": "Hewan dengan belalai panjang (long trunk) dan bertubuh besar adalah 'Elephant' (Gajah)."
+  },
+  {
+    "id": "BING3_007",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Fruits and Vegetables",
+    "subtopic": "Nama Buah dan Sayuran",
+    "difficulty": "mudah",
+    "question": "Kelinci sangat suka makan sayur wortel. Bahasa Inggris dari 'wortel' adalah ...",
+    "options": ["Carrot", "Spinach", "Banana", "Apple"],
+    "correctAnswer": "Carrot",
+    "explanation": "'Carrot' artinya wortel, 'Spinach' artinya bayam, 'Banana' artinya pisang, dan 'Apple' artinya apel."
+  },
+  {
+    "id": "BING3_008",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Family Members",
+    "subtopic": "Anggota Keluarga",
+    "difficulty": "sedang",
+    "question": "'Mr. Rudi is my father's father. He is my ...' (Pak Rudi adalah ayahnya ayahku. Beliau adalah ... saya).",
+    "options": ["Grandfather (Kakek)", "Grandmother (Nenek)", "Brother (Saudara laki-laki)", "Sister (Saudara perempuan)"],
+    "correctAnswer": "Grandfather (Kakek)",
+    "explanation": "Ayah dari ayah atau ibu kita adalah kakek, yang dalam Bahasa Inggris disebut 'Grandfather'."
+  },
+  {
+    "id": "BING3_009",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Parts of the Body",
+    "subtopic": "Bagian Tubuh dan Fungsinya",
+    "difficulty": "sedang",
+    "question": "'We use our ... to see the beautiful rainbow' (Kita menggunakan ... kita untuk melihat pelangi yang indah).",
+    "options": ["Eyes (Mata)", "Ears (Telinga)", "Hands (Tangan)", "Feet (Kaki)"],
+    "correctAnswer": "Eyes (Mata)",
+    "explanation": "Untuk melihat (to see), kita menggunakan mata yang dalam Bahasa Inggris adalah 'Eyes'."
+  },
+  {
+    "id": "BING3_010",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "School Objects",
+    "subtopic": "Benda-benda di Kelas",
+    "difficulty": "mudah",
+    "question": "Benda yang digunakan siswa untuk menghapus tulisan pensil yang salah disebut 'penghapus'. Bahasa Inggris dari penghapus adalah ...",
+    "options": ["Eraser", "Ruler", "Pencil case", "Whiteboard"],
+    "correctAnswer": "Eraser",
+    "explanation": "'Eraser' artinya penghapus. 'Ruler' artinya penggaris, dan 'Whiteboard' artinya papan tulis putih."
+  },
+  {
+    "id": "BING3_011",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Days and Months",
+    "subtopic": "Nama Hari dan Bulan",
+    "difficulty": "sedang",
+    "question": "'Today is Monday. Tomorrow is ...' (Hari ini adalah hari Senin. Besok adalah hari ...).",
+    "options": ["Tuesday (Selasa)", "Sunday (Minggu)", "Wednesday (Rabu)", "Friday (Jumat)"],
+    "correctAnswer": "Tuesday (Selasa)",
+    "explanation": "Hari setelah Monday (Senin) adalah Tuesday (Selasa)."
+  },
+  {
+    "id": "BING3_012",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Simple Vocabulary",
+    "subtopic": "Kata Kerja dan Benda Harian",
+    "difficulty": "sedang",
+    "question": "Arti kata yang tepat dari kalimat 'I drink a glass of milk' adalah ...",
+    "options": [
+      "Saya minum segelas susu",
+      "Saya makan sepiring nasi",
+      "Saya membaca sebuah buku",
+      "Saya membeli sebuah tas"
+    ],
+    "correctAnswer": "Saya minum segelas susu",
+    "explanation": "'I' = Saya, 'drink' = minum, 'a glass of milk' = segelas susu."
+  },
+  {
+    "id": "BING3_013",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Simple Sentences",
+    "subtopic": "Menyusun Kalimat Sederhana",
+    "difficulty": "sulit",
+    "question": "Susunlah kata-kata berikut menjadi kalimat Bahasa Inggris yang benar: 'have - I - two - rabbits'",
+    "options": [
+      "I have two rabbits",
+      "Have I rabbits two",
+      "Two rabbits have I",
+      "I two have rabbits"
+    ],
+    "correctAnswer": "I have two rabbits",
+    "explanation": "'I have two rabbits' artinya 'Saya mempunyai dua ekor kelinci'."
+  },
+  {
+    "id": "BING3_014",
+    "grade": 3,
+    "subject": "Bahasa Inggris",
+    "topic": "Reading Comprehension",
+    "subtopic": "Memahami Teks Pendek Bahasa Inggris",
+    "difficulty": "sulit",
+    "question": "Bacalah teks berikut! 'Hello, my name is Siti. I am nine years old. My favorite fruit is mango because it is sweet.' Apa buah kesukaan Siti dalam bacaan tersebut?",
+    "options": ["Mango (Mangga)", "Apple (Apel)", "Orange (Jeruk)", "Watermelon (Semangka)"],
+    "correctAnswer": "Mango (Mangga)",
+    "explanation": "Dalam bacaan tertulis 'My favorite fruit is mango', yang berarti buah kesukaan Siti adalah mangga."
+  }
+]

@@ -1,0 +1,171 @@
+[
+  {
+    "id": "BINDO3_001",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Membaca dan Memahami Teks Pendek",
+    "subtopic": "Informasi Dalam Bacaan",
+    "difficulty": "mudah",
+    "question": "Bacalah teks berikut! 'Setiap hari Minggu pagi, Rina membantu ibu menyiram bunga mawar di halaman rumah.' Kapan Rina membantu ibu menyiram bunga?",
+    "options": ["Hari Minggu pagi", "Hari Minggu sore", "Hari Sabtu pagi", "Setiap pulang sekolah"],
+    "correctAnswer": "Hari Minggu pagi",
+    "explanation": "Dalam kalimat pertama tertulis jelas bahwa Rina membantu ibu setiap hari Minggu pagi."
+  },
+  {
+    "id": "BINDO3_002",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menentukan Ide Pokok",
+    "subtopic": "Kalimat Utama Paragraf",
+    "difficulty": "sedang",
+    "question": "Bacalah paragraf berikut! 'Menjaga kebersihan kelas adalah tanggung jawab bersama. Setiap siswa bertugas sesuai jadwal piket. Kelas yang bersih membuat belajar menjadi nyaman.' Ide pokok paragraf tersebut adalah ...",
+    "options": [
+      "Menjaga kebersihan kelas adalah tanggung jawab bersama",
+      "Jadwal piket dibuat oleh ketua kelas",
+      "Belajar di rumah lebih menyenangkan",
+      "Siswa membawa sapu dari rumah"
+    ],
+    "correctAnswer": "Menjaga kebersihan kelas adalah tanggung jawab bersama",
+    "explanation": "Ide pokok terletak pada kalimat utama di awal paragraf, yaitu menjaga kebersihan kelas adalah tanggung jawab bersama."
+  },
+  {
+    "id": "BINDO3_003",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menjawab Pertanyaan Berdasarkan Bacaan",
+    "subtopic": "Mengapa dan Bagaimana",
+    "difficulty": "sedang",
+    "question": "Bacalah teks berikut! 'Budi selalu mencuci tangan dengan sabun sebelum makan agar kuman tidak masuk ke perut.' Mengapa Budi mencuci tangan sebelum makan?",
+    "options": [
+      "Agar kuman tidak masuk ke perut",
+      "Agar tangannya terasa dingin",
+      "Karena disuruh oleh temannya",
+      "Supaya makanannya cepat habis"
+    ],
+    "correctAnswer": "Agar kuman tidak masuk ke perut",
+    "explanation": "Tujuan Budi mencuci tangan dengan sabun adalah agar kuman penyakit tidak ikut masuk ke perut."
+  },
+  {
+    "id": "BINDO3_004",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Sinonim dan Antonim",
+    "subtopic": "Persamaan dan Lawan Kata",
+    "difficulty": "mudah",
+    "question": "Persamaan kata (sinonim) dari kata 'Pintar' adalah ...",
+    "options": ["Pandai", "Malas", "Lambat", "Pendek"],
+    "correctAnswer": "Pandai",
+    "explanation": "Sinonim adalah persamaan makna kata. Kata 'pintar' memiliki arti yang sama dengan kata 'pandai' atau 'cerdas'."
+  },
+  {
+    "id": "BINDO3_005",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Sinonim dan Antonim",
+    "subtopic": "Lawan Kata (Antonim)",
+    "difficulty": "mudah",
+    "question": "Lawan kata (antonim) dari kata 'Bersih' adalah ...",
+    "options": ["Kotor", "Rapi", "Harum", "Indah"],
+    "correctAnswer": "Kotor",
+    "explanation": "Antonim adalah lawan kata. Lawan kata dari 'bersih' adalah 'kotor'."
+  },
+  {
+    "id": "BINDO3_006",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Kosakata dan Makna Kata",
+    "subtopic": "Kosakata Cuaca dan Lingkungan",
+    "difficulty": "sedang",
+    "question": "Air yang turun dari langit dalam bentuk titik-titik air karena awan mendung disebut ...",
+    "options": ["Hujan", "Pelangi", "Angin", "Kabut"],
+    "correctAnswer": "Hujan",
+    "explanation": "Titik-titik air yang jatuh dari awan mendung di langit disebut hujan."
+  },
+  {
+    "id": "BINDO3_007",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menyusun Kalimat",
+    "subtopic": "Menyusun Kata Acak (S-P-O-K)",
+    "difficulty": "sedang",
+    "question": "Susunlah kata-kata acak berikut menjadi kalimat yang benar: 'membaca - di perpustakaan - Siti - buku cerita'",
+    "options": [
+      "Siti membaca buku cerita di perpustakaan",
+      "Buku cerita membaca Siti di perpustakaan",
+      "Di perpustakaan buku cerita membaca Siti",
+      "Membaca Siti di perpustakaan buku cerita"
+    ],
+    "correctAnswer": "Siti membaca buku cerita di perpustakaan",
+    "explanation": "Susunan kalimat yang baik mengikuti pola Subjek (Siti) - Predikat (membaca) - Objek (buku cerita) - Keterangan (di perpustakaan)."
+  },
+  {
+    "id": "BINDO3_008",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Huruf Kapital dan Tanda Baca",
+    "subtopic": "Penggunaan Huruf Kapital dan Tanda Tanya",
+    "difficulty": "sulit",
+    "question": "Manakah penulisan huruf kapital dan tanda baca yang paling tepat di bawah ini?",
+    "options": [
+      "Kapan Edo berangkat ke Surabaya?",
+      "kapan edo berangkat ke surabaya.",
+      "Kapan edo berangkat ke Surabaya!",
+      "kapan Edo berangkat ke surabaya?"
+    ],
+    "correctAnswer": "Kapan Edo berangkat ke Surabaya?",
+    "explanation": "Huruf kapital digunakan pada awal kalimat (Kapan), nama orang (Edo), dan nama kota (Surabaya). Kalimat tanya diakhiri tanda tanya (?)."
+  },
+  {
+    "id": "BINDO3_009",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Melengkapi Kalimat",
+    "subtopic": "Kata Hubung dan Kosakata Tepat",
+    "difficulty": "mudah",
+    "question": "Lengkapilah kalimat berikut: 'Doni memakai jas hujan ... pakaiannya tidak basah saat kehujanan.'",
+    "options": ["agar", "tetapi", "sedangkan", "atau"],
+    "correctAnswer": "agar",
+    "explanation": "Kata hubung 'agar' atau 'supaya' digunakan untuk menyatakan tujuan."
+  },
+  {
+    "id": "BINDO3_010",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Memahami Cerita Sederhana",
+    "subtopic": "Pesan Moral dan Tokoh Cerita",
+    "difficulty": "sulit",
+    "question": "Bacalah cerita berikut! 'Semut melihat Merpati hampir tenggelam di sungai. Semut menggigit kaki pemburu yang hendak menangkap Merpati. Sebelumnya, Merpati pernah menolong Semut dengan menjatuhkan daun.' Pesan baik dari cerita tersebut adalah ...",
+    "options": [
+      "Kita harus saling menolong sesama teman yang kesulitan",
+      "Kita tidak boleh bermain di dekat sungai",
+      "Semut suka menggigit kaki orang di hutan",
+      "Burung merpati pandai berenang di sungai"
+    ],
+    "correctAnswer": "Kita harus saling menolong sesama teman yang kesulitan",
+    "explanation": "Cerita Semut dan Merpati mengajarkan kita untuk saling menolong dan membalas kebaikan dengan kebaikan."
+  },
+  {
+    "id": "BINDO3_011",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Huruf Kapital dan Tanda Baca",
+    "subtopic": "Tanda Titik dan Huruf Kapital",
+    "difficulty": "sulit",
+    "question": "Tanda baca yang tepat untuk mengakhiri kalimat berita seperti 'Ibu membeli sayur di pasar' adalah ...",
+    "options": ["Tanda titik (.)", "Tanda tanya (?)", "Tanda seru (!)", "Tanda koma (,)"],
+    "correctAnswer": "Tanda titik (.)",
+    "explanation": "Kalimat berita atau pernyataan selalu diakhiri dengan tanda titik (.)."
+  },
+  {
+    "id": "BINDO3_012",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "topic": "Memahami Cerita Sederhana",
+    "subtopic": "Sifat Tokoh dalam Cerita",
+    "difficulty": "sulit",
+    "question": "Bacalah kutipan cerita! 'Meskipun uang jajannya tidak banyak, Lani selalu menyisihkan sebagian uangnya ke dalam celengan setiap hari.' Sifat Lani dalam cerita tersebut adalah ...",
+    "options": ["Hemat dan rajin menabung", "Boros dan suka jajan", "Pelit kepada teman", "Mudah menyerah"],
+    "correctAnswer": "Hemat dan rajin menabung",
+    "explanation": "Menyisihkan uang jajan untuk ditabung menunjukkan sifat hemat dan rajin menabung."
+  }
+]

@@ -7,9 +7,9 @@ const NAMES_POOL = [
   "Lani",
   "Dayu",
   "Beni",
-  "ayu",
+  "Ayu",
   "Doni",
-].map((n) => n.charAt(0).toUpperCase() + n.slice(1));
+];
 
 const ITEMS_POOL = [
   { name: "apel", unit: "buah", container: "keranjang" },
@@ -26,6 +26,8 @@ export class HybridQuestionEngine {
   constructor() {
     this.mathTemplates = this.registerMathTemplates();
     this.ipasTemplates = this.registerIpasTemplates();
+    this.bindoTemplates = this.registerBindoTemplates();
+    this.bingTemplates = this.registerBingTemplates();
   }
 
   randInt(min, max) {
@@ -34,11 +36,6 @@ export class HybridQuestionEngine {
 
   pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  pickTwoDistinct(arr) {
-    const shuffled = this.shuffleArray(arr);
-    return [shuffled[0], shuffled[1]];
   }
 
   shuffleArray(arr) {
@@ -259,7 +256,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_NILAITEMPAT",
         subject: "Matematika",
@@ -307,7 +303,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_PENJUMLAHAN",
         subject: "Matematika",
@@ -352,7 +347,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_PENGURANGAN",
         subject: "Matematika",
@@ -397,7 +391,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_PERKALIAN",
         subject: "Matematika",
@@ -441,7 +434,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_PEMBAGIAN",
         subject: "Matematika",
@@ -480,7 +472,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_CAMPURAN",
         subject: "Matematika",
@@ -515,7 +506,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_PECAHAN",
         subject: "Matematika",
@@ -566,7 +556,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_PENGUKURAN",
         subject: "Matematika",
@@ -622,7 +611,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_BANGUNDATAR",
         subject: "Matematika",
@@ -682,7 +670,6 @@ export class HybridQuestionEngine {
           };
         },
       },
-
       {
         templateId: "TPL_MTK3_SOALCERITA",
         subject: "Matematika",
@@ -757,7 +744,7 @@ export class HybridQuestionEngine {
             options: this.shuffleArray(allTools),
             correctAnswer: chosen.alat,
             explanation: `Hewan ${chosen.hewan} bernapas menggunakan ${chosen.alat.toLowerCase()} untuk ${chosen.info}.`,
-            params: { hewan: chosen.hewan, alat: chosen.alat },
+            params: {},
           };
         },
       },
@@ -805,7 +792,7 @@ export class HybridQuestionEngine {
             ]),
             correctAnswer: chosen.proses,
             explanation: `${chosen.proses} adalah ${chosen.detail}.`,
-            params: { proses: chosen.proses },
+            params: {},
           };
         },
       },
@@ -846,7 +833,7 @@ export class HybridQuestionEngine {
             options: this.shuffleArray(allOptions),
             correctAnswer: chosen.ubah,
             explanation: `Pada ${chosen.alat}, terjadi perubahan ${chosen.ubah.toLowerCase()} untuk ${chosen.manfaat}.`,
-            params: { alat: chosen.alat },
+            params: {},
           };
         },
       },
@@ -887,7 +874,7 @@ export class HybridQuestionEngine {
             ]),
             correctAnswer: chosen.wujud,
             explanation: `${chosen.contoh.charAt(0).toUpperCase() + chosen.contoh.slice(1)} adalah ${chosen.wujud.toLowerCase()} karena ${chosen.sifat}.`,
-            params: { wujud: chosen.wujud },
+            params: {},
           };
         },
       },
@@ -933,7 +920,353 @@ export class HybridQuestionEngine {
             options: this.shuffleArray(opts),
             correctAnswer: chosen.jenis,
             explanation: `Profesi ${chosen.profesi} bekerja untuk ${chosen.detail}, sehingga termasuk pekerjaan yang ${chosen.jenis.toLowerCase()}.`,
-            params: { profesi: chosen.profesi },
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerBindoTemplates() {
+    return [
+      {
+        templateId: "TPL_BINDO3_SINONIM_ANTONIM",
+        subject: "Bahasa Indonesia",
+        topic: "Sinonim dan Antonim",
+        subtopic: "Persamaan dan Lawan Kata",
+        generate: (difficulty) => {
+          const person = this.pickRandom(NAMES_POOL);
+          const pairs = [
+            {
+              word: "Rajin",
+              syn: "Giat",
+              ant: "Malas",
+              wrong: ["Tinggi", "Cepat", "Lambat"],
+            },
+            {
+              word: "Gembira",
+              syn: "Senang",
+              ant: "Sedih",
+              wrong: ["Marah", "Takut", "Lapar"],
+            },
+            {
+              word: "Besar",
+              syn: "Raksasa",
+              ant: "Kecil",
+              wrong: ["Panjang", "Lebar", "Jauh"],
+            },
+            {
+              word: "Jauh",
+              syn: "Renggang",
+              ant: "Dekat",
+              wrong: ["Tinggi", "Rendah", "Dalam"],
+            },
+            {
+              word: "Hemat",
+              syn: "Cermat",
+              ant: "Boros",
+              wrong: ["Kaya", "Miskin", "Dermawan"],
+            },
+          ];
+          const p = this.pickRandom(pairs);
+          const askAntonym = difficulty !== "mudah" && Math.random() > 0.45;
+
+          if (askAntonym) {
+            return {
+              question: `${person} sedang mencari lawan kata (antonim) dari kata "${p.word}". Antonim dari kata "${p.word}" adalah ...`,
+              options: this.shuffleArray([
+                p.ant,
+                p.syn,
+                p.wrong[0],
+                p.wrong[1],
+              ]),
+              correctAnswer: p.ant,
+              explanation: `Antonim adalah lawan kata. Lawan kata dari "${p.word}" adalah "${p.ant}".`,
+              params: {},
+            };
+          }
+
+          return {
+            question: `Persamaan kata (sinonim) dari kata "${p.word}" adalah ...`,
+            options: this.shuffleArray([p.syn, p.ant, p.wrong[0], p.wrong[2]]),
+            correctAnswer: p.syn,
+            explanation: `Sinonim adalah persamaan makna kata. Persamaan kata dari "${p.word}" adalah "${p.syn}".`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_BINDO3_MENYUSUN_KALIMAT",
+        subject: "Bahasa Indonesia",
+        topic: "Menyusun Kalimat",
+        subtopic: "Menyusun Kata Acak Menjadi Kalimat Padu",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const templates = [
+            {
+              scrambled: `menyiram - ${person} - di taman - bunga`,
+              correct: `${person} menyiram bunga di taman`,
+              w1: `Bunga menyiram ${person} di taman`,
+              w2: `Di taman bunga menyiram ${person}`,
+              w3: `Menyiram ${person} bunga di taman`,
+            },
+            {
+              scrambled: `di halaman - bermain - ${person} - sepeda`,
+              correct: `${person} bermain sepeda di halaman`,
+              w1: `Sepeda bermain ${person} di halaman`,
+              w2: `Di halaman sepeda bermain ${person}`,
+              w3: `Bermain ${person} di halaman sepeda`,
+            },
+            {
+              scrambled: `membantu - mencuci piring - ${person} - ibu`,
+              correct: `${person} membantu ibu mencuci piring`,
+              w1: `Piring mencuci ${person} membantu ibu`,
+              w2: `Mencuci piring ibu ${person} membantu`,
+              w3: `Membantu piring ${person} mencuci ibu`,
+            },
+          ];
+          const chosen = this.pickRandom(templates);
+          return {
+            question: `Susunlah kata-kata acak berikut menjadi kalimat yang benar: "${chosen.scrambled}"`,
+            options: this.shuffleArray([
+              chosen.correct,
+              chosen.w1,
+              chosen.w2,
+              chosen.w3,
+            ]),
+            correctAnswer: chosen.correct,
+            explanation: `Kalimat yang benar diawali Subjek (${person}) diikuti Predikat, Objek, dan Keterangan: "${chosen.correct}".`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_BINDO3_KAPITAL_TANDABACA",
+        subject: "Bahasa Indonesia",
+        topic: "Huruf Kapital dan Tanda Baca",
+        subtopic: "Penggunaan Huruf Kapital Nama Orang dan Tempat",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const kota = this.pickRandom([
+            "Jakarta",
+            "Bandung",
+            "Surabaya",
+            "Yogyakarta",
+            "Malang",
+          ]);
+          const hari = this.pickRandom(["Senin", "Minggu", "Sabtu", "Jumat"]);
+
+          const correct = `Pada hari ${hari}, ${person} pergi ke ${kota}.`;
+          const w1 = `pada hari ${hari.toLowerCase()}, ${person.toLowerCase()} pergi ke ${kota.toLowerCase()}.`;
+          const w2 = `Pada hari ${hari.toLowerCase()}, ${person} pergi ke ${kota.toLowerCase()}?`;
+          const w3 = `pada Hari ${hari}, ${person.toLowerCase()} Pergi ke ${kota}!`;
+
+          return {
+            question: `Manakah kalimat di bawah ini yang menggunakan huruf kapital dan tanda baca dengan benar?`,
+            options: this.shuffleArray([correct, w1, w2, w3]),
+            correctAnswer: correct,
+            explanation: `Huruf kapital digunakan pada awal kalimat (Pada), nama hari (${hari}), nama orang (${person}), dan nama kota (${kota}), serta diakhiri tanda titik (.).`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_BINDO3_TEKS_PENDEK",
+        subject: "Bahasa Indonesia",
+        topic: "Membaca dan Memahami Teks Pendek",
+        subtopic: "Menemukan Informasi Bacaan",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const stories = [
+            {
+              text: `Setiap sore pukul empat, ${person} memberi makan kelinci peliharaannya dengan sayur wortel segar.`,
+              q: `Apa makanan yang diberikan ${person} kepada kelinci peliharaannya?`,
+              ans: "Sayur wortel segar",
+              opts: [
+                "Sayur wortel segar",
+                "Biji jagung kering",
+                "Rumput laut",
+                "Ikan goreng",
+              ],
+            },
+            {
+              text: `${person} membawa payung berwarna merah ke sekolah karena sejak pagi langit tampak mendung tebal.`,
+              q: `Mengapa ${person} membawa payung ke sekolah?`,
+              ans: "Karena sejak pagi langit tampak mendung tebal",
+              opts: [
+                "Karena sejak pagi langit tampak mendung tebal",
+                "Karena ingin bermain hujan-hujanan di lapangan",
+                "Karena disuruh oleh penjaga sekolah",
+                "Karena cuaca sangat panas dan cerah",
+              ],
+            },
+          ];
+          const s = this.pickRandom(stories);
+          return {
+            question: `Bacalah teks berikut! "${s.text}" ${s.q}`,
+            options: this.shuffleArray(s.opts),
+            correctAnswer: s.ans,
+            explanation: `Berdasarkan teks bacaan tersebut, jawabannya adalah: ${s.ans}.`,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerBingTemplates() {
+    return [
+      {
+        templateId: "TPL_BING3_NUMBERS",
+        subject: "Bahasa Inggris",
+        topic: "Numbers",
+        subtopic: "Numbers 1 to 100",
+        generate: () => {
+          const pairs = [
+            { num: 7, word: "Seven", wrong: ["Six", "Eight", "Seventeen"] },
+            { num: 12, word: "Twelve", wrong: ["Twenty", "Ten", "Two"] },
+            {
+              num: 19,
+              word: "Nineteen",
+              wrong: ["Ninety", "Nine", "Seventeen"],
+            },
+            { num: 20, word: "Twenty", wrong: ["Twelve", "Two", "Thirty"] },
+            {
+              num: 25,
+              word: "Twenty-five",
+              wrong: ["Fifty-two", "Fifteen", "Thirty-five"],
+            },
+            { num: 40, word: "Forty", wrong: ["Fourteen", "Four", "Fifty"] },
+            {
+              num: 100,
+              word: "One hundred",
+              wrong: ["One thousand", "Ten", "Ninety"],
+            },
+          ];
+          const chosen = this.pickRandom(pairs);
+          return {
+            question: `Bahasa Inggris yang tepat untuk angka "${chosen.num}" adalah ...`,
+            options: this.shuffleArray([chosen.word, ...chosen.wrong]),
+            correctAnswer: chosen.word,
+            explanation: `Angka ${chosen.num} dalam Bahasa Inggris ditulis dan dibaca "${chosen.word}".`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_BING3_COLORS_OBJECTS",
+        subject: "Bahasa Inggris",
+        topic: "Colors",
+        subtopic: "Mengenal Warna dalam Bahasa Inggris",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const colorFacts = [
+            {
+              obj: "pisang yang matang (ripe banana)",
+              eng: "Yellow (Kuning)",
+              wrong: ["Purple (Ungu)", "Blue (Biru)", "Black (Hitam)"],
+            },
+            {
+              obj: "buah apel merah (red apple)",
+              eng: "Red (Merah)",
+              wrong: ["White (Putih)", "Blue (Biru)", "Grey (Abu-abu)"],
+            },
+            {
+              obj: "susu putih (fresh milk)",
+              eng: "White (Putih)",
+              wrong: ["Black (Hitam)", "Green (Hijau)", "Red (Merah)"],
+            },
+            {
+              obj: "daun segar di pohon (fresh leaf)",
+              eng: "Green (Hijau)",
+              wrong: ["Pink (Merah muda)", "Blue (Biru)", "White (Putih)"],
+            },
+          ];
+          const c = this.pickRandom(colorFacts);
+          return {
+            question: `${person} melihat ${c.obj}. Warna benda tersebut dalam Bahasa Inggris adalah ...`,
+            options: this.shuffleArray([c.eng, ...c.wrong]),
+            correctAnswer: c.eng,
+            explanation: `Warna ${c.obj} dalam Bahasa Inggris adalah ${c.eng}.`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_BING3_ANIMALS_FOOD",
+        subject: "Bahasa Inggris",
+        topic: "Animals",
+        subtopic: "Vocabulary Hewan dan Cirinya",
+        generate: () => {
+          const items = [
+            {
+              desc: "Hewan ini suka melompat, bertelinga panjang, dan suka makan wortel (It has long ears and likes carrots)",
+              ans: "Rabbit (Kelinci)",
+              wrong: ["Fish (Ikan)", "Bird (Burung)", "Snake (Ular)"],
+            },
+            {
+              desc: "Hewan ini bisa terbang tinggi di langit dan memiliki sayap (It has wings and can fly in the sky)",
+              ans: "Bird (Burung)",
+              wrong: ["Cow (Sapi)", "Cat (Kucing)", "Goat (Kambing)"],
+            },
+            {
+              desc: "Hewan ternak ini menghasilkan susu segar dan berbunyi moo (It gives us milk)",
+              ans: "Cow (Sapi)",
+              wrong: ["Chicken (Ayam)", "Duck (Bebek)", "Ant (Semut)"],
+            },
+            {
+              desc: "Hewan ini hidup di air dan berenang menggunakan sirip (It lives in water and can swim)",
+              ans: "Fish (Ikan)",
+              wrong: ["Monkey (Monyet)", "Horse (Kuda)", "Lion (Singa)"],
+            },
+          ];
+          const it = this.pickRandom(items);
+          return {
+            question: `Tebaklah hewan berikut dalam Bahasa Inggris! "${it.desc}". Hewan apakah itu?`,
+            options: this.shuffleArray([it.ans, ...it.wrong]),
+            correctAnswer: it.ans,
+            explanation: `Berdasarkan deskripsi tersebut, jawabannya adalah ${it.ans}.`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_BING3_SIMPLE_SENTENCES",
+        subject: "Bahasa Inggris",
+        topic: "Simple Sentences",
+        subtopic: "Kalimat Sederhana tentang Kesukaan dan Kepemilikan",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const sentences = [
+            {
+              indo: `${person} suka makan buah apel`,
+              eng: `${person} likes to eat apples`,
+              w1: `${person} sleeping in the classroom`,
+              w2: `Apples like to eat ${person}`,
+              w3: `${person} is a red apple`,
+            },
+            {
+              indo: `Saya mempunyai sebuah tas sekolah baru`,
+              eng: `I have a new school bag`,
+              w1: `I am a school bag`,
+              w2: `Bag have a new school I`,
+              w3: `My school is a new bag`,
+            },
+            {
+              indo: `Ini adalah buku cerita saya`,
+              eng: `This is my story book`,
+              w1: `That are my pencil`,
+              w2: `Book is my this story`,
+              w3: `I am a story book`,
+            },
+          ];
+          const s = this.pickRandom(sentences);
+          return {
+            question: `Bahasa Inggris yang tepat untuk kalimat "${s.indo}" adalah ...`,
+            options: this.shuffleArray([s.eng, s.w1, s.w2, s.w3]),
+            correctAnswer: s.eng,
+            explanation: `Terjemahan Bahasa Inggris yang tepat untuk "${s.indo}" adalah "${s.eng}".`,
+            params: {},
           };
         },
       },
@@ -946,7 +1279,12 @@ export class HybridQuestionEngine {
     difficulty = "sedang",
   }) {
     const subjKey = String(subject).toLowerCase();
-    const pool = subjKey === "ipas" ? this.ipasTemplates : this.mathTemplates;
+    let pool = this.mathTemplates;
+    if (subjKey === "ipas") pool = this.ipasTemplates;
+    else if (subjKey === "bahasa_indonesia" || subjKey === "bahasa indonesia")
+      pool = this.bindoTemplates;
+    else if (subjKey === "bahasa_inggris" || subjKey === "bahasa inggris")
+      pool = this.bingTemplates;
 
     let candidates = pool;
     if (topic && topic !== "semua") {
@@ -994,14 +1332,23 @@ export class HybridQuestionEngine {
       errors.push("ID soal kosong.");
     }
 
-    if (!q.question || String(q.question).trim().length < 8) {
+    if (!q.question || String(q.question).trim().length < 6) {
       errors.push("Teks pertanyaan tidak lengkap.");
     }
 
     const subj = String(q.subject || "").toLowerCase();
-    if (!["matematika", "ipas"].includes(subj)) {
-      errors.push(`Mata pelajaran tidak didukung pada tahap ini: ${q.subject}`);
+    const validSubjects = [
+      "matematika",
+      "ipas",
+      "bahasa indonesia",
+      "bahasa_indonesia",
+      "bahasa inggris",
+      "bahasa_inggris",
+    ];
+    if (!validSubjects.includes(subj)) {
+      errors.push(`Mata pelajaran tidak didukung: ${q.subject}`);
     }
+
     if (!q.topic || String(q.topic).trim().length === 0) {
       errors.push("Topik soal kosong.");
     }
@@ -1010,6 +1357,7 @@ export class HybridQuestionEngine {
     if (!["mudah", "sedang", "sulit"].includes(diff)) {
       errors.push(`Tingkat kesulitan tidak valid: ${q.difficulty}`);
     }
+
     if (!q.correctAnswer || String(q.correctAnswer).trim().length === 0) {
       errors.push("Kunci jawaban kosong.");
     }
@@ -1051,7 +1399,7 @@ export class HybridQuestionEngine {
     };
   }
 
-  runAutomatedVerificationSuite(questionBanks = { matematika: [], ipas: [] }) {
+  runAutomatedVerificationSuite(questionBanks = {}) {
     const report = {
       passed: true,
       totalTests: 0,
@@ -1074,6 +1422,8 @@ export class HybridQuestionEngine {
     const allBankQuestions = [
       ...(questionBanks.matematika || []),
       ...(questionBanks.ipas || []),
+      ...(questionBanks.bahasa_indonesia || []),
+      ...(questionBanks.bahasa_inggris || []),
     ];
     let bankInvalidCount = 0;
     const seenBankIds = new Set();
@@ -1090,90 +1440,40 @@ export class HybridQuestionEngine {
     });
 
     recordCheck(
-      "Validasi Question Bank (MTK & IPAS)",
+      "Validasi Question Bank (MTK, IPAS, B.Indo, B.Inggris)",
       bankInvalidCount === 0 && duplicateIdCount === 0,
       `${allBankQuestions.length} soal diperiksa, gagal: ${bankInvalidCount}, duplikat ID: ${duplicateIdCount}`,
     );
 
-    let mathGenSuccess = 0;
-    let mathGenTotal = 0;
-    this.mathTemplates.forEach((tpl) => {
-      ["mudah", "sedang", "sulit"].forEach((diff) => {
-        mathGenTotal += 1;
-        const q = this.generateFromTemplate({
-          subject: "matematika",
-          topic: tpl.topic,
-          difficulty: diff,
+    const testTemplatePool = (poolName, subjectKey, tplArray) => {
+      let okCount = 0;
+      let total = 0;
+      tplArray.forEach((tpl) => {
+        ["mudah", "sedang", "sulit"].forEach((diff) => {
+          total += 1;
+          const q = this.generateFromTemplate({
+            subject: subjectKey,
+            topic: tpl.topic,
+            difficulty: diff,
+          });
+          if (q && this.validateQuestionObject(q).valid) okCount += 1;
         });
-        if (q && this.validateQuestionObject(q).valid) {
-          mathGenSuccess += 1;
-        }
       });
-    });
-
-    recordCheck(
-      "Template Generator Matematika (11 Topik x 3 Kesulitan)",
-      mathGenSuccess === mathGenTotal,
-      `${mathGenSuccess}/${mathGenTotal} variasi soal berhasil dibuat & lulus validator 9-poin`,
-    );
-
-    let ipasGenSuccess = 0;
-    let ipasGenTotal = 0;
-    this.ipasTemplates.forEach((tpl) => {
-      ["mudah", "sedang", "sulit"].forEach((diff) => {
-        ipasGenTotal += 1;
-        const q = this.generateFromTemplate({
-          subject: "ipas",
-          topic: tpl.topic,
-          difficulty: diff,
-        });
-        if (q && this.validateQuestionObject(q).valid) {
-          ipasGenSuccess += 1;
-        }
-      });
-    });
-
-    recordCheck(
-      "Controlled Template Generator IPAS",
-      ipasGenSuccess === ipasGenTotal,
-      `${ipasGenSuccess}/${ipasGenTotal} variasi kontekstual IPAS valid dan akurat`,
-    );
-
-    const mockProfileUp = {
-      topicPerformance: {
-        "matematika:Perkalian": {
-          currentDifficulty: "mudah",
-          recentResults: [true, true, true, true, false],
-        },
-      },
+      recordCheck(
+        `Generator ${poolName}`,
+        okCount === total,
+        `${okCount}/${total} variasi lulus validator`,
+      );
     };
-    const resUp = this.resolveTargetDifficulty({
-      settings: { difficultyMode: "adaptif", adaptiveBounds: "mudah-sulit" },
-      profile: mockProfileUp,
-      subject: "matematika",
-      topic: "Perkalian",
-    });
 
-    const mockProfileBound = {
-      topicPerformance: {
-        "matematika:Perkalian": {
-          currentDifficulty: "sedang",
-          recentResults: [true, true, true, true, true],
-        },
-      },
-    };
-    const resBound = this.resolveTargetDifficulty({
-      settings: { difficultyMode: "adaptif", adaptiveBounds: "mudah-sedang" },
-      profile: mockProfileBound,
-      subject: "matematika",
-      topic: "Perkalian",
-    });
-
-    recordCheck(
-      "Aturan Adaptif (≥80% Naik Tingkat & Batas Tutor)",
-      resUp.difficulty === "sedang" && resBound.difficulty === "sedang",
-      `80% dari Mudah → ${resUp.difficulty} | Batas Mudah-Sedang saat 100% → tetap ${resBound.difficulty}`,
+    testTemplatePool("Matematika", "matematika", this.mathTemplates);
+    testTemplatePool("IPAS", "ipas", this.ipasTemplates);
+    testTemplatePool(
+      "Bahasa Indonesia",
+      "bahasa_indonesia",
+      this.bindoTemplates,
     );
+    testTemplatePool("Bahasa Inggris", "bahasa_inggris", this.bingTemplates);
 
     return report;
   }

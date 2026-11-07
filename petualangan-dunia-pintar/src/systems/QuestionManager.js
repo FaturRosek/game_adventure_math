@@ -1,5 +1,7 @@
 import mathGrade3Data from "../data/mathGrade3.json";
 import ipasGrade3Data from "../data/ipasGrade3.json";
+import bindoGrade3Data from "../data/bindoGrade3.json";
+import bingGrade3Data from "../data/bingGrade3.json";
 import { db } from "../storage/db.js";
 import { hybridEngine } from "./HybridQuestionEngine.js";
 
@@ -11,13 +13,54 @@ export class QuestionManager {
         sourceType: "question_bank",
       })),
       ipas: ipasGrade3Data.map((q) => ({ ...q, sourceType: "question_bank" })),
+      bahasa_indonesia: bindoGrade3Data.map((q) => ({
+        ...q,
+        sourceType: "question_bank",
+      })),
+      bahasa_inggris: bingGrade3Data.map((q) => ({
+        ...q,
+        sourceType: "question_bank",
+      })),
     };
     this.banks = {
       matematika: [...this.baseBanks.matematika],
       ipas: [...this.baseBanks.ipas],
+      bahasa_indonesia: [...this.baseBanks.bahasa_indonesia],
+      bahasa_inggris: [...this.baseBanks.bahasa_inggris],
     };
     this.usedQuestionIds = new Set();
     this.usedQuestionSignatures = new Set();
+  }
+
+  normalizeSubjectKey(subject = "matematika") {
+    const raw = String(subject || "matematika")
+      .trim()
+      .toLowerCase();
+    if (raw === "ipas") return "ipas";
+    if (
+      raw === "bahasa_indonesia" ||
+      raw === "bahasa indonesia" ||
+      raw === "bindo"
+    ) {
+      return "bahasa_indonesia";
+    }
+    if (
+      raw === "bahasa_inggris" ||
+      raw === "bahasa inggris" ||
+      raw === "bing" ||
+      raw === "english"
+    ) {
+      return "bahasa_inggris";
+    }
+    return "matematika";
+  }
+
+  formatSubjectDisplayName(subjKey) {
+    const k = this.normalizeSubjectKey(subjKey);
+    if (k === "ipas") return "IPAS";
+    if (k === "bahasa_indonesia") return "Bahasa Indonesia";
+    if (k === "bahasa_inggris") return "Bahasa Inggris";
+    return "Matematika";
   }
 
   async loadCustomQuestionsFromDB() {
@@ -25,12 +68,13 @@ export class QuestionManager {
     this.banks = {
       matematika: [...this.baseBanks.matematika],
       ipas: [...this.baseBanks.ipas],
+      bahasa_indonesia: [...this.baseBanks.bahasa_indonesia],
+      bahasa_inggris: [...this.baseBanks.bahasa_inggris],
     };
 
-    const existingIds = new Set([
-      ...this.banks.matematika.map((q) => q.id),
-      ...this.banks.ipas.map((q) => q.id),
-    ]);
+    const existingIds = new Set(
+      this.getAllQuestionsCombined().map((q) => q.id),
+    );
 
     customList.forEach((q) => {
       if (!q || !q.id || existingIds.has(q.id)) return;
@@ -38,12 +82,8 @@ export class QuestionManager {
       const check = hybridEngine.validateQuestionObject(withSource);
       if (!check.valid) return;
 
-      const subjKey = String(q.subject || "").toLowerCase();
-      if (subjKey === "ipas") {
-        this.banks.ipas.push(withSource);
-      } else {
-        this.banks.matematika.push(withSource);
-      }
+      const subjKey = this.normalizeSubjectKey(q.subject);
+      this.banks[subjKey].push(withSource);
       existingIds.add(q.id);
     });
   }
@@ -54,12 +94,17 @@ export class QuestionManager {
   }
 
   getSubjectBank(subject = "matematika") {
-    const key = String(subject).toLowerCase();
+    const key = this.normalizeSubjectKey(subject);
     return this.banks[key] || this.banks.matematika;
   }
 
   getAllQuestionsCombined() {
-    return [...this.banks.matematika, ...this.banks.ipas];
+    return [
+      ...this.banks.matematika,
+      ...this.banks.ipas,
+      ...this.banks.bahasa_indonesia,
+      ...this.banks.bahasa_inggris,
+    ];
   }
 
   getTopicsBySubject(subject = "matematika") {
@@ -76,27 +121,39 @@ export class QuestionManager {
       total: 0,
       mathTemplateCount: hybridEngine.mathTemplates.length,
       ipasTemplateCount: hybridEngine.ipasTemplates.length,
+      bindoTemplateCount: hybridEngine.bindoTemplates.length,
+      bingTemplateCount: hybridEngine.bingTemplates.length,
       bySubject: {
         matematika: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
         ipas: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
+        bahasa_indonesia: {
+          total: 0,
+          mudah: 0,
+          sedang: 0,
+          sulit: 0,
+          topics: {},
+        },
+        bahasa_inggris: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
       },
     };
 
-    ["matematika", "ipas"].forEach((subj) => {
-      const list = this.banks[subj] || [];
-      stats.bySubject[subj].total = list.length;
-      stats.total += list.length;
+    ["matematika", "ipas", "bahasa_indonesia", "bahasa_inggris"].forEach(
+      (subj) => {
+        const list = this.banks[subj] || [];
+        stats.bySubject[subj].total = list.length;
+        stats.total += list.length;
 
-      list.forEach((q) => {
-        const diff = String(q.difficulty || "sedang").toLowerCase();
-        if (stats.bySubject[subj][diff] !== undefined) {
-          stats.bySubject[subj][diff] += 1;
-        }
-        const topic = q.topic || "Umum";
-        stats.bySubject[subj].topics[topic] =
-          (stats.bySubject[subj].topics[topic] || 0) + 1;
-      });
-    });
+        list.forEach((q) => {
+          const diff = String(q.difficulty || "sedang").toLowerCase();
+          if (stats.bySubject[subj][diff] !== undefined) {
+            stats.bySubject[subj][diff] += 1;
+          }
+          const topic = q.topic || "Umum";
+          stats.bySubject[subj].topics[topic] =
+            (stats.bySubject[subj].topics[topic] || 0) + 1;
+        });
+      },
+    );
 
     return stats;
   }
@@ -104,7 +161,7 @@ export class QuestionManager {
   exportQuestionBankPayload() {
     return {
       app: "Petualangan Dunia Pintar - Question Bank Export",
-      version: "1.0.0-hybrid",
+      version: "1.0.0-4subjects",
       exportedAt: new Date().toISOString(),
       totalQuestions: this.getAllQuestionsCombined().length,
       questions: this.getAllQuestionsCombined(),
@@ -162,13 +219,11 @@ export class QuestionManager {
         return;
       }
 
+      const subjKey = this.normalizeSubjectKey(item.subject);
       const normalizedQuestion = {
         id,
         grade: Number(item.grade) || 3,
-        subject:
-          String(item.subject || "").toLowerCase() === "ipas"
-            ? "IPAS"
-            : "Matematika",
+        subject: this.formatSubjectDisplayName(subjKey),
         topic: String(item.topic || "").trim(),
         subtopic: String(item.subtopic || item.topic || "").trim(),
         difficulty: String(item.difficulty || "")
@@ -215,7 +270,7 @@ export class QuestionManager {
     explicitTopic = null,
   ) {
     if (explicitTopic && explicitTopic !== "semua") return explicitTopic;
-    const subjKey = String(subject).toLowerCase();
+    const subjKey = this.normalizeSubjectKey(subject);
     const allTopics = this.getTopicsBySubject(subjKey);
 
     if (profile && profile.topicPerformance) {
@@ -235,7 +290,7 @@ export class QuestionManager {
   }
 
   getNextQuestion(subject = "matematika", topicFilter = null, options = {}) {
-    const subjKey = String(subject).toLowerCase();
+    const subjKey = this.normalizeSubjectKey(subject);
     const profile = options.profile || null;
     const settings = options.settings || {};
 
@@ -283,7 +338,7 @@ export class QuestionManager {
       return {
         error: true,
         poolExhaustedError: true,
-        message: `Stok soal unik untuk mata pelajaran ${subjKey.toUpperCase()} (${targetDiff.toUpperCase()}) tidak mencukupi tanpa pengulangan. Silakan tambah soal di Panel Tutor.`,
+        message: `Stok soal unik untuk mata pelajaran ${this.formatSubjectDisplayName(subjKey)} (${targetDiff.toUpperCase()}) tidak mencukupi.`,
       };
     }
 
@@ -362,7 +417,7 @@ export class QuestionManager {
     profile = null,
     settings = {},
   }) {
-    const subjKey = String(subject).toLowerCase();
+    const subjKey = this.normalizeSubjectKey(subject);
     const roundTopic =
       topic && topic !== "semua"
         ? topic
@@ -395,27 +450,25 @@ export class QuestionManager {
       forceDifficulty: roundDifficulty,
     });
 
-    let studentQ = this.getNextQuestion(
-      tutorQ.subject || subjKey,
-      tutorQ.topic || roundTopic,
-      {
-        profile,
-        settings,
-        forceDifficulty: tutorQ.difficulty || roundDifficulty,
-      },
-    );
+    let studentQ = this.getNextQuestion(subjKey, tutorQ.topic || roundTopic, {
+      profile,
+      settings,
+      forceDifficulty: tutorQ.difficulty || roundDifficulty,
+    });
 
     if (studentQ.question === tutorQ.question) {
-      const twin = this.tryGenerateUniqueFromTemplate(
-        subjKey,
-        tutorQ.topic || roundTopic,
-        tutorQ.difficulty || roundDifficulty,
-      );
+      const twin =
+        this.tryGenerateUniqueFromTemplate(
+          subjKey,
+          tutorQ.topic || roundTopic,
+          roundDifficulty,
+        ) || this.pickValidFromBank(subjKey, null, null);
       if (twin) {
         this.usedQuestionIds.add(twin.id);
         this.usedQuestionSignatures.add(twin.question);
         studentQ = {
           ...twin,
+          difficulty: roundDifficulty,
           options: hybridEngine.shuffleArray(twin.options),
           adaptiveMeta,
         };
