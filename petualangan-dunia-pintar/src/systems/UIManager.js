@@ -1320,8 +1320,16 @@ export class UIManager {
                 <div class="form-group">
                   <label for="duel-sel-subject">📘 Mata Pelajaran:</label>
                   <select id="duel-sel-subject" class="input-cartoon">
-                    <option value="matematika" ${chosenSubject === "matematika" ? "selected" : ""}>📐 Matematika Kelas 3</option>
-                    <option value="ipas" ${chosenSubject === "ipas" ? "selected" : ""}>🌿 IPAS Kelas 3</option>
+                    ${GAME_CONFIG.subjects
+                      .filter((s) => s.active)
+                      .map(
+                        (s) => `
+                      <option value="${s.id}" ${chosenSubject === s.id ? "selected" : ""}>
+                        ${s.icon} ${this.escapeHtml(s.name)} Kelas 3
+                      </option>
+                    `,
+                      )
+                      .join("")}
                   </select>
                 </div>
 

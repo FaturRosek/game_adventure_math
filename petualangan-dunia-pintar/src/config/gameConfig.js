@@ -66,6 +66,22 @@ export const GAME_CONFIG = {
       statusText: "Aktif",
       desc: "Makhluk Hidup, Lingkungan, Wujud Benda, Energi & Sosial",
     },
+    {
+      id: "bahasa_indonesia",
+      name: "Bahasa Indonesia",
+      icon: "📖",
+      active: true,
+      statusText: "Aktif",
+      desc: "Membaca Teks, Ide Pokok, Sinonim/Antonim, Kosakata & Kalimat",
+    },
+    {
+      id: "bahasa_inggris",
+      name: "Bahasa Inggris",
+      icon: "🔤",
+      active: true,
+      statusText: "Aktif",
+      desc: "Greetings, Numbers, Colors, Animals, Vocabulary & Reading",
+    },
   ],
 
   modes: [
@@ -106,7 +122,7 @@ export const GAME_CONFIG = {
       totalQuestions: 7,
       boxDistribution: [2, 2, 1, 2],
       unlockRequirementText:
-        "Selesaikan Level Mudah untuk membuka Level Sedang.",
+        "Selesaikan Level Mudah (minimal 80%) untuk membuka Level Sedang.",
       desc: "Tepat 7 soal tantangan menengah!",
     },
     {
@@ -117,7 +133,7 @@ export const GAME_CONFIG = {
       totalQuestions: 10,
       boxDistribution: [2, 3, 2, 3],
       unlockRequirementText:
-        "Selesaikan Level Sedang untuk membuka Level Sulit.",
+        "Selesaikan Level Sedang (minimal 80%) untuk membuka Level Sulit.",
       desc: "Tepat 10 soal tingkat lanjut untuk sang juara!",
     },
   ],

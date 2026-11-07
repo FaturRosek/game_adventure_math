@@ -168,6 +168,11 @@ export class AdventureScene extends Phaser.Scene {
     );
   }
 
+  getSubjectLabel() {
+    const found = GAME_CONFIG.subjects.find((s) => s.id === this.subject);
+    return found ? found.name : "Matematika";
+  }
+
   addFloatingLabel(x, y, text, bgColor = "#2c3e50") {
     return this.add
       .text(x, y, text, {
@@ -254,7 +259,7 @@ export class AdventureScene extends Phaser.Scene {
   }
 
   spawnSubjectChallenges(worldH, isIpas) {
-    const labelSubject = isIpas ? "IPAS" : "Matematika";
+    const labelSubject = this.getSubjectLabel();
     const [qBox1, qBox2, qBox3, qBox4] = this.boxDistribution;
 
     const chest1 = this.challengesGroup.create(
@@ -564,7 +569,7 @@ export class AdventureScene extends Phaser.Scene {
     }
 
     const isIpas = this.subject === "ipas";
-    const subjLabel = isIpas ? "IPAS" : "Matematika";
+    const subjLabel = this.getSubjectLabel();
     const badge = `${this.levelMeta.name} ${subjLabel} (${stars}⭐)`;
 
     const collectibleItem = isIpas
