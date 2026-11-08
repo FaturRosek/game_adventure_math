@@ -28,6 +28,10 @@ export class HybridQuestionEngine {
     this.ipasTemplates = this.registerIpasTemplates();
     this.bindoTemplates = this.registerBindoTemplates();
     this.bingTemplates = this.registerBingTemplates();
+    this.mathGrade4Templates = this.registerMathGrade4Templates();
+    this.ipasGrade4Templates = this.registerIpasGrade4Templates();
+    this.bindoGrade4Templates = this.registerBindoGrade4Templates();
+    this.bingGrade4Templates = this.registerBingGrade4Templates();
   }
 
   randInt(min, max) {
@@ -97,12 +101,7 @@ export class HybridQuestionEngine {
     return allowed[allowed.length - 1];
   }
 
-  resolveTargetDifficulty({
-    settings = {},
-    profile = null,
-    subject = "matematika",
-    topic = null,
-  }) {
+  resolveTargetDifficulty({ settings = {}, profile = null, grade = 3, subject = "matematika", topic = null }) {
     const mode = settings.difficultyMode || "adaptif";
     const manualLevel = settings.manualDifficulty || "sedang";
     const rangeBound = settings.adaptiveBounds || "mudah-sulit";
@@ -110,9 +109,7 @@ export class HybridQuestionEngine {
 
     if (mode === "manual") {
       return {
-        difficulty: ["mudah", "sedang", "sulit"].includes(manualLevel)
-          ? manualLevel
-          : "sedang",
+        difficulty: ["mudah", "sedang", "sulit"].includes(manualLevel) ? manualLevel : "sedang",
         mode: "manual",
         reason: "Ditentukan secara manual oleh Tutor",
       };
@@ -127,20 +124,20 @@ export class HybridQuestionEngine {
       };
     }
 
-    const subjKey = String(subject).toLowerCase();
+    const numGrade = Number(grade) || Number(profile.grade) || 3;
+    const cleanSubj = String(subject).toLowerCase().replace(/^g\d+_/, "");
+    const scopedSubj = numGrade === 3 ? cleanSubj : `g${numGrade}_${cleanSubj}`;
     let topicPerf = null;
 
     if (topic && topic !== "semua") {
-      const key = `${subjKey}:${topic}`;
+      const key = `${scopedSubj}:${topic}`;
       topicPerf = profile.topicPerformance[key] || null;
     } else {
       const subjTopics = Object.entries(profile.topicPerformance)
-        .filter(([k]) => k.startsWith(`${subjKey}:`))
+        .filter(([k]) => k.startsWith(`${scopedSubj}:`))
         .map(([, v]) => v);
       if (subjTopics.length > 0) {
-        subjTopics.sort(
-          (a, b) => (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0),
-        );
+        subjTopics.sort((a, b) => (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0));
         topicPerf = subjTopics[0];
       }
     }
@@ -1273,36 +1270,287 @@ export class HybridQuestionEngine {
     ];
   }
 
-  generateFromTemplate({
-    subject = "matematika",
-    topic = null,
-    difficulty = "sedang",
-  }) {
-    const subjKey = String(subject).toLowerCase();
-    let pool = this.mathTemplates;
-    if (subjKey === "ipas") pool = this.ipasTemplates;
-    else if (subjKey === "bahasa_indonesia" || subjKey === "bahasa indonesia")
-      pool = this.bindoTemplates;
-    else if (subjKey === "bahasa_inggris" || subjKey === "bahasa inggris")
-      pool = this.bingTemplates;
+  registerMathGrade4Templates() {
+    return [
+      {
+        templateId: "TPL_MTK4_PENJUMLAHAN_RIBUAN",
+        grade: 4,
+        subject: "Matematika",
+        topic: "Penjumlahan dan Pengurangan",
+        subtopic: "Operasi Penjumlahan dan Pengurangan Ribuan",
+        generate: (difficulty) => {
+          const isSubtraction = difficulty !== "mudah" && Math.random() > 0.45;
+          const person = this.pickRandom(NAMES_POOL);
+          if (isSubtraction) {
+            const a = difficulty === "sedang" ? this.randInt(4200, 6800) : this.randInt(6500, 9500);
+            const b = difficulty === "sedang" ? this.randInt(1350, 2900) : this.randInt(2450, 5200);
+            const ans = a - b;
+            const correctStr = this.formatThousand(ans);
+            const opts = [
+              correctStr,
+              this.formatThousand(ans + 100),
+              this.formatThousand(ans - 100),
+              this.formatThousand(ans + 20),
+            ];
+            return {
+              question: `Gudang beras milik Paman ${person} menyimpan ${this.formatThousand(a)} kg beras. Sebanyak ${this.formatThousand(b)} kg beras dikirim ke pasar. Berapa kg beras yang tersisa di gudang?`,
+              options: this.shuffleArray(opts),
+              correctAnswer: correctStr,
+              explanation: `Sisa beras = ${this.formatThousand(a)} - ${this.formatThousand(b)} = ${correctStr} kg.`,
+              params: { a, b, ans },
+            };
+          }
+          const a = difficulty === "mudah" ? this.randInt(1200, 3500) : this.randInt(3200, 5800);
+          const b = difficulty === "mudah" ? this.randInt(1100, 2400) : this.randInt(2150, 3900);
+          const ans = a + b;
+          const correctStr = this.formatThousand(ans);
+          const opts = [
+            correctStr,
+            this.formatThousand(ans + 100),
+            this.formatThousand(ans - 100),
+            this.formatThousand(ans + 10),
+          ];
+          return {
+            question: `Hasil penjumlahan dari ${this.formatThousand(a)} + ${this.formatThousand(b)} adalah ...`,
+            options: this.shuffleArray(opts),
+            correctAnswer: correctStr,
+            explanation: `Jika dijumlahkan bersusun: ${this.formatThousand(a)} + ${this.formatThousand(b)} = ${correctStr}.`,
+            params: { a, b, ans },
+          };
+        },
+      },
+      {
+        templateId: "TPL_MTK4_PERKALIAN_PEMBAGIAN",
+        grade: 4,
+        subject: "Matematika",
+        topic: "Perkalian dan Pembagian",
+        subtopic: "Perkalian dan Pembagian Dua Angka",
+        generate: (difficulty) => {
+          const isDivision = Math.random() > 0.5;
+          const person = this.pickRandom(NAMES_POOL);
+          const item = this.pickRandom(ITEMS_POOL);
+
+          if (isDivision) {
+            const divisor = difficulty === "mudah" ? this.randInt(6, 9) : this.randInt(11, 16);
+            const quotient = difficulty === "mudah" ? this.randInt(11, 15) : this.randInt(12, 22);
+            const dividend = divisor * quotient;
+            const options = this.buildPlausibleNumericOptions(quotient, item.unit, [-2, 2, -4, 4, 1, -1]);
+            return {
+              question: `Panitia sekolah memiliki ${dividend} ${item.unit} ${item.name} yang akan dimasukkan sama banyak ke dalam ${divisor} ${item.container}. Berapa ${item.unit} isi setiap ${item.container}?`,
+              options,
+              correctAnswer: `${quotient} ${item.unit}`,
+              explanation: `Karena ${divisor} × ${quotient} = ${dividend}, maka ${dividend} : ${divisor} = ${quotient} ${item.unit}.`,
+              params: { dividend, divisor, quotient },
+            };
+          }
+
+          const a = difficulty === "mudah" ? this.randInt(12, 19) : this.randInt(21, 36);
+          const b = difficulty === "mudah" ? this.randInt(6, 9) : this.randInt(11, 18);
+          const ans = a * b;
+          const options = this.buildPlausibleNumericOptions(ans, item.unit, [-10, 10, -b, b, 12, -12]);
+          return {
+            question: `Toko buku membeli ${b} ${item.container} ${item.name}. Setiap ${item.container} berisi ${a} ${item.unit}. Berapa ${item.unit} jumlah seluruh ${item.name}?`,
+            options,
+            correctAnswer: `${ans} ${item.unit}`,
+            explanation: `Total seluruhnya = ${b} × ${a} = ${ans} ${item.unit}.`,
+            params: { a, b, ans },
+          };
+        },
+      },
+      {
+        templateId: "TPL_MTK4_KELILING_LUAS",
+        grade: 4,
+        subject: "Matematika",
+        topic: "Keliling dan Luas Bangun Datar",
+        subtopic: "Menghitung Luas Persegi dan Persegi Panjang",
+        generate: (difficulty) => {
+          const p = difficulty === "mudah" ? this.randInt(7, 12) : this.randInt(13, 22);
+          const l = difficulty === "mudah" ? this.randInt(4, 8) : this.randInt(9, 15);
+          const luas = p * l;
+          const keliling = 2 * (p + l);
+          const options = this.buildPlausibleNumericOptions(luas, "cm²", [
+            keliling - luas,
+            10,
+            -10,
+            p,
+            -l,
+          ]);
+          return {
+            question: `Sebuah kertas karton berbentuk persegi panjang memiliki panjang ${p} cm dan lebar ${l} cm. Berapakah luas kertas karton tersebut?`,
+            options,
+            correctAnswer: `${luas} cm²`,
+            explanation: `Luas persegi panjang = panjang × lebar = ${p} cm × ${l} cm = ${luas} cm².`,
+            params: { p, l, luas },
+          };
+        },
+      },
+      {
+        templateId: "TPL_MTK4_KELIPATAN_POLA",
+        grade: 4,
+        subject: "Matematika",
+        topic: "Faktor dan Kelipatan",
+        subtopic: "Kelipatan Bilangan",
+        generate: () => {
+          const base = this.randInt(4, 9);
+          const seq = [base, base * 2, base * 3, base * 4];
+          const nextVal = base * 5;
+          const options = this.buildPlausibleNumericOptions(nextVal, "", [-2, 2, base, -base, 3]);
+          return {
+            question: `Perhatikan barisan bilangan kelipatan ${base} berikut: ${seq.join(", ")}, ... Bilangan kelipatan selanjutnya adalah ...`,
+            options,
+            correctAnswer: `${nextVal}`,
+            explanation: `Kelipatan ke-5 dari ${base} adalah 5 × ${base} = ${nextVal}.`,
+            params: { base, nextVal },
+          };
+        },
+      },
+    ];
+  }
+
+  registerIpasGrade4Templates() {
+    return [
+      {
+        templateId: "TPL_IPAS4_GAYA",
+        grade: 4,
+        subject: "IPAS",
+        topic: "Gaya dan Pengaruhnya terhadap Benda",
+        subtopic: "Macam-macam Gaya dalam Kehidupan",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const items = [
+            { act: "menarik busur panah yang terbuat dari karet elastis", gaya: "Gaya pegas", info: "dihasilkan oleh benda yang lentur atau elastis" },
+            { act: "mendekatkan magnet batang ke paku-paku besi kecil hingga menempel", gaya: "Gaya magnet", info: "tarikan atau dorongan yang dihasilkan oleh magnet terhadap benda logam tertentu" },
+            { act: "mengerem sepeda yang sedang melaju di jalan beraspal", gaya: "Gaya gesek", info: "terjadi karena dua permukaan benda (kampas rem dan roda) saling bersentuhan" },
+            { act: "mengangkat ember air dari dalam sumur menggunakan tangan", gaya: "Gaya otot", info: "menggunakan tenaga otot tubuh manusia" },
+          ];
+          const chosen = this.pickRandom(items);
+          return {
+            question: `Saat beraktivitas, ${person} ${chosen.act}. Jenis gaya yang bekerja pada kegiatan ${person} adalah ...`,
+            options: this.shuffleArray(["Gaya pegas", "Gaya magnet", "Gaya gesek", "Gaya otot"]),
+            correctAnswer: chosen.gaya,
+            explanation: `${chosen.gaya} adalah gaya yang ${chosen.info}.`,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_IPAS4_EKOSISTEM",
+        grade: 4,
+        subject: "IPAS",
+        topic: "Ekosistem dan Rantai Makanan",
+        subtopic: "Peran Makhluk Hidup dalam Rantai Makanan",
+        generate: () => {
+          const chains = [
+            { rantai: "Rumput -> Kelinci -> Ular -> Elang", tanya: "Kelinci", peran: "Konsumen tingkat I (Herbivora)" },
+            { rantai: "Padi -> Tikus -> Ular -> Elang", tanya: "Padi", peran: "Produsen penghasil makanan" },
+            { rantai: "Fitoplankton -> Ikan Kecil -> Ikan Besar -> Hiu", tanya: "Ikan Kecil", peran: "Konsumen tingkat I (Herbivora)" },
+          ];
+          const c = this.pickRandom(chains);
+          return {
+            question: `Perhatikan rantai makanan berikut: "${c.rantai}". Peran "${c.tanya}" pada rantai makanan tersebut adalah sebagai ...`,
+            options: this.shuffleArray([
+              "Produsen penghasil makanan",
+              "Konsumen tingkat I (Herbivora)",
+              "Konsumen puncak",
+              "Benda mati tak hidup",
+            ]),
+            correctAnswer: c.peran,
+            explanation: `Pada rantai makanan "${c.rantai}", ${c.tanya} berperan sebagai ${c.peran.toLowerCase()}.`,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerBindoGrade4Templates() {
+    return [
+      {
+        templateId: "TPL_BINDO4_KATA_BAKU",
+        grade: 4,
+        subject: "Bahasa Indonesia",
+        topic: "Kata Baku dan Tidak Baku",
+        subtopic: "Memilih Kata Baku Sesuai KBBI",
+        generate: () => {
+          const pairs = [
+            { baku: "aktif", tidakBaku: "aktip", kalimat: "Siswa kelas 4 sangat ... bertanya saat berdiskusi." },
+            { baku: "nasihat", tidakBaku: "nasehat", kalimat: "Kita harus mendengarkan ... yang diberikan oleh orang tua." },
+            { baku: "jadwal", tidakBaku: "jadual", kalimat: "Ketua kelas menempelkan ... piket kebersihan di dinding." },
+            { baku: "praktik", tidakBaku: "praktek", kalimat: "Hari ini siswa kelas 4 melakukan ... menanam kacang hijau." },
+          ];
+          const p = this.pickRandom(pairs);
+          return {
+            question: `Lengkapilah kalimat berikut dengan kata baku yang tepat! "${p.kalimat}"`,
+            options: this.shuffleArray([p.baku, p.tidakBaku, `${p.baku}s`, `${p.tidakBaku}an`]),
+            correctAnswer: p.baku,
+            explanation: `Penulisan kata baku yang tepat sesuai KBBI adalah "${p.baku}", bukan "${p.tidakBaku}".`,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerBingGrade4Templates() {
+    return [
+      {
+        templateId: "TPL_BING4_DAILY_ROOMS",
+        grade: 4,
+        subject: "Bahasa Inggris",
+        topic: "Rooms and Objects at Home",
+        subtopic: "Activities in Different Rooms",
+        generate: () => {
+          const person = this.pickRandom(NAMES_POOL);
+          const scenarios = [
+            { act: "sleeps on a comfortable bed with a pillow and blanket", room: "Bedroom (Kamar tidur)" },
+            { act: "takes a bath using soap and water", room: "Bathroom (Kamar mandi)" },
+            { act: "cooks fried rice and boils water on the stove", room: "Kitchen (Dapur)" },
+            { act: "welcomes guests on the sofa", room: "Living room (Ruang tamu)" },
+          ];
+          const s = this.pickRandom(scenarios);
+          return {
+            question: `${person} ${s.act}. Where is ${person}? (Di ruangan manakah ${person} berada?)`,
+            options: this.shuffleArray([
+              "Bedroom (Kamar tidur)",
+              "Bathroom (Kamar mandi)",
+              "Kitchen (Dapur)",
+              "Living room (Ruang tamu)",
+            ]),
+            correctAnswer: s.room,
+            explanation: `Kegiatan "${s.act}" dilakukan di ${s.room}.`,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  generateFromTemplate({ grade = 3, subject = "matematika", topic = null, difficulty = "sedang" }) {
+    const numGrade = Number(grade) || 3;
+    const subjKey = String(subject).toLowerCase().replace(/^g\d+_/, "");
+
+    let pool = numGrade === 4 ? this.mathGrade4Templates : this.mathTemplates;
+    if (subjKey === "ipas") {
+      pool = numGrade === 4 ? this.ipasGrade4Templates : this.ipasTemplates;
+    } else if (subjKey === "bahasa_indonesia" || subjKey === "bahasa indonesia") {
+      pool = numGrade === 4 ? this.bindoGrade4Templates : this.bindoTemplates;
+    } else if (subjKey === "bahasa_inggris" || subjKey === "bahasa inggris") {
+      pool = numGrade === 4 ? this.bingGrade4Templates : this.bingTemplates;
+    }
 
     let candidates = pool;
     if (topic && topic !== "semua") {
-      const matched = pool.filter(
-        (t) => t.topic.toLowerCase() === topic.toLowerCase(),
-      );
+      const matched = pool.filter((t) => t.topic.toLowerCase() === topic.toLowerCase());
       if (matched.length > 0) candidates = matched;
     }
 
     const chosenTemplate = this.pickRandom(candidates);
-    const cleanDiff = ["mudah", "sedang", "sulit"].includes(difficulty)
-      ? difficulty
-      : "sedang";
+    const cleanDiff = ["mudah", "sedang", "sulit"].includes(difficulty) ? difficulty : "sedang";
     const rawResult = chosenTemplate.generate(cleanDiff);
 
     const questionObj = {
       id: `${chosenTemplate.templateId}_${Date.now()}_${this.randInt(100, 999)}`,
-      grade: 3,
+      grade: numGrade,
       subject: chosenTemplate.subject,
       topic: chosenTemplate.topic,
       subtopic: chosenTemplate.subtopic,

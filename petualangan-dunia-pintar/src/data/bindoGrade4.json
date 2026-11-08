@@ -1,0 +1,186 @@
+[
+  {
+    "id": "BINDO4_001",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Membaca dan Memahami Teks",
+    "subtopic": "Memahami Isi Paragraf",
+    "difficulty": "mudah",
+    "question": "Bacalah teks berikut! 'Pagi itu udara di desa terasa sangat sejuk. Para petani mulai berjalan menuju sawah sambil membawa cangkul.' Di manakah latar tempat peristiwa dalam teks tersebut?",
+    "options": ["Di desa dan sawah", "Di pelabuhan kapal", "Di pusat perbelanjaan", "Di stasiun kereta"],
+    "correctAnswer": "Di desa dan sawah",
+    "explanation": "Teks secara jelas menyebutkan suasana pagi di desa dan petani yang berjalan menuju sawah."
+  },
+  {
+    "id": "BINDO4_002",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menentukan Ide Pokok dan Ide Pendukung",
+    "subtopic": "Gagasan Utama Paragraf",
+    "difficulty": "sedang",
+    "question": "Bacalah paragraf berikut! 'Bersepeda memiliki banyak manfaat bagi kesehatan tubuh. Dengan bersepeda rutin, otot kaki menjadi kuat. Selain itu, jantung kita juga menjadi lebih sehat.' Ide pokok paragraf tersebut adalah ...",
+    "options": [
+      "Manfaat bersepeda bagi kesehatan tubuh",
+      "Cara memperbaiki sepeda yang rusak",
+      "Harga sepeda baru di toko olahraga",
+      "Lomba balap sepeda di tingkat sekolah"
+    ],
+    "correctAnswer": "Manfaat bersepeda bagi kesehatan tubuh",
+    "explanation": "Kalimat pertama merupakan kalimat utama yang memuat ide pokok tentang manfaat bersepeda bagi kesehatan tubuh."
+  },
+  {
+    "id": "BINDO4_003",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menemukan Informasi Tersurat dan Tersirat",
+    "subtopic": "Makna Tersirat dalam Bacaan",
+    "difficulty": "sedang",
+    "question": "Bacalah kutipan berikut! 'Begitu bel istirahat berbunyi, Dika langsung membuka bekal makanan yang disiapkan ibunya dan memakannya sampai habis tanpa sisa.' Informasi tersirat dari kutipan tersebut adalah ...",
+    "options": [
+      "Dika merasa lapar dan menyukai masakan ibunya",
+      "Dika tidak suka membawa bekal dari rumah",
+      "Dika membeli jajanan di kantin sekolah",
+      "Makanan Dika terjatuh di lantai kelas"
+    ],
+    "correctAnswer": "Dika merasa lapar dan menyukai masakan ibunya",
+    "explanation": "Tindakan langsung memakan bekal sampai habis tanpa sisa menyiratkan bahwa Dika lapar dan menyukai bekal buatan ibunya."
+  },
+  {
+    "id": "BINDO4_004",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menyimpulkan Isi Bacaan",
+    "subtopic": "Kesimpulan Paragraf",
+    "difficulty": "sedang",
+    "question": "Bacalah teks berikut! 'Sampah plastik sangat sulit terurai di dalam tanah. Jika dibuang ke sungai, sampah plastik dapat menyumbat aliran air dan menyebabkan banjir.' Kesimpulan yang tepat dari bacaan tersebut adalah ...",
+    "options": [
+      "Kita harus mengurangi dan tidak membuang sampah plastik sembarangan",
+      "Sampah plastik sangat baik untuk menyuburkan tanaman",
+      "Sungai merupakan tempat yang cocok untuk membuang plastik",
+      "Plastik dapat hancur di dalam tanah hanya dalam satu hari"
+    ],
+    "correctAnswer": "Kita harus mengurangi dan tidak membuang sampah plastik sembarangan",
+    "explanation": "Karena plastik sulit terurai dan memicu banjir, kesimpulannya kita tidak boleh membuang sampah plastik sembarangan."
+  },
+  {
+    "id": "BINDO4_005",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Tokoh, Watak, Latar, dan Amanat Cerita",
+    "subtopic": "Menentukan Amanat Cerita",
+    "difficulty": "mudah",
+    "question": "Bacalah penggalan cerita! 'Rusa mengejek Kura-kura karena berjalan sangat lambat. Namun saat lomba lari, Rusa tertidur di bawah pohon karena merasa sombong, sehingga Kura-kura yang tekun berhasil mencapai garis finis lebih dulu.' Amanat cerita tersebut adalah ...",
+    "options": [
+      "Jangan bersikap sombong dan meremehkan orang lain",
+      "Kita harus tidur siang saat sedang mengikuti perlombaan",
+      "Berjalan lambat lebih buruk daripada berlari cepat",
+      "Kita boleh mengejek teman yang berbeda kemampuan"
+    ],
+    "correctAnswer": "Jangan bersikap sombong dan meremehkan orang lain",
+    "explanation": "Cerita tersebut mengajarkan agar kita tetap rendah hati, tekun, dan tidak sombong meremehkan orang lain."
+  },
+  {
+    "id": "BINDO4_006",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Sinonim dan Antonim",
+    "subtopic": "Sinonim dan Antonim Kontekstual",
+    "difficulty": "mudah",
+    "question": "Lawan kata (antonim) dari kata 'Hemat' dalam kalimat 'Kita harus hemat menggunakan energi listrik' adalah ...",
+    "options": ["Boros", "Cermat", "Teliti", "Rajin"],
+    "correctAnswer": "Boros",
+    "explanation": "Lawan kata (antonim) dari hemat adalah boros."
+  },
+  {
+    "id": "BINDO4_007",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Makna Kata dan Kosakata",
+    "subtopic": "Arti Kata Sesuai KBBI Sederhana",
+    "difficulty": "sedang",
+    "question": "Perhatikan kalimat berikut: 'Para penumpang kereta api menunggu keberangkatan di peron stasiun.' Arti kata 'peron' adalah ...",
+    "options": [
+      "Pelataran tempat penumpang menunggu kereta di stasiun",
+      "Ruang kemudi khusus untuk masinis kereta",
+      "Loket pembelian tiket bus antarkota",
+      "Jembatan penyeberangan di jalan raya"
+    ],
+    "correctAnswer": "Pelataran tempat penumpang menunggu kereta di stasiun",
+    "explanation": "Peron adalah pelataran atau bagian di stasiun tempat penumpang menunggu untuk naik atau turun dari kereta."
+  },
+  {
+    "id": "BINDO4_008",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Kalimat Efektif",
+    "subtopic": "Memilih Kalimat Efektif yang Tidak Berlebihan",
+    "difficulty": "sulit",
+    "question": "Manakah di bawah ini yang merupakan kalimat efektif yang benar dan tidak memboroskan kata?",
+    "options": [
+      "Semua siswa kelas 4 mengikuti upacara bendera.",
+      "Para siswa-siswa kelas 4 semuanya mengikuti upacara bendera.",
+      "Banyak anak-anak murid yang sedang baris-berbaris.",
+      "Ibu guru naik ke atas panggung untuk berpidato."
+    ],
+    "correctAnswer": "Semua siswa kelas 4 mengikuti upacara bendera.",
+    "explanation": "Kalimat efektif tidak menggandakan kata jamak seperti 'para siswa-siswa' atau 'naik ke atas'."
+  },
+  {
+    "id": "BINDO4_009",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Kata Baku dan Tidak Baku",
+    "subtopic": "Mengenali Ejaan Kata Baku",
+    "difficulty": "sedang",
+    "question": "Ayah pergi membeli obat di ... menggunakan resep dari dokter. Kata baku yang tepat untuk melengkapi kalimat tersebut adalah ...",
+    "options": ["apotek", "apotik", "afotek", "apoteck"],
+    "correctAnswer": "apotek",
+    "explanation": "Sesuai Kamus Besar Bahasa Indonesia (KBBI), bentuk baku yang benar adalah 'apotek' (orangnya disebut apoteker)."
+  },
+  {
+    "id": "BINDO4_010",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Penggunaan Huruf Kapital dan Tanda Baca",
+    "subtopic": "Petikan Langsung dan Huruf Kapital",
+    "difficulty": "sulit",
+    "question": "Manakah penggunaan huruf kapital dan tanda baca yang tepat pada kalimat berikut?",
+    "options": [
+      "Keluarga Siti berlibur ke Danau Toba pada bulan Juni.",
+      "Keluarga siti berlibur ke danau Toba pada bulan juni.",
+      "keluarga Siti berlibur ke Danau toba pada Bulan Juni!",
+      "Keluarga Siti berlibur ke danau toba pada bulan Juni?"
+    ],
+    "correctAnswer": "Keluarga Siti berlibur ke Danau Toba pada bulan Juni.",
+    "explanation": "Huruf kapital dipakai di awal kalimat, nama orang (Siti), nama geografi diikuti nama diri (Danau Toba), dan nama bulan (Juni)."
+  },
+  {
+    "id": "BINDO4_011",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Menyusun Paragraf",
+    "subtopic": "Mengurutkan Kalimat Acak",
+    "difficulty": "sulit",
+    "question": "Urutkan kalimat berikut menjadi paragraf yang padu! (1) Setelah disabuni, bilas tangan dengan air bersih. (2) Basahi kedua tangan dengan air mengalir. (3) Keringkan tangan menggunakan handuk bersih. (4) Gosokkan sabun ke telapak dan sela-sela jari.",
+    "options": [
+      "(2) - (4) - (1) - (3)",
+      "(1) - (2) - (3) - (4)",
+      "(4) - (2) - (1) - (3)",
+      "(2) - (1) - (4) - (3)"
+    ],
+    "correctAnswer": "(2) - (4) - (1) - (3)",
+    "explanation": "Urutan mencuci tangan yang logis dimulai dari membasahi tangan (2), menggosok sabun (4), membilas dengan air bersih (1), lalu mengeringkan tangan (3)."
+  },
+  {
+    "id": "BINDO4_012",
+    "grade": 4,
+    "subject": "Bahasa Indonesia",
+    "topic": "Teks Deskripsi, Narasi, dan Prosedur",
+    "subtopic": "Mengenal Jenis Teks",
+    "difficulty": "sedang",
+    "question": "Teks yang berisi langkah-langkah atau tahapan berurutan untuk membuat atau melakukan sesuatu (misalnya cara membuat jus mangga) disebut teks ...",
+    "options": ["Teks prosedur", "Teks narasi dongeng", "Teks puisi", "Teks pantun"],
+    "correctAnswer": "Teks prosedur",
+    "explanation": "Teks prosedur adalah teks yang menjelaskan petunjuk atau langkah-langkah melakukan sesuatu secara berurutan."
+  }
+]

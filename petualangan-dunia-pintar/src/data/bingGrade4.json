@@ -1,0 +1,185 @@
+[
+  {
+    "id": "BING4_001",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Greetings and Introductions",
+    "subtopic": "Introducing Others",
+    "difficulty": "mudah",
+    "question": "Beni: 'Hello, Edo. This is my new friend, Lani.' — Edo: 'Hello, Lani. ...' (Halo Lani, senang bertemu denganmu).",
+    "options": [
+      "Nice to meet you",
+      "Good night",
+      "See you yesterday",
+      "I am hungry"
+    ],
+    "correctAnswer": "Nice to meet you",
+    "explanation": "Saat berkenalan dengan teman baru, kita mengucapkan 'Nice to meet you' yang artinya 'Senang bertemu denganmu'."
+  },
+  {
+    "id": "BING4_002",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Numbers, Time, and Days",
+    "subtopic": "Telling the Time",
+    "difficulty": "sedang",
+    "question": "'It is seven o'clock in the morning.' Waktu yang ditunjukkan oleh kalimat tersebut adalah pukul ...",
+    "options": ["07.00 pagi", "07.30 pagi", "08.00 malam", "06.00 sore"],
+    "correctAnswer": "07.00 pagi",
+    "explanation": "'Seven o'clock in the morning' artinya tepat pukul 07.00 pagi."
+  },
+  {
+    "id": "BING4_003",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Colors and Shapes",
+    "subtopic": "Mengenal Bentuk Benda (Shapes)",
+    "difficulty": "mudah",
+    "question": "'A clock on the wall has a round shape like a ...' (Jam dinding berbentuk bundar seperti sebuah ...).",
+    "options": ["Circle (Lingkaran)", "Triangle (Segitiga)", "Square (Persegi)", "Star (Bintang)"],
+    "correctAnswer": "Circle (Lingkaran)",
+    "explanation": "Bentuk bundar disebut 'Circle' (lingkaran). 'Triangle' = segitiga, dan 'Square' = persegi."
+  },
+  {
+    "id": "BING4_004",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Family Members",
+    "subtopic": "Relasi Anggota Keluarga",
+    "difficulty": "mudah",
+    "question": "'My mother's sister is my ...' (Saudara perempuan dari ibuku adalah ... saya).",
+    "options": ["Aunt (Bibi/Tante)", "Uncle (Paman)", "Grandfather (Kakek)", "Brother (Kakak laki-laki)"],
+    "correctAnswer": "Aunt (Bibi/Tante)",
+    "explanation": "Saudara perempuan dari ibu atau ayah disebut 'Aunt' (Bibi/Tante), sedangkan paman disebut 'Uncle'."
+  },
+  {
+    "id": "BING4_005",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Parts of the Body",
+    "subtopic": "Fungsi Anggota Tubuh",
+    "difficulty": "mudah",
+    "question": "'We listen to the teacher's voice with our ...' (Kita mendengarkan suara guru dengan ... kita).",
+    "options": ["Ears (Telinga)", "Eyes (Mata)", "Shoulders (Bahu)", "Knees (Lutut)"],
+    "correctAnswer": "Ears (Telinga)",
+    "explanation": "Untuk mendengarkan (listen), kita menggunakan telinga atau 'Ears'."
+  },
+  {
+    "id": "BING4_006",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Animals and Plants",
+    "subtopic": "Ciri Hewan dan Tumbuhan",
+    "difficulty": "sedang",
+    "question": "'A giraffe has a very long ... to eat leaves on tall trees' (Jerapah memiliki ... yang sangat panjang untuk memakan daun di pohon tinggi).",
+    "options": ["Neck (Leher)", "Tail (Ekor)", "Beak (Paruh)", "Fin (Sirip)"],
+    "correctAnswer": "Neck (Leher)",
+    "explanation": "Jerapah (giraffe) terkenal memiliki leher yang panjang atau 'long neck'."
+  },
+  {
+    "id": "BING4_007",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Fruits, Vegetables, and Food",
+    "subtopic": "Makanan dan Minuman Sehari-hari",
+    "difficulty": "mudah",
+    "question": "'For breakfast, I eat a plate of fried rice and a sunny-side-up egg.' Arti dari 'fried rice' adalah ...",
+    "options": ["Nasi goreng", "Ayam goreng", "Roti bakar", "Bubur ayam"],
+    "correctAnswer": "Nasi goreng",
+    "explanation": "'Fried rice' artinya nasi goreng ('fried' = goreng, 'rice' = nasi)."
+  },
+  {
+    "id": "BING4_008",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "School Objects and Classroom Activities",
+    "subtopic": "Kegiatan di Dalam Kelas",
+    "difficulty": "sedang",
+    "question": "'The students are borrowing and reading books quietly in the school ...' (Para siswa meminjam dan membaca buku dengan tenang di ... sekolah).",
+    "options": ["Library (Perpustakaan)", "Canteen (Kantin)", "Schoolyard (Halaman)", "Bathroom (Kamar mandi)"],
+    "correctAnswer": "Library (Perpustakaan)",
+    "explanation": "Tempat meminjam dan membaca buku di sekolah adalah 'Library' (Perpustakaan)."
+  },
+  {
+    "id": "BING4_009",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Daily Activities",
+    "subtopic": "Kegiatan Rutin Harian",
+    "difficulty": "sedang",
+    "question": "'Every morning after waking up, Siti goes to the bathroom to ... her teeth' (Setiap pagi setelah bangun tidur, Siti ke kamar mandi untuk ... giginya).",
+    "options": ["Brush (Menyikat)", "Wash (Mencuci pakaian)", "Sweep (Menyapu)", "Cook (Memasak)"],
+    "correctAnswer": "Brush (Menyikat)",
+    "explanation": "Menyikat gigi dalam Bahasa Inggris adalah 'brush teeth'."
+  },
+  {
+    "id": "BING4_010",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Hobbies",
+    "subtopic": "Kegemaran dan Hobi",
+    "difficulty": "mudah",
+    "question": "'Doni brings his swimsuit and goggles to the pool. His hobby is ...' (Doni membawa baju renang dan kacamata renang ke kolam. Hobinya adalah ...).",
+    "options": ["Swimming (Berenang)", "Singing (Bernyanyi)", "Painting (Melukis)", "Cycling (Bersepeda)"],
+    "correctAnswer": "Swimming (Berenang)",
+    "explanation": "Pergi ke kolam renang (pool) dengan baju renang menunjukkan hobi 'Swimming' (berenang)."
+  },
+  {
+    "id": "BING4_011",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Rooms and Objects at Home",
+    "subtopic": "Ruangan dan Benda di Rumah",
+    "difficulty": "sedang",
+    "question": "'Mother is cooking soup using a stove and a pan in the ...' (Ibu sedang memasak sup menggunakan kompor dan panci di ...).",
+    "options": ["Kitchen (Dapur)", "Bedroom (Kamar tidur)", "Living room (Ruang tamu)", "Garage (Garasi)"],
+    "correctAnswer": "Kitchen (Dapur)",
+    "explanation": "Ruangan tempat memasak dengan kompor (stove) adalah 'Kitchen' (dapur)."
+  },
+  {
+    "id": "BING4_012",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Describing People and Things",
+    "subtopic": "Kata Sifat (Adjectives)",
+    "difficulty": "sulit",
+    "question": "'An elephant is big, but an ant is ...' (Seekor gajah itu besar, tetapi seekor semut itu ...).",
+    "options": ["Small (Kecil)", "Tall (Tinggi)", "Heavy (Berat)", "Long (Panjang)"],
+    "correctAnswer": "Small (Kecil)",
+    "explanation": "Lawan kata dari 'big' (besar) untuk mendeskripsikan semut (ant) adalah 'small' (kecil)."
+  },
+  {
+    "id": "BING4_013",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Simple Sentences",
+    "subtopic": "Present Continuous dan Simple Present",
+    "difficulty": "sulit",
+    "question": "Susunlah kata-kata berikut menjadi kalimat Bahasa Inggris yang benar: 'playing - in the yard - are - They - football'",
+    "options": [
+      "They are playing football in the yard",
+      "Playing football they are in the yard",
+      "They playing are in the yard football",
+      "In the yard are they football playing"
+    ],
+    "correctAnswer": "They are playing football in the yard",
+    "explanation": "'They are playing football in the yard' artinya 'Mereka sedang bermain sepak bola di halaman'."
+  },
+  {
+    "id": "BING4_014",
+    "grade": 4,
+    "subject": "Bahasa Inggris",
+    "topic": "Reading Comprehension",
+    "subtopic": "Memahami Teks Kegiatan Sehari-hari",
+    "difficulty": "sulit",
+    "question": "Bacalah teks berikut! 'Every Sunday, Rina and her father clean the garden. Rina waters the flowers and her father cuts the grass.' Apa yang dilakukan ayah Rina di taman?",
+    "options": [
+      "Cuts the grass (Memotong rumput)",
+      "Waters the flowers (Menyiram bunga)",
+      "Washes the car (Mencuci mobil)",
+      "Reads a newspaper (Membaca koran)"
+    ],
+    "correctAnswer": "Cuts the grass (Memotong rumput)",
+    "explanation": "Dalam kalimat terakhir disebutkan '...and her father cuts the grass' (dan ayahnya memotong rumput)."
+  }
+]

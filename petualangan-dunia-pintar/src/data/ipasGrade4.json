@@ -1,0 +1,161 @@
+[
+  {
+    "id": "IPAS4_001",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Bagian Tubuh Tumbuhan dan Fungsinya",
+    "subtopic": "Fungsi Daun, Batang, dan Akar",
+    "difficulty": "mudah",
+    "question": "Bagian tumbuhan yang berfungsi mengantarkan air dan nutrisi dari akar menuju daun serta menopang tubuh tumbuhan adalah ...",
+    "options": ["Batang", "Bunga", "Biji", "Buah"],
+    "correctAnswer": "Batang",
+    "explanation": "Batang berfungsi sebagai jalur pengangkut air dan zat hara dari akar ke daun serta menopang tumbuhan."
+  },
+  {
+    "id": "IPAS4_002",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Fotosintesis dan Kebutuhan Tumbuhan",
+    "subtopic": "Hasil Proses Fotosintesis",
+    "difficulty": "sedang",
+    "question": "Dalam proses fotosintesis, tumbuhan hijau menyerap karbon dioksida dan air dengan bantuan cahaya matahari untuk menghasilkan ...",
+    "options": [
+      "Karbohidrat (makanan) dan Oksigen",
+      "Karbon dioksida dan Uap air",
+      "Zat lemas dan Tanah humus",
+      "Minyak bumi dan Batu bara"
+    ],
+    "correctAnswer": "Karbohidrat (makanan) dan Oksigen",
+    "explanation": "Fotosintesis menghasilkan makanan (glukosa/karbohidrat) bagi tumbuhan serta gas oksigen yang dibutuhkan makhluk hidup untuk bernapas."
+  },
+  {
+    "id": "IPAS4_003",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Wujud Zat dan Perubahannya",
+    "subtopic": "Menyublim dan Mengkristal",
+    "difficulty": "sedang",
+    "question": "Kapur barus (kamper) yang diletakkan di dalam lemari pakaian lama-kelamaan mengecil dan habis karena berubah wujud dari padat langsung menjadi gas. Peristiwa ini disebut ...",
+    "options": ["Menyublim", "Mengembun", "Mencair", "Membeku"],
+    "correctAnswer": "Menyublim",
+    "explanation": "Menyublim adalah perubahan wujud zat dari benda padat langsung menjadi gas."
+  },
+  {
+    "id": "IPAS4_004",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Gaya dan Pengaruhnya terhadap Benda",
+    "subtopic": "Gaya Gesek dan Gaya Gravitasi",
+    "difficulty": "mudah",
+    "question": "Buah kelapa yang matang jatuh sendiri dari pohonnya menuju ke permukaan tanah karena adanya pengaruh ...",
+    "options": ["Gaya gravitasi bumi", "Gaya magnet", "Gaya pegas", "Gaya listrik statis"],
+    "correctAnswer": "Gaya gravitasi bumi",
+    "explanation": "Gaya gravitasi bumi menarik semua benda di permukaan bumi menuju ke bawah (pusat bumi)."
+  },
+  {
+    "id": "IPAS4_005",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Energi dan Perubahannya",
+    "subtopic": "Transformasi Energi",
+    "difficulty": "sedang",
+    "question": "Saat kita bertepuk tangan dengan keras hingga terdengar suara, terjadi perubahan bentuk energi yaitu ...",
+    "options": [
+      "Energi gerak menjadi energi bunyi",
+      "Energi panas menjadi energi cahaya",
+      "Energi listrik menjadi energi gerak",
+      "Energi cahaya menjadi energi kimia"
+    ],
+    "correctAnswer": "Energi gerak menjadi energi bunyi",
+    "explanation": "Gerakan kedua telapak tangan yang saling bertemu mengubah energi gerak menjadi energi bunyi."
+  },
+  {
+    "id": "IPAS4_006",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Bunyi dan Cahaya",
+    "subtopic": "Sifat-sifat Cahaya",
+    "difficulty": "sedang",
+    "question": "Pensil yang dimasukkan sebagian ke dalam gelas bening berisi air tampak seperti patah bila dilihat dari samping. Hal ini membuktikan sifat cahaya yaitu ...",
+    "options": [
+      "Cahaya dapat dibiaskan",
+      "Cahaya merambat lurus",
+      "Cahaya tidak dapat menembus benda bening",
+      "Cahaya hanya berwarna putih"
+    ],
+    "correctAnswer": "Cahaya dapat dibiaskan",
+    "explanation": "Pembiasan cahaya terjadi ketika cahaya merambat melalui dua medium yang berbeda kerapatannya (udara dan air)."
+  },
+  {
+    "id": "IPAS4_007",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Hubungan Makhluk Hidup dengan Lingkungannya",
+    "subtopic": "Simbiosis Mutualisme, Parasitisme, dan Komensalisme",
+    "difficulty": "sedang",
+    "question": "Hubungan antara tanaman benalu yang hidup menempel dan menyerap makanan dari pohon mangga inangnya disebut simbiosis ...",
+    "options": ["Parasitisme", "Mutualisme", "Komensalisme", "Netralisme"],
+    "correctAnswer": "Parasitisme",
+    "explanation": "Simbiosis parasitisme adalah hubungan yang menguntungkan satu pihak (benalu) dan merugikan pihak lainnya (pohon mangga)."
+  },
+  {
+    "id": "IPAS4_008",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Ekosistem dan Rantai Makanan",
+    "subtopic": "Produsen, Konsumen, dan Pengurai",
+    "difficulty": "mudah",
+    "question": "Perhatikan rantai makanan di sawah: Padi -> Belalang -> Katak -> Ular. Dalam rantai makanan tersebut, tanaman padi berperan sebagai ...",
+    "options": ["Produsen", "Konsumen tingkat I", "Konsumen tingkat II", "Pengurai (Dekomposer)"],
+    "correctAnswer": "Produsen",
+    "explanation": "Tumbuhan hijau seperti padi mampu membuat makanan sendiri melalui fotosintesis sehingga berperan sebagai produsen."
+  },
+  {
+    "id": "IPAS4_009",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Sumber Daya Alam dan Pelestariannya",
+    "subtopic": "SDA Dapat Diperbarui dan Tidak Dapat Diperbarui",
+    "difficulty": "mudah",
+    "question": "Berikut ini yang termasuk sumber daya alam yang dapat diperbarui adalah ...",
+    "options": ["Air, tumbuhan, dan cahaya matahari", "Batu bara dan minyak bumi", "Emas dan tembaga", "Gas alam dan perak"],
+    "correctAnswer": "Air, tumbuhan, dan cahaya matahari",
+    "explanation": "Air, tumbuhan, hewan, angin, dan sinar matahari adalah sumber daya alam yang dapat diperbarui."
+  },
+  {
+    "id": "IPAS4_010",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Peta dan Lingkungan Sekitar",
+    "subtopic": "Komponen Peta dan Arah Mata Angin",
+    "difficulty": "sulit",
+    "question": "Pada gambar peta pada umumnya, arah panah mata angin Utara (U) selalu menunjuk ke bagian ...",
+    "options": ["Atas peta", "Bawah peta", "Kanan peta", "Kiri peta"],
+    "correctAnswer": "Atas peta",
+    "explanation": "Sesuai pedoman pemetaan, arah Utara (U) pada peta digambarkan menunjuk ke bagian atas."
+  },
+  {
+    "id": "IPAS4_011",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Keragaman Budaya dan Kehidupan Masyarakat",
+    "subtopic": "Rumah Adat dan Tradisi Daerah",
+    "difficulty": "sulit",
+    "question": "Rumah Gadang yang memiliki atap melengkung menyerupai tanduk kerbau merupakan rumah adat tradisional dari provinsi ...",
+    "options": ["Sumatera Barat", "Jawa Timur", "Bali", "Papua"],
+    "correctAnswer": "Sumatera Barat",
+    "explanation": "Rumah Gadang adalah rumah adat masyarakat Minangkabau di Provinsi Sumatera Barat."
+  },
+  {
+    "id": "IPAS4_012",
+    "grade": 4,
+    "subject": "IPAS",
+    "topic": "Kegiatan Ekonomi dan Pemanfaatan Sumber Daya",
+    "subtopic": "Produksi, Distribusi, dan Konsumsi",
+    "difficulty": "sulit",
+    "question": "Kegiatan mengantarkan sayur-mayur hasil panen petani dari desa menuju ke pasar-pasar di kota disebut kegiatan ...",
+    "options": ["Distribusi", "Produksi", "Konsumsi", "Rekreasi"],
+    "correctAnswer": "Distribusi",
+    "explanation": "Produksi adalah menghasilkan barang, distribusi adalah menyalurkan barang, dan konsumsi adalah menggunakan/memakai barang."
+  }
+]
