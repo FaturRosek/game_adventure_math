@@ -44,7 +44,7 @@ export const GAME_CONFIG = {
     { grade: 1, name: "Kelas 1 SD", active: false, statusText: "Coming Soon" },
     { grade: 2, name: "Kelas 2 SD", active: false, statusText: "Coming Soon" },
     { grade: 3, name: "Kelas 3 SD", active: true, statusText: "Aktif" },
-    { grade: 4, name: "Kelas 4 SD", active: false, statusText: "Coming Soon" },
+    { grade: 4, name: "Kelas 4 SD", active: true, statusText: "Aktif" },
     { grade: 5, name: "Kelas 5 SD", active: false, statusText: "Coming Soon" },
     { grade: 6, name: "Kelas 6 SD", active: false, statusText: "Coming Soon" },
   ],

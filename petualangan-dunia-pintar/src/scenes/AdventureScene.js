@@ -11,6 +11,7 @@ export class AdventureScene extends Phaser.Scene {
 
   init(data) {
     this.profile = data?.profile || null;
+    this.grade = Number(data?.grade) || Number(this.profile?.grade) || 3;
     this.subject = data?.subject || "matematika";
     this.levelKey = data?.levelKey || "easy";
 
@@ -403,6 +404,7 @@ export class AdventureScene extends Phaser.Scene {
     const currentStepInBox = boxAnswered + 1;
 
     const qData = questionManager.getNextQuestion(this.subject, null, {
+      grade: this.grade,
       profile: uiManager.activeProfile || this.profile,
       settings: uiManager.settings,
       forceDifficulty: this.levelDifficulty,
@@ -455,6 +457,7 @@ export class AdventureScene extends Phaser.Scene {
             uiManager.activeProfile.id,
             {
               questionId: qData.id,
+              grade: this.grade,
               subject: this.subject,
               topic: qData.topic,
               difficulty: qData.difficulty,
@@ -576,10 +579,11 @@ export class AdventureScene extends Phaser.Scene {
       ? `Kristal ${this.levelMeta.name} IPAS`
       : `Kompas ${this.levelMeta.name} Matematika`;
 
-    const levelTitle = `Adventure ${subjLabel} — ${this.levelMeta.name} (${this.totalChallenges} Soal)`;
+    const levelTitle = `Adventure ${subjLabel} Kelas ${this.grade} — ${this.levelMeta.name} (${this.totalChallenges} Soal)`;
 
     uiManager.showAdventureResult({
-      levelId: `${this.subject}_${this.levelKey}`,
+      levelId: `g${this.grade}_${this.subject}_${this.levelKey}`,
+      grade: this.grade,
       levelKey: this.levelKey,
       difficulty: this.levelDifficulty,
       levelTitle,

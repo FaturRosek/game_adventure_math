@@ -295,9 +295,9 @@ export class UIManager {
                 <label for="inp-student-grade">Kelas:</label>
                 <select id="inp-student-grade" class="input-cartoon">
                   <option value="3" selected>Kelas 3 SD (Aktif)</option>
+                  <option value="4">Kelas 4 SD (Aktif)</option>
                   <option value="1" disabled>Kelas 1 SD (Coming Soon)</option>
                   <option value="2" disabled>Kelas 2 SD (Coming Soon)</option>
-                  <option value="4" disabled>Kelas 4 SD (Coming Soon)</option>
                   <option value="5" disabled>Kelas 5 SD (Coming Soon)</option>
                   <option value="6" disabled>Kelas 6 SD (Coming Soon)</option>
                 </select>
@@ -570,6 +570,7 @@ export class UIManager {
     const subjProgress = db.getSubjectAdventureProgress(
       this.activeProfile,
       this.selectedSubject,
+      this.selectedGrade,
     );
 
     const levelCardsHtml = GAME_CONFIG.adventureLevels
@@ -868,6 +869,7 @@ export class UIManager {
 
     this.phaserGame.scene.start("AdventureScene", {
       profile: this.activeProfile,
+      grade: this.selectedGrade,
       subject: this.selectedSubject,
       levelKey: chosenLevelKey,
     });
@@ -1278,7 +1280,7 @@ export class UIManager {
     let studentChar = this.activeProfile?.character || "kiko";
 
     const renderSetupHTML = () => {
-      const topics = questionManager.getTopicsBySubject(chosenSubject);
+      const topics = questionManager.getTopicsBySubject(chosenSubject, this.selectedGrade);
       const topicOptionsHtml = [
         `<option value="semua">Semua Topik (${chosenSubject.toUpperCase()})</option>`,
         ...topics.map(
@@ -1325,7 +1327,7 @@ export class UIManager {
                       .map(
                         (s) => `
                       <option value="${s.id}" ${chosenSubject === s.id ? "selected" : ""}>
-                        ${s.icon} ${this.escapeHtml(s.name)} Kelas 3
+                        ${s.icon} ${this.escapeHtml(s.name)} Kelas ${this.selectedGrade}
                       </option>
                     `,
                       )
@@ -1545,6 +1547,7 @@ export class UIManager {
   prepareNextDuelRound() {
     const s = this.duelSession;
     s.currentPair = questionManager.getDuelQuestionPair({
+      grade: this.selectedGrade,
       subject: s.subject,
       topic: s.topic,
       difficulty: s.difficulty,
@@ -2179,8 +2182,9 @@ export class UIManager {
     });
   }
 
-  renderSubjectAdventureTableForTutor(profile, subjectId, subjectTitle) {
-    const subjProg = db.getSubjectAdventureProgress(profile, subjectId);
+  renderSubjectAdventureTableForTutor(profile, subjectId, subjectTitle, grade = null) {
+    const targetGrade = Number(grade) || Number(profile?.grade) || 3;
+    const subjProg = db.getSubjectAdventureProgress(profile, subjectId, targetGrade);
     const rowsHtml = GAME_CONFIG.adventureLevels
       .map((lvl) => {
         const st = subjProg?.levels?.[lvl.id] || {
