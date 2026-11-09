@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import { GAME_CONFIG } from "./config/gameConfig.js";
 import { BootScene } from "./scenes/BootScene.js";
 import { AdventureScene } from "./scenes/AdventureScene.js";
+import { CarRacingScene } from "./scenes/CarRacingScene.js";
+import { MazeAdventureScene } from "./scenes/MazeAdventureScene.js";
 import { DuelScene } from "./scenes/DuelScene.js";
 import { uiManager } from "./systems/UIManager.js";
 
@@ -23,7 +25,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         debug: false,
       },
     },
-    scene: [BootScene, AdventureScene, DuelScene],
+    scene: [
+      BootScene,
+      AdventureScene,
+      CarRacingScene,
+      MazeAdventureScene,
+      DuelScene,
+    ],
   };
 
   const game = new Phaser.Game(phaserConfig);

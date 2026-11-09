@@ -162,12 +162,21 @@ export class UIManager {
 
   stopAllGameplayScenes() {
     if (!this.phaserGame) return;
-    if (this.phaserGame.scene.isActive("AdventureScene")) {
-      this.phaserGame.scene.stop("AdventureScene");
+    ['AdventureScene', 'CarRacingScene', 'MazeAdventureScene', 'DuelScene'].forEach((scKey) => {
+      if (this.phaserGame.scene.isActive(scKey)) {
+        this.phaserGame.scene.stop(scKey);
+      }
+    });
+  }
+
+  getActiveAdventureSceneInstance() {
+    if (!this.phaserGame) return null;
+    for (const key of ['AdventureScene', 'CarRacingScene', 'MazeAdventureScene']) {
+      if (this.phaserGame.scene.isActive(key)) {
+        return this.phaserGame.scene.getScene(key);
+      }
     }
-    if (this.phaserGame.scene.isActive("DuelScene")) {
-      this.phaserGame.scene.stop("DuelScene");
-    }
+    return null;
   }
 
   showMainMenu() {
@@ -847,7 +856,7 @@ export class UIManager {
 
   startAdventureMode(levelKey = null) {
     this.stopAllGameplayScenes();
-    const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || "easy";
+    const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || 'easy';
     this.selectedAdventureLevelKey = chosenLevelKey;
 
     const levelMeta =
@@ -859,23 +868,67 @@ export class UIManager {
 
     this.renderAdventureHUD({
       characterEmoji: charInfo.emoji,
-      playerName: this.activeProfile?.name || "Petualang",
+      playerName: this.activeProfile?.name || 'Petualang',
       subjectName: subInfo.name,
       levelName: levelMeta.name,
+      genre: levelMeta.genre || 'platformer',
+      controlHint: levelMeta.controlHint || '',
       coins: 0,
       answeredCount: 0,
-      totalChallenges: levelMeta.totalQuestions,
+      totalChallenges: levelMeta.totalQuestions
     });
 
-    this.phaserGame.scene.start("AdventureScene", {
+    const targetSceneKey =
+      chosenLevelKey === 'medium'
+        ? 'CarRacingScene'
+        : chosenLevelKey === 'hard'
+          ? 'MazeAdventureScene'
+          : 'AdventureScene';
+
+    this.phaserGame.scene.start(targetSceneKey, {
       profile: this.activeProfile,
       grade: this.selectedGrade,
       subject: this.selectedSubject,
-      levelKey: chosenLevelKey,
+      levelKey: chosenLevelKey
     });
   }
 
   renderAdventureHUD(stats) {
+    let touchHtml = '<div></div>';
+    if (this.settings.showTouchControls) {
+      if (stats.genre === 'racing') {
+        touchHtml = `
+          <div class="hud-touch-controls">
+            <button id="touch-left" class="btn-touch" style="width:110px;" aria-label="Geser Kiri">◀ KIRI</button>
+            <button id="touch-right" class="btn-touch" style="width:110px;" aria-label="Geser Kanan">KANAN ▶</button>
+          </div>
+        `;
+      } else if (stats.genre === 'maze') {
+        touchHtml = `
+          <div class="hud-touch-controls">
+            <div class="touch-dpad">
+              <button id="touch-left" class="btn-touch" aria-label="Kiri">◀</button>
+              <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
+            </div>
+            <div class="touch-dpad">
+              <button id="touch-up" class="btn-touch" aria-label="Atas">▲</button>
+              <button id="touch-down" class="btn-touch" aria-label="Bawah">▼</button>
+            </div>
+          </div>
+        `;
+      } else {
+        touchHtml = `
+          <div class="hud-touch-controls">
+            <div class="touch-dpad">
+              <button id="touch-left" class="btn-touch" aria-label="Kiri">◀</button>
+              <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
+            </div>
+            <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT ▲</button>
+          </div>
+        `;
+      }
+    }
+
     this.container.innerHTML = `
       <div class="hud-overlay" id="adventure-hud">
         <div class="hud-top-bar">
@@ -890,7 +943,7 @@ export class UIManager {
               <span>🪙 Koin: <span id="hud-coin-val">${stats.coins}</span></span>
             </div>
             <div class="hud-pill" style="background: #e8f8f5;">
-              <span>🧩 Soal Dikerjakan: <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span></span>
+              <span>🧩 Soal: <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span></span>
             </div>
           </div>
 
@@ -899,45 +952,41 @@ export class UIManager {
           </button>
         </div>
 
-        <div id="hud-hint-banner" style="align-self: center; background: rgba(44,62,80,0.92); color: #fff; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 1rem; display: none;">
+        <div id="hud-hint-banner" style="align-self: center; background: rgba(44,62,80,0.92); color: #fff; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.98rem; display: block;">
+          🎮 ${this.escapeHtml(stats.controlHint || 'Gunakan tombol arah untuk bermain!')}
         </div>
 
-        ${
-          this.settings.showTouchControls
-            ? `
-          <div class="hud-touch-controls">
-            <div class="touch-dpad">
-              <button id="touch-left" class="btn-touch" aria-label="Kiri">◀</button>
-              <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
-            </div>
-            <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT ▲</button>
-          </div>
-        `
-            : "<div></div>"
-        }
+        ${touchHtml}
       </div>
     `;
 
-    document
-      .getElementById("btn-hud-exit")
-      .addEventListener("click", async () => {
-        this.playTone("click");
-        const advScene = this.phaserGame?.scene.getScene("AdventureScene");
-        if (advScene && this.activeProfile && !advScene.levelCompleted) {
-          this.activeProfile = await db.saveIncompleteAdventureSession(
-            this.activeProfile.id,
-            this.selectedSubject,
-            {
-              levelKey: advScene.levelKey,
-              questionsAnswered: advScene.questionsAnswered,
-              totalChallenges: advScene.totalChallenges,
-              correctAnswers: advScene.correctAnswers,
-              wrongAnswers: advScene.wrongAnswers,
-            },
-          );
-        }
-        this.showAdventureLevelSelection();
-      });
+    setTimeout(() => {
+      const hintEl = document.getElementById('hud-hint-banner');
+      if (hintEl && hintEl.textContent.startsWith('🎮')) {
+        hintEl.style.display = 'none';
+      }
+    }, 4000);
+
+    document.getElementById('btn-hud-exit').addEventListener('click', async () => {
+      this.playTone('click');
+      const advScene = this.getActiveAdventureSceneInstance();
+      if (advScene && this.activeProfile && !advScene.levelCompleted) {
+        this.activeProfile = await db.saveIncompleteAdventureSession(
+          this.activeProfile.id,
+          this.selectedSubject,
+          {
+            grade: this.selectedGrade,
+            levelKey: advScene.levelKey,
+            questionsAnswered: advScene.questionsAnswered,
+            totalChallenges: advScene.totalChallenges,
+            correctAnswers: advScene.correctAnswers,
+            wrongAnswers: advScene.wrongAnswers
+          },
+          this.selectedGrade
+        );
+      }
+      this.showAdventureLevelSelection();
+    });
 
     this.bindTouchButtons();
   }
@@ -962,48 +1011,37 @@ export class UIManager {
   }
 
   bindTouchButtons() {
-    const btnLeft = document.getElementById("touch-left");
-    const btnRight = document.getElementById("touch-right");
-    const btnJump = document.getElementById("touch-jump");
+    const bindKey = (elId, stateProp) => {
+      const btn = document.getElementById(elId);
+      if (!btn) return;
 
-    if (!btnLeft || !btnRight || !btnJump) return;
+      const setVal = (val) => {
+        const activeScene = this.getActiveAdventureSceneInstance();
+        if (activeScene && activeScene.touchState) {
+          activeScene.touchState[stateProp] = val;
+        }
+      };
 
-    const setInputState = (key, val) => {
-      const scene = this.phaserGame?.scene.getScene("AdventureScene");
-      if (scene && scene.touchState) {
-        scene.touchState[key] = val;
-      }
+      ['mousedown', 'touchstart'].forEach((evt) => {
+        btn.addEventListener(evt, (e) => {
+          e.preventDefault();
+          setVal(true);
+        });
+      });
+
+      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach((evt) => {
+        btn.addEventListener(evt, (e) => {
+          e.preventDefault();
+          setVal(false);
+        });
+      });
     };
 
-    ["mousedown", "touchstart"].forEach((evt) => {
-      btnLeft.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setInputState("left", true);
-      });
-      btnRight.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setInputState("right", true);
-      });
-      btnJump.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setInputState("jump", true);
-      });
-    });
-
-    ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach((evt) => {
-      btnLeft.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setInputState("left", false);
-      });
-      btnRight.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setInputState("right", false);
-      });
-      btnJump.addEventListener(evt, (e) => {
-        e.preventDefault();
-        setInputState("jump", false);
-      });
-    });
+    bindKey('touch-left', 'left');
+    bindKey('touch-right', 'right');
+    bindKey('touch-up', 'up');
+    bindKey('touch-down', 'down');
+    bindKey('touch-jump', 'jump');
   }
 
   showQuestionModal({ questionData, triggerTitle, onComplete }) {
