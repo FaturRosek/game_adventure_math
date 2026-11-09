@@ -3,6 +3,7 @@ import { GAME_CONFIG } from "../config/gameConfig.js";
 import { questionManager } from "../systems/QuestionManager.js";
 import { uiManager } from "../systems/UIManager.js";
 import { db } from "../storage/db.js";
+import { AdventureLevelBuilder } from "../systems/AdventureLevelBuilder.js";
 
 export class AdventureScene extends Phaser.Scene {
   constructor() {
@@ -34,6 +35,10 @@ export class AdventureScene extends Phaser.Scene {
     this.lastHitTime = 0;
     this.sessionStartTime = performance.now();
 
+    this.movingPlatformsList = [];
+    this.checkpoints = [{ x: 120, y: GAME_CONFIG.worldHeight - 150 }];
+    this.lastSafeCheckpoint = { x: 120, y: GAME_CONFIG.worldHeight - 150 };
+
     this.touchState = {
       left: false,
       right: false,
@@ -41,19 +46,38 @@ export class AdventureScene extends Phaser.Scene {
     };
   }
 
+  getSubjectLabel() {
+    const found = GAME_CONFIG.subjects.find((s) => s.id === this.subject);
+    return found ? found.name : "Matematika";
+  }
+
   create() {
     questionManager.resetSession();
 
     const worldW = GAME_CONFIG.worldWidth;
     const worldH = GAME_CONFIG.worldHeight;
-    const isIpas = this.subject === "ipas";
 
     this.physics.world.setBounds(0, 0, worldW, worldH);
 
-    this.createBackgroundDecor(worldW, worldH, isIpas);
-
     this.platforms = this.physics.add.staticGroup();
-    this.createLevelPlatforms(worldW, worldH);
+    this.movingPlatformsGroup = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+    this.crumblingPlatformsGroup = this.physics.add.staticGroup();
+    this.coinsGroup = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+    this.obstaclesGroup = this.physics.add.staticGroup();
+    this.lavaGroup = this.physics.add.staticGroup();
+    this.fireballsGroup = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+    this.challengesGroup = this.physics.add.staticGroup();
+
+    AdventureLevelBuilder.buildLevel(this);
 
     const charId = this.profile?.character || "kiko";
     this.player = this.physics.add.sprite(
@@ -67,12 +91,22 @@ export class AdventureScene extends Phaser.Scene {
     this.player.body.setOffset(7, 8);
 
     this.physics.add.collider(this.player, this.platforms);
+    this.physics.add.collider(this.player, this.movingPlatformsGroup);
+    this.physics.add.collider(
+      this.player,
+      this.crumblingPlatformsGroup,
+      this.handleStepCrumblingPlatform,
+      null,
+      this,
+    );
 
-    this.coinsGroup = this.physics.add.group({
-      allowGravity: false,
-      immovable: true,
-    });
-    this.spawnLevelCoins();
+    if (this.gateObject) {
+      this.gateCollider = this.physics.add.collider(
+        this.player,
+        this.gateObject,
+      );
+    }
+
     this.physics.add.overlap(
       this.player,
       this.coinsGroup,
@@ -80,9 +114,6 @@ export class AdventureScene extends Phaser.Scene {
       null,
       this,
     );
-
-    this.obstaclesGroup = this.physics.add.staticGroup();
-    this.spawnLevelObstacles(worldH);
     this.physics.add.overlap(
       this.player,
       this.obstaclesGroup,
@@ -90,9 +121,20 @@ export class AdventureScene extends Phaser.Scene {
       null,
       this,
     );
-
-    this.challengesGroup = this.physics.add.staticGroup();
-    this.spawnSubjectChallenges(worldH, isIpas);
+    this.physics.add.overlap(
+      this.player,
+      this.fireballsGroup,
+      this.handleHitObstacle,
+      null,
+      this,
+    );
+    this.physics.add.overlap(
+      this.player,
+      this.lavaGroup,
+      this.handleFallIntoLava,
+      null,
+      this,
+    );
     this.physics.add.overlap(
       this.player,
       this.challengesGroup,
@@ -100,8 +142,6 @@ export class AdventureScene extends Phaser.Scene {
       null,
       this,
     );
-
-    this.gateCollider = this.physics.add.collider(this.player, this.gateObject);
 
     this.finishFlag = this.physics.add.staticImage(
       worldW - 140,
@@ -133,52 +173,11 @@ export class AdventureScene extends Phaser.Scene {
     });
   }
 
-  createBackgroundDecor(worldW, worldH, isIpas) {
-    const bg = this.add.graphics();
-    if (isIpas) {
-      bg.fillGradientStyle(0x38ef7d, 0x38ef7d, 0xe8f8f5, 0xe8f8f5, 1);
-    } else {
-      bg.fillGradientStyle(0x56ccf2, 0x56ccf2, 0xdff9fb, 0xdff9fb, 1);
-    }
-    bg.fillRect(0, 0, worldW, worldH);
-
-    const hills = this.add.graphics();
-    hills.fillStyle(isIpas ? 0x27ae60 : 0xa3cb38, 0.5);
-    for (let x = 0; x < worldW; x += 520) {
-      hills.fillCircle(x + 240, worldH - 60, 260);
-    }
-
-    const clouds = this.add.graphics();
-    clouds.fillStyle(0xffffff, 0.85);
-    for (let x = 150; x < worldW; x += 420) {
-      const y = 90 + (x % 110);
-      clouds.fillRoundedRect(x, y, 150, 46, 23);
-      clouds.fillCircle(x + 45, y, 28);
-      clouds.fillCircle(x + 95, y - 4, 34);
-    }
-
-    const bannerTitle = isIpas
-      ? `🌿 Adventure IPAS (${this.levelMeta.name} — ${this.totalChallenges} Soal): Selesaikan semua pos menuju Finis!`
-      : `📐 Adventure Matematika (${this.levelMeta.name} — ${this.totalChallenges} Soal): Selesaikan semua pos menuju Finis!`;
-
-    this.addFloatingLabel(
-      340,
-      worldH - 190,
-      bannerTitle,
-      isIpas ? "#16a085" : "#f39c12",
-    );
-  }
-
-  getSubjectLabel() {
-    const found = GAME_CONFIG.subjects.find((s) => s.id === this.subject);
-    return found ? found.name : "Matematika";
-  }
-
   addFloatingLabel(x, y, text, bgColor = "#2c3e50") {
     return this.add
       .text(x, y, text, {
         fontFamily: "Segoe UI, sans-serif",
-        fontSize: "16px",
+        fontSize: "15px",
         fontStyle: "bold",
         color: "#ffffff",
         backgroundColor: bgColor,
@@ -187,164 +186,94 @@ export class AdventureScene extends Phaser.Scene {
       .setOrigin(0.5);
   }
 
-  createLevelPlatforms(worldW, worldH) {
-    for (let x = 32; x < worldW; x += 64) {
-      this.platforms.create(x, worldH - 32, "ground_tile");
-    }
+  createMovingPlatform(cfg) {
+    const plat = this.movingPlatformsGroup.create(
+      cfg.x,
+      cfg.y,
+      cfg.texture || "platform_moving_gold",
+    );
+    plat.setImmovable(true);
+    plat.body.allowGravity = false;
+    plat.setData({
+      moveType: cfg.moveType || "horizontal",
+      minX: cfg.minX || cfg.x - 120,
+      maxX: cfg.maxX || cfg.x + 120,
+      minY: cfg.minY || cfg.y - 120,
+      maxY: cfg.maxY || cfg.y + 120,
+      speed: cfg.speed || 110,
+      direction: 1,
+      active: Boolean(cfg.active),
+    });
+    this.movingPlatformsList.push(plat);
+    return plat;
+  }
 
-    const floatingCoords = [
-      { x: 520, y: worldH - 165 },
-      { x: 820, y: worldH - 250 },
-      { x: 1180, y: worldH - 180 },
-      { x: 1520, y: worldH - 265 },
-      { x: 1920, y: worldH - 175 },
-      { x: 2250, y: worldH - 260 },
-      { x: 2620, y: worldH - 190 },
-      { x: 3180, y: worldH - 220 },
-    ];
+  createCrumblingPlatform(x, y) {
+    const plat = this.crumblingPlatformsGroup.create(x, y, "platform_crumble");
+    plat.setData({ crumbling: false, baseX: x, baseY: y });
+    return plat;
+  }
 
-    floatingCoords.forEach((p) => {
-      this.platforms.create(p.x, p.y, "platform_wood");
+  handleStepCrumblingPlatform(player, plat) {
+    if (plat.getData("crumbling") || !player.body.touching.down) return;
+    plat.setData("crumbling", true);
+
+    this.tweens.add({
+      targets: plat,
+      x: plat.getData("baseX") + 4,
+      duration: 55,
+      yoyo: true,
+      repeat: 7,
+      onComplete: () => {
+        plat.disableBody(true, true);
+        this.time.delayedCall(2600, () => {
+          plat.enableBody(
+            true,
+            plat.getData("baseX"),
+            plat.getData("baseY"),
+            true,
+            true,
+          );
+          plat.setData("crumbling", false);
+        });
+      },
     });
   }
 
-  spawnLevelCoins() {
-    const h = GAME_CONFIG.worldHeight;
-    const coinPositions = [
-      { x: 320, y: h - 100 },
-      { x: 370, y: h - 100 },
-      { x: 420, y: h - 100 },
-      { x: 480, y: h - 220 },
-      { x: 520, y: h - 220 },
-      { x: 560, y: h - 220 },
-      { x: 780, y: h - 305 },
-      { x: 820, y: h - 305 },
-      { x: 860, y: h - 305 },
-      { x: 1140, y: h - 235 },
-      { x: 1220, y: h - 235 },
-      { x: 1480, y: h - 320 },
-      { x: 1520, y: h - 320 },
-      { x: 1560, y: h - 320 },
-      { x: 1880, y: h - 230 },
-      { x: 1960, y: h - 230 },
-      { x: 2210, y: h - 315 },
-      { x: 2250, y: h - 315 },
-      { x: 2290, y: h - 315 },
-      { x: 2600, y: h - 245 },
-      { x: 2650, y: h - 245 },
-      { x: 3140, y: h - 275 },
-      { x: 3220, y: h - 275 },
-      { x: 3420, y: h - 100 },
-      { x: 3480, y: h - 100 },
-    ];
-
-    coinPositions.forEach((pos) => {
-      const coin = this.coinsGroup.create(pos.x, pos.y, "coin_gold");
-      coin.setData("collected", false);
-      this.tweens.add({
-        targets: coin,
-        y: pos.y - 8,
-        duration: 750,
-        yoyo: true,
-        repeat: -1,
-        ease: "Sine.easeInOut",
-      });
+  spawnFireballTrap(x, startY, peakY) {
+    const fb = this.fireballsGroup.create(x, startY, "fireball_trap");
+    this.tweens.add({
+      targets: fb,
+      y: peakY,
+      duration: 1350,
+      yoyo: true,
+      repeat: -1,
+      ease: "Quad.easeOut",
     });
+    return fb;
   }
 
-  spawnLevelObstacles(worldH) {
-    const spikeXList = [670, 1350, 2080, 2780, 3320];
-    spikeXList.forEach((x) => {
-      this.obstaclesGroup.create(x, worldH - 82, "obstacle_spike");
-    });
-  }
+  handleFallIntoLava(player) {
+    const now = this.time.now;
+    if (now - this.lastHitTime < 1000 || this.isQuizOpen) return;
+    this.lastHitTime = now;
 
-  spawnSubjectChallenges(worldH, isIpas) {
-    const labelSubject = this.getSubjectLabel();
-    const [qBox1, qBox2, qBox3, qBox4] = this.boxDistribution;
+    uiManager.playTone("wrong");
+    this.cameras.main.shake(180, 0.008);
 
-    const chest1 = this.challengesGroup.create(
-      820,
-      worldH - 292,
-      "chest_closed",
-    );
-    const label1 = this.addFloatingLabel(
-      820,
-      worldH - 345,
-      `❓ Peti ${labelSubject} 1 (0/${qBox1})`,
-      "#d35400",
-    );
-    chest1.setData({
-      id: "chal_1",
-      baseName: `Peti ${labelSubject} 1`,
-      title: `📦 Peti Pengetahuan ${labelSubject} 1`,
-      type: "chest",
-      answeredCount: 0,
-      requiredCount: qBox1,
-      solved: false,
-      labelObj: label1,
+    player.setVelocity(0, 0);
+    player.setPosition(this.lastSafeCheckpoint.x, this.lastSafeCheckpoint.y);
+
+    uiManager.updateAdventureHUD({
+      coins: this.coinsCollected,
+      answeredCount: this.questionsAnswered,
+      totalChallenges: this.totalChallenges,
+      hintText:
+        "🌋 Awas Kawah Lava! Kamu dikembalikan ke pijakan aman terakhir.",
     });
 
-    const owlNpc = this.challengesGroup.create(1680, worldH - 96, "npc_owl");
-    const label2 = this.addFloatingLabel(
-      1680,
-      worldH - 155,
-      `🦉 Misi ${labelSubject} (0/${qBox2})`,
-      "#8e44ad",
-    );
-    owlNpc.setData({
-      id: "chal_2",
-      baseName: `Misi ${labelSubject}`,
-      title: `🦉 Misi Burung Hantu (${labelSubject})`,
-      type: "npc",
-      answeredCount: 0,
-      requiredCount: qBox2,
-      solved: false,
-      labelObj: label2,
-    });
-
-    const chest2 = this.challengesGroup.create(
-      2250,
-      worldH - 302,
-      "chest_closed",
-    );
-    const label3 = this.addFloatingLabel(
-      2250,
-      worldH - 355,
-      `❓ Peti ${labelSubject} 2 (0/${qBox3})`,
-      "#d35400",
-    );
-    chest2.setData({
-      id: "chal_3",
-      baseName: `Peti ${labelSubject} 2`,
-      title: `📦 Peti Harta Karun ${labelSubject} 2`,
-      type: "chest",
-      answeredCount: 0,
-      requiredCount: qBox3,
-      solved: false,
-      labelObj: label3,
-    });
-
-    this.gateObject = this.challengesGroup.create(
-      2950,
-      worldH - 128,
-      "math_gate",
-    );
-    this.gateLabel = this.addFloatingLabel(
-      2950,
-      worldH - 215,
-      `🔒 Gerbang ${labelSubject} (0/${qBox4})`,
-      "#c0392b",
-    );
-    this.gateObject.setData({
-      id: "chal_4",
-      baseName: `Gerbang ${labelSubject}`,
-      title: `🚪 Gerbang Kunci ${labelSubject}`,
-      type: "gate",
-      answeredCount: 0,
-      requiredCount: qBox4,
-      solved: false,
-      labelObj: this.gateLabel,
+    this.time.delayedCall(2200, () => {
+      uiManager.updateAdventureHUD({ hintText: "" });
     });
   }
 
@@ -362,21 +291,22 @@ export class AdventureScene extends Phaser.Scene {
     });
   }
 
-  handleHitObstacle(player, spike) {
+  handleHitObstacle(player, hazard) {
     const now = this.time.now;
     if (now - this.lastHitTime < 1100 || this.isQuizOpen) return;
     this.lastHitTime = now;
 
     uiManager.playTone("wrong");
     player.setVelocityY(-340);
-    player.setVelocityX(player.x < spike.x ? -220 : 220);
+    player.setVelocityX(player.x < hazard.x ? -220 : 220);
 
     this.cameras.main.shake(140, 0.006);
     uiManager.updateAdventureHUD({
       coins: this.coinsCollected,
       answeredCount: this.questionsAnswered,
       totalChallenges: this.totalChallenges,
-      hintText: "⚠️ Hati-hati rintangan berduri! Ayo lompati!",
+      hintText:
+        "⚠️ Hati-hati jebakan & rintangan! Perhatikan waktu lompatanmu!",
     });
 
     this.time.delayedCall(2000, () => {
@@ -425,11 +355,12 @@ export class AdventureScene extends Phaser.Scene {
     const type = challengeObj.getData("type");
     const baseName = challengeObj.getData("baseName");
     const labelObj = challengeObj.getData("labelObj");
+    const onSolvedCallback = challengeObj.getData("onSolved");
     const globalNumber = this.questionsAnswered + 1;
 
     uiManager.showQuestionModal({
       questionData: qData,
-      triggerTitle: `${baseTitle} (Pos ${currentStepInBox}/${requiredCount} • Total Soal Ke-${globalNumber}/${this.totalChallenges})`,
+      triggerTitle: `${baseTitle} (Pos ${currentStepInBox}/${requiredCount} • Soal Ke-${globalNumber}/${this.totalChallenges})`,
       onComplete: async (isCorrect, chosenAnswer) => {
         const updatedBoxAnswered = boxAnswered + 1;
         challengeObj.setData("answeredCount", updatedBoxAnswered);
@@ -494,7 +425,13 @@ export class AdventureScene extends Phaser.Scene {
           challengeObj.setTexture("chest_open");
           if (labelObj)
             labelObj.setText(
-              `✅ ${baseName} (${requiredCount}/${requiredCount} Selesai)`,
+              `✅ ${baseName} (${requiredCount}/${requiredCount})`,
+            );
+        } else if (type === "switch") {
+          challengeObj.setTexture("switch_on");
+          if (labelObj)
+            labelObj.setText(
+              `⚡ ${baseName} Aktif! (${requiredCount}/${requiredCount})`,
             );
         } else if (type === "gate") {
           if (this.gateCollider) {
@@ -509,14 +446,18 @@ export class AdventureScene extends Phaser.Scene {
           challengeObj.setTint(0xbadc58);
           if (labelObj)
             labelObj.setText(
-              `✅ ${baseName} (${requiredCount}/${requiredCount} Selesai)`,
+              `✅ ${baseName} (${requiredCount}/${requiredCount})`,
             );
+        }
+
+        if (typeof onSolvedCallback === "function") {
+          onSolvedCallback();
         }
 
         const remainingTotal = this.totalChallenges - this.questionsAnswered;
         const statusMsg =
           remainingTotal > 0
-            ? `🌟 Pos selesai! Masih ada ${remainingTotal} soal lagi di pos lainnya sebelum ke Garis Finis.`
+            ? `🌟 Mekanisme aktif! Masih ada ${remainingTotal} soal lagi sebelum ke Garis Finis.`
             : `🏁 Seluruh ${this.totalChallenges} soal telah dikerjakan! Ayo menuju Bendera Finis!`;
 
         uiManager.updateAdventureHUD({
@@ -544,7 +485,7 @@ export class AdventureScene extends Phaser.Scene {
         coins: this.coinsCollected,
         answeredCount: this.questionsAnswered,
         totalChallenges: this.totalChallenges,
-        hintText: `🔒 Kamu baru mengerjakan ${this.questionsAnswered}/${this.totalChallenges} soal! Selesaikan ${kurang} soal lagi di pos sebelumnya untuk menamatkan level ini!`,
+        hintText: `🔒 Kamu baru mengerjakan ${this.questionsAnswered}/${this.totalChallenges} soal! Selesaikan ${kurang} soal lagi di pos sebelumnya!`,
       });
       this.time.delayedCall(3500, () => {
         uiManager.updateAdventureHUD({ hintText: "" });
@@ -571,15 +512,10 @@ export class AdventureScene extends Phaser.Scene {
       stars = 2;
     }
 
-    const isIpas = this.subject === "ipas";
     const subjLabel = this.getSubjectLabel();
-    const badge = `${this.levelMeta.name} ${subjLabel} (${stars}⭐)`;
-
-    const collectibleItem = isIpas
-      ? `Kristal ${this.levelMeta.name} IPAS`
-      : `Kompas ${this.levelMeta.name} Matematika`;
-
-    const levelTitle = `Adventure ${subjLabel} Kelas ${this.grade} — ${this.levelMeta.name} (${this.totalChallenges} Soal)`;
+    const badge = `${this.levelMeta.name} — ${subjLabel}`;
+    const collectibleItem = `Relik ${this.levelMeta.name} (${subjLabel})`;
+    const levelTitle = `${this.levelMeta.name} — ${subjLabel} Kelas ${this.grade}`;
 
     uiManager.showAdventureResult({
       levelId: `g${this.grade}_${this.subject}_${this.levelKey}`,
@@ -603,6 +539,34 @@ export class AdventureScene extends Phaser.Scene {
 
   update() {
     if (!this.player || this.isQuizOpen || this.levelCompleted) return;
+
+    this.movingPlatformsList.forEach((plat) => {
+      if (!plat.getData("active")) {
+        plat.body.setVelocity(0, 0);
+        return;
+      }
+      const moveType = plat.getData("moveType");
+      const speed = plat.getData("speed");
+      let dir = plat.getData("direction");
+
+      if (moveType === "horizontal") {
+        if (plat.x >= plat.getData("maxX")) dir = -1;
+        else if (plat.x <= plat.getData("minX")) dir = 1;
+        plat.setData("direction", dir);
+        plat.body.setVelocityX(speed * dir);
+      } else {
+        if (plat.y >= plat.getData("maxY")) dir = -1;
+        else if (plat.y <= plat.getData("minY")) dir = 1;
+        plat.setData("direction", dir);
+        plat.body.setVelocityY(speed * dir);
+      }
+    });
+
+    this.checkpoints.forEach((cp) => {
+      if (this.player.x >= cp.x) {
+        this.lastSafeCheckpoint = cp;
+      }
+    });
 
     const moveLeft =
       this.cursors.left.isDown ||
