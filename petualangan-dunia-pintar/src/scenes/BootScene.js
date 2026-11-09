@@ -133,6 +133,200 @@ export class BootScene extends Phaser.Scene {
     }
     g.generateTexture("checker_line", 28, 140);
 
+    g.clear();
+    g.fillStyle(0x576574, 1);
+    g.fillRect(0, 0, 64, 64);
+    g.fillStyle(0xd35400, 1);
+    g.fillRect(0, 0, 64, 14);
+    g.lineStyle(3, 0x2c3e50, 1);
+    g.strokeRect(1, 1, 62, 62);
+    g.generateTexture("temple_tile", 64, 64);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(0, 0, 192, 36, 10);
+    g.fillStyle(0x7f8c8d, 1);
+    g.fillRoundedRect(3, 3, 186, 30, 8);
+    g.fillStyle(0xf39c12, 1);
+    g.fillRect(10, 6, 172, 6);
+    g.generateTexture("platform_temple", 192, 36);
+
+    g.clear();
+    g.fillStyle(0x1e272e, 1);
+    g.fillRect(0, 0, 64, 64);
+    g.fillStyle(0xc0392b, 1);
+    g.fillRect(0, 0, 64, 12);
+    g.lineStyle(3, 0x000000, 1);
+    g.strokeRect(1, 1, 62, 62);
+    g.generateTexture("fortress_tile", 64, 64);
+
+    g.clear();
+    g.fillStyle(0x000000, 1);
+    g.fillRoundedRect(0, 0, 192, 36, 8);
+    g.fillStyle(0x2d3436, 1);
+    g.fillRoundedRect(3, 3, 186, 30, 6);
+    g.fillStyle(0xe74c3c, 1);
+    g.fillRect(12, 6, 168, 5);
+    g.generateTexture("platform_fortress", 192, 36);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(0, 0, 160, 32, 10);
+    g.fillStyle(0xf1c40f, 1);
+    g.fillRoundedRect(3, 3, 154, 26, 8);
+    g.fillStyle(0xe67e22, 1);
+    g.fillRect(14, 12, 132, 8);
+    g.generateTexture("platform_moving_gold", 160, 32);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(0, 0, 140, 30, 8);
+    g.fillStyle(0x95a5a6, 1);
+    g.fillRoundedRect(3, 3, 134, 24, 6);
+    g.lineStyle(3, 0x2c3e50, 1);
+    g.beginPath();
+    g.moveTo(45, 3);
+    g.lineTo(55, 16);
+    g.lineTo(48, 27);
+    g.moveTo(95, 3);
+    g.lineTo(88, 15);
+    g.lineTo(96, 27);
+    g.strokePath();
+    g.generateTexture("platform_crumble", 140, 30);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(4, 26, 48, 22, 6);
+    g.fillStyle(0x7f8c8d, 1);
+    g.fillRoundedRect(7, 29, 42, 16, 4);
+    g.lineStyle(6, 0xc0392b, 1);
+    g.beginPath();
+    g.moveTo(28, 28);
+    g.lineTo(14, 6);
+    g.strokePath();
+    g.fillStyle(0xe74c3c, 1);
+    g.fillCircle(14, 6, 7);
+    g.generateTexture("switch_off", 56, 48);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(4, 26, 48, 22, 6);
+    g.fillStyle(0x7f8c8d, 1);
+    g.fillRoundedRect(7, 29, 42, 16, 4);
+    g.lineStyle(6, 0x27ae60, 1);
+    g.beginPath();
+    g.moveTo(28, 28);
+    g.lineTo(42, 6);
+    g.strokePath();
+    g.fillStyle(0x2ecc71, 1);
+    g.fillCircle(42, 6, 7);
+    g.generateTexture("switch_on", 56, 48);
+
+    g.clear();
+    g.fillStyle(0xc0392b, 1);
+    g.fillRect(0, 8, 64, 36);
+    g.fillStyle(0xe67e22, 1);
+    g.fillRect(0, 8, 64, 16);
+    g.fillStyle(0xf1c40f, 1);
+    g.fillCircle(16, 12, 8);
+    g.fillCircle(48, 12, 8);
+    g.generateTexture("lava_tile", 64, 44);
+
+    g.clear();
+    g.fillStyle(0xe74c3c, 1);
+    g.fillCircle(16, 16, 15);
+    g.fillStyle(0xf1c40f, 1);
+    g.fillCircle(16, 16, 9);
+    g.generateTexture("fireball_trap", 32, 32);
+
+    g.clear();
+    g.fillStyle(0x1e272e, 1);
+    g.fillRoundedRect(2, 12, 10, 22, 4);
+    g.fillRoundedRect(52, 12, 10, 22, 4);
+    g.fillRoundedRect(2, 66, 10, 22, 4);
+    g.fillRoundedRect(52, 66, 10, 22, 4);
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(8, 2, 48, 96, 16);
+    g.fillStyle(0xe74c3c, 1);
+    g.fillRoundedRect(11, 5, 42, 90, 14);
+    g.fillStyle(0xf1c40f, 1);
+    g.fillRect(28, 5, 8, 90);
+    g.fillStyle(0x74b9ff, 1);
+    g.fillRoundedRect(15, 22, 34, 20, 6);
+    g.generateTexture("race_car_player", 64, 100);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(6, 2, 44, 86, 14);
+    g.fillStyle(0x9b59b6, 1);
+    g.fillRoundedRect(9, 5, 38, 80, 12);
+    g.fillStyle(0xdfe6e9, 1);
+    g.fillRoundedRect(13, 52, 30, 18, 5);
+    g.generateTexture("obstacle_car", 56, 90);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(4, 28, 32, 10, 3);
+    g.fillTriangle(20, 4, 6, 32, 34, 32);
+    g.fillStyle(0xe67e22, 1);
+    g.fillTriangle(20, 7, 9, 30, 31, 30);
+    g.fillStyle(0xffffff, 1);
+    g.fillRect(14, 18, 12, 5);
+    g.generateTexture("road_cone", 40, 40);
+
+    g.clear();
+    for (let c = 0; c < 12; c++) {
+      for (let r = 0; r < 2; r++) {
+        g.fillStyle((c + r) % 2 === 0 ? 0xffffff : 0x2c3e50, 1);
+        g.fillRect(c * 20, r * 20, 20, 20);
+      }
+    }
+    g.generateTexture("race_finish_banner", 240, 40);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRect(0, 0, 64, 64);
+    g.fillStyle(0x636e72, 1);
+    g.fillRect(4, 4, 26, 26);
+    g.fillRect(34, 4, 26, 26);
+    g.fillRect(4, 34, 56, 26);
+    g.generateTexture("maze_wall_tile", 64, 64);
+
+    g.clear();
+    g.fillStyle(0xdfe6e9, 1);
+    g.fillRect(0, 0, 64, 64);
+    g.lineStyle(1, 0xb2bec3, 0.5);
+    g.strokeRect(0, 0, 64, 64);
+    g.generateTexture("maze_floor_tile", 64, 64);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillCircle(14, 20, 11);
+    g.fillRect(22, 16, 18, 8);
+    g.fillRect(32, 22, 6, 8);
+    g.fillStyle(0xf1c40f, 1);
+    g.fillCircle(14, 20, 8);
+    g.fillRect(22, 18, 16, 4);
+    g.fillRect(33, 22, 4, 6);
+    g.generateTexture("maze_key", 44, 40);
+
+    g.clear();
+    g.fillStyle(0x2c3e50, 1);
+    g.fillRoundedRect(2, 2, 60, 60, 8);
+    g.fillStyle(0xd35400, 1);
+    g.fillRoundedRect(6, 6, 52, 52, 6);
+    g.fillStyle(0xf1c40f, 1);
+    g.fillCircle(32, 32, 10);
+    g.generateTexture("maze_key_door", 64, 64);
+
+    g.clear();
+    g.fillStyle(0x1e8449, 1);
+    g.fillCircle(30, 30, 28);
+    g.fillStyle(0x2ecc71, 1);
+    g.fillCircle(30, 30, 20);
+    g.fillStyle(0xa3cb38, 1);
+    g.fillCircle(30, 30, 11);
+    g.generateTexture("maze_exit_portal", 60, 60);
     g.destroy();
   }
 
@@ -143,9 +337,11 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(outline, 1);
       g.fillRoundedRect(11, 0, 11, 24, 5);
       g.fillRoundedRect(30, 0, 11, 24, 5);
-      g.fillStyle(0xf8efba, 1);      g.fillRoundedRect(13, 2, 7, 20, 4);
+      g.fillStyle(0xf8efba, 1);
+      g.fillRoundedRect(13, 2, 7, 20, 4);
       g.fillRoundedRect(32, 2, 7, 20, 4);
-      g.fillStyle(0xff9ff3, 1);      g.fillRoundedRect(15, 4, 3, 14, 2);
+      g.fillStyle(0xff9ff3, 1);
+      g.fillRoundedRect(15, 4, 3, 14, 2);
       g.fillRoundedRect(34, 4, 3, 14, 2);
 
       g.fillStyle(outline, 1);
@@ -159,7 +355,8 @@ export class BootScene extends Phaser.Scene {
       g.fillRoundedRect(9, 36, 34, 22, 10);
       g.fillStyle(0x9b59b6, 1);
       g.fillRoundedRect(11, 38, 30, 18, 8);
-      g.fillStyle(0xf1c40f, 1);      g.fillCircle(26, 46, 3);
+      g.fillStyle(0xf1c40f, 1);
+      g.fillCircle(26, 46, 3);
 
       g.fillStyle(outline, 1);
       g.fillRoundedRect(7, 16, 38, 25, 12);
@@ -187,9 +384,11 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(outline, 1);
       g.fillCircle(12, 12, 8);
       g.fillCircle(40, 12, 8);
-      g.fillStyle(0x8d5524, 1);      g.fillCircle(12, 12, 6);
+      g.fillStyle(0x8d5524, 1);
+      g.fillCircle(12, 12, 6);
       g.fillCircle(40, 12, 6);
-      g.fillStyle(0xe0ac69, 1);      g.fillCircle(12, 12, 3);
+      g.fillStyle(0xe0ac69, 1);
+      g.fillCircle(12, 12, 3);
       g.fillCircle(40, 12, 3);
 
       g.fillStyle(outline, 1);
@@ -203,7 +402,8 @@ export class BootScene extends Phaser.Scene {
       g.fillRoundedRect(6, 34, 40, 23, 11);
       g.fillStyle(0x3498db, 1);
       g.fillRoundedRect(8, 36, 36, 19, 9);
-      g.fillStyle(0xe0ac69, 1);      g.fillRoundedRect(18, 38, 16, 15, 7);
+      g.fillStyle(0xe0ac69, 1);
+      g.fillRoundedRect(18, 38, 16, 15, 7);
 
       g.fillStyle(outline, 1);
       g.fillRoundedRect(6, 12, 40, 27, 13);
@@ -239,8 +439,10 @@ export class BootScene extends Phaser.Scene {
       g.fillRoundedRect(7, 34, 38, 23, 10);
       g.fillStyle(0x2ecc71, 1);
       g.fillRoundedRect(9, 36, 34, 19, 8);
-      g.fillStyle(0xffffff, 1);      g.fillRect(21, 36, 10, 17);
-      g.fillStyle(0xe74c3c, 1);      g.fillTriangle(23, 37, 29, 37, 26, 49);
+      g.fillStyle(0xffffff, 1);
+      g.fillRect(21, 36, 10, 17);
+      g.fillStyle(0xe74c3c, 1);
+      g.fillTriangle(23, 37, 29, 37, 26, 49);
 
       g.fillStyle(outline, 1);
       g.fillRoundedRect(6, 12, 40, 26, 13);
@@ -287,7 +489,8 @@ export class BootScene extends Phaser.Scene {
       g.fillRoundedRect(9, 35, 34, 21, 9);
       g.fillStyle(0xe67e22, 1);
       g.fillRoundedRect(11, 37, 30, 17, 8);
-      g.fillStyle(0xfff5e6, 1);      g.fillRoundedRect(18, 39, 16, 13, 6);
+      g.fillStyle(0xfff5e6, 1);
+      g.fillRoundedRect(18, 39, 16, 13, 6);
 
       g.fillStyle(0xe74c3c, 1);
       g.fillRoundedRect(11, 34, 30, 6, 3);
