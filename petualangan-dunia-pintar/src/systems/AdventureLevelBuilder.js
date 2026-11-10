@@ -499,12 +499,17 @@ export class AdventureLevelBuilder {
 
   static createChallengeNode(scene, cfg) {
     const node = scene.challengesGroup.create(cfg.x, cfg.y, cfg.texture);
-    const labelOffset = cfg.type === "gate" ? 88 : 55;
+    node.refreshBody();
+    if (cfg.type === 'gate') {
+      node.body.setSize(60, 140);
+      node.body.setOffset(-8, -6);
+    }
+    const labelOffset = cfg.type === 'gate' ? 88 : 55;
     const label = scene.addFloatingLabel(
       cfg.x,
       cfg.y - labelOffset,
       `❓ ${cfg.baseName} (0/${cfg.requiredCount})`,
-      cfg.labelColor || "#2c3e50",
+      cfg.labelColor || '#2c3e50'
     );
     node.setData({
       id: cfg.id,
