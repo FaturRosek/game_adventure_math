@@ -2,56 +2,140 @@ import mathGrade3Data from "../data/mathGrade3.json";
 import ipasGrade3Data from "../data/ipasGrade3.json";
 import bindoGrade3Data from "../data/bindoGrade3.json";
 import bingGrade3Data from "../data/bingGrade3.json";
+import pancasilaGrade3Data from "../data/pancasilaGrade3.json";
+import senirupaGrade3Data from "../data/senirupaGrade3.json";
+
 import mathGrade4Data from "../data/mathGrade4.json";
 import ipasGrade4Data from "../data/ipasGrade4.json";
 import bindoGrade4Data from "../data/bindoGrade4.json";
 import bingGrade4Data from "../data/bingGrade4.json";
+import pancasilaGrade4Data from "../data/pancasilaGrade4.json";
+import senirupaGrade4Data from "../data/senirupaGrade4.json";
+
 import { db } from "../storage/db.js";
 import { hybridEngine } from "./HybridQuestionEngine.js";
+
+const ALL_SUBJECT_KEYS = [
+  "matematika",
+  "ipas",
+  "bahasa_indonesia",
+  "bahasa_inggris",
+  "pendidikan_pancasila",
+  "seni_rupa",
+];
 
 export class QuestionManager {
   constructor() {
     this.baseBanksByGrade = {
       3: {
-        matematika: mathGrade3Data.map((q) => ({ ...q, grade: 3, sourceType: "question_bank" })),
-        ipas: ipasGrade3Data.map((q) => ({ ...q, grade: 3, sourceType: "question_bank" })),
-        bahasa_indonesia: bindoGrade3Data.map((q) => ({ ...q, grade: 3, sourceType: "question_bank" })),
-        bahasa_inggris: bingGrade3Data.map((q) => ({ ...q, grade: 3, sourceType: "question_bank" })),
+        matematika: mathGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        ipas: ipasGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        bahasa_indonesia: bindoGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        bahasa_inggris: bingGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        pendidikan_pancasila: pancasilaGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        seni_rupa: senirupaGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
       },
       4: {
-        matematika: mathGrade4Data.map((q) => ({ ...q, grade: 4, sourceType: "question_bank" })),
-        ipas: ipasGrade4Data.map((q) => ({ ...q, grade: 4, sourceType: "question_bank" })),
-        bahasa_indonesia: bindoGrade4Data.map((q) => ({ ...q, grade: 4, sourceType: "question_bank" })),
-        bahasa_inggris: bingGrade4Data.map((q) => ({ ...q, grade: 4, sourceType: "question_bank" })),
+        matematika: mathGrade4Data.map((q) => ({
+          ...q,
+          grade: 4,
+          sourceType: "question_bank",
+        })),
+        ipas: ipasGrade4Data.map((q) => ({
+          ...q,
+          grade: 4,
+          sourceType: "question_bank",
+        })),
+        bahasa_indonesia: bindoGrade4Data.map((q) => ({
+          ...q,
+          grade: 4,
+          sourceType: "question_bank",
+        })),
+        bahasa_inggris: bingGrade4Data.map((q) => ({
+          ...q,
+          grade: 4,
+          sourceType: "question_bank",
+        })),
+        pendidikan_pancasila: pancasilaGrade4Data.map((q) => ({
+          ...q,
+          grade: 4,
+          sourceType: "question_bank",
+        })),
+        seni_rupa: senirupaGrade4Data.map((q) => ({
+          ...q,
+          grade: 4,
+          sourceType: "question_bank",
+        })),
       },
     };
-    this.banksByGrade = {
-      3: {
-        matematika: [...this.baseBanksByGrade[3].matematika],
-        ipas: [...this.baseBanksByGrade[3].ipas],
-        bahasa_indonesia: [...this.baseBanksByGrade[3].bahasa_indonesia],
-        bahasa_inggris: [...this.baseBanksByGrade[3].bahasa_inggris],
-      },
-      4: {
-        matematika: [...this.baseBanksByGrade[4].matematika],
-        ipas: [...this.baseBanksByGrade[4].ipas],
-        bahasa_indonesia: [...this.baseBanksByGrade[4].bahasa_indonesia],
-        bahasa_inggris: [...this.baseBanksByGrade[4].bahasa_inggris],
-      },
-    };
+
+    this.banksByGrade = { 3: {}, 4: {} };
+    [3, 4].forEach((g) => {
+      ALL_SUBJECT_KEYS.forEach((k) => {
+        this.banksByGrade[g][k] = [...this.baseBanksByGrade[g][k]];
+      });
+    });
+
     this.banks = this.banksByGrade[3];
     this.usedQuestionIds = new Set();
     this.usedQuestionSignatures = new Set();
   }
 
   normalizeSubjectKey(subject = "matematika") {
-    const raw = String(subject || "matematika").trim().toLowerCase().replace(/^g\d+_/, "");
+    const raw = String(subject || "matematika")
+      .trim()
+      .toLowerCase()
+      .replace(/^g\d+_/, "");
     if (raw === "ipas") return "ipas";
-    if (raw === "bahasa_indonesia" || raw === "bahasa indonesia" || raw === "bindo") {
+    if (
+      raw === "bahasa_indonesia" ||
+      raw === "bahasa indonesia" ||
+      raw === "bindo"
+    ) {
       return "bahasa_indonesia";
     }
-    if (raw === "bahasa_inggris" || raw === "bahasa inggris" || raw === "bing" || raw === "english") {
+    if (
+      raw === "bahasa_inggris" ||
+      raw === "bahasa inggris" ||
+      raw === "bing" ||
+      raw === "english"
+    ) {
       return "bahasa_inggris";
+    }
+    if (
+      raw === "pendidikan_pancasila" ||
+      raw === "pendidikan pancasila" ||
+      raw === "ppkn" ||
+      raw === "pancasila"
+    ) {
+      return "pendidikan_pancasila";
+    }
+    if (raw === "seni_rupa" || raw === "seni rupa" || raw === "senirupa") {
+      return "seni_rupa";
     }
     return "matematika";
   }
@@ -61,21 +145,22 @@ export class QuestionManager {
     if (k === "ipas") return "IPAS";
     if (k === "bahasa_indonesia") return "Bahasa Indonesia";
     if (k === "bahasa_inggris") return "Bahasa Inggris";
+    if (k === "pendidikan_pancasila") return "Pendidikan Pancasila";
+    if (k === "seni_rupa") return "Seni Rupa";
     return "Matematika";
   }
 
   async loadCustomQuestionsFromDB() {
     const customList = await db.getCustomQuestions();
     [3, 4].forEach((g) => {
-      this.banksByGrade[g] = {
-        matematika: [...this.baseBanksByGrade[g].matematika],
-        ipas: [...this.baseBanksByGrade[g].ipas],
-        bahasa_indonesia: [...this.baseBanksByGrade[g].bahasa_indonesia],
-        bahasa_inggris: [...this.baseBanksByGrade[g].bahasa_inggris],
-      };
+      ALL_SUBJECT_KEYS.forEach((k) => {
+        this.banksByGrade[g][k] = [...this.baseBanksByGrade[g][k]];
+      });
     });
 
-    const existingIds = new Set(this.getAllQuestionsCombined().map((q) => q.id));
+    const existingIds = new Set(
+      this.getAllQuestionsCombined().map((q) => q.id),
+    );
 
     customList.forEach((q) => {
       if (!q || !q.id || existingIds.has(q.id)) return;
@@ -104,16 +189,13 @@ export class QuestionManager {
   }
 
   getAllQuestionsCombined() {
-    return [
-      ...this.banksByGrade[3].matematika,
-      ...this.banksByGrade[3].ipas,
-      ...this.banksByGrade[3].bahasa_indonesia,
-      ...this.banksByGrade[3].bahasa_inggris,
-      ...this.banksByGrade[4].matematika,
-      ...this.banksByGrade[4].ipas,
-      ...this.banksByGrade[4].bahasa_indonesia,
-      ...this.banksByGrade[4].bahasa_inggris,
-    ];
+    const all = [];
+    [3, 4].forEach((g) => {
+      ALL_SUBJECT_KEYS.forEach((k) => {
+        all.push(...(this.banksByGrade[g][k] || []));
+      });
+    });
+    return all;
   }
 
   getTopicsBySubject(subject = "matematika", grade = 3) {
@@ -128,20 +210,39 @@ export class QuestionManager {
   getBankStatistics() {
     const stats = {
       total: 0,
-      mathTemplateCount: hybridEngine.mathTemplates.length + hybridEngine.mathGrade4Templates.length,
-      ipasTemplateCount: hybridEngine.ipasTemplates.length + hybridEngine.ipasGrade4Templates.length,
-      bindoTemplateCount: hybridEngine.bindoTemplates.length + hybridEngine.bindoGrade4Templates.length,
-      bingTemplateCount: hybridEngine.bingTemplates.length + hybridEngine.bingGrade4Templates.length,
-      bySubject: {
-        matematika: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
-        ipas: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
-        bahasa_indonesia: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
-        bahasa_inggris: { total: 0, mudah: 0, sedang: 0, sulit: 0, topics: {} },
-      },
+      mathTemplateCount:
+        hybridEngine.mathTemplates.length +
+        hybridEngine.mathGrade4Templates.length,
+      ipasTemplateCount:
+        hybridEngine.ipasTemplates.length +
+        hybridEngine.ipasGrade4Templates.length,
+      bindoTemplateCount:
+        hybridEngine.bindoTemplates.length +
+        hybridEngine.bindoGrade4Templates.length,
+      bingTemplateCount:
+        hybridEngine.bingTemplates.length +
+        hybridEngine.bingGrade4Templates.length,
+      pancasilaTemplateCount:
+        hybridEngine.pancasilaTemplates.length +
+        hybridEngine.pancasilaGrade4Templates.length,
+      senirupaTemplateCount:
+        hybridEngine.senirupaTemplates.length +
+        hybridEngine.senirupaGrade4Templates.length,
+      bySubject: {},
     };
 
+    ALL_SUBJECT_KEYS.forEach((subj) => {
+      stats.bySubject[subj] = {
+        total: 0,
+        mudah: 0,
+        sedang: 0,
+        sulit: 0,
+        topics: {},
+      };
+    });
+
     [3, 4].forEach((g) => {
-      ["matematika", "ipas", "bahasa_indonesia", "bahasa_inggris"].forEach((subj) => {
+      ALL_SUBJECT_KEYS.forEach((subj) => {
         const list = this.banksByGrade[g][subj] || [];
         stats.bySubject[subj].total += list.length;
         stats.total += list.length;
@@ -152,7 +253,8 @@ export class QuestionManager {
             stats.bySubject[subj][diff] += 1;
           }
           const topic = `[Kls ${g}] ${q.topic || "Umum"}`;
-          stats.bySubject[subj].topics[topic] = (stats.bySubject[subj].topics[topic] || 0) + 1;
+          stats.bySubject[subj].topics[topic] =
+            (stats.bySubject[subj].topics[topic] || 0) + 1;
         });
       });
     });
@@ -163,7 +265,7 @@ export class QuestionManager {
   exportQuestionBankPayload() {
     return {
       app: "Petualangan Dunia Pintar - Question Bank Export",
-      version: "1.0.0-grade3-4",
+      version: "1.0.0-6subjects-grade3-4",
       exportedAt: new Date().toISOString(),
       totalQuestions: this.getAllQuestionsCombined().length,
       questions: this.getAllQuestionsCombined(),
@@ -185,11 +287,12 @@ export class QuestionManager {
       }
     }
 
-    const rawItems = parsed && Array.isArray(parsed.questions)
-      ? parsed.questions
-      : Array.isArray(parsed)
-        ? parsed
-        : [parsed];
+    const rawItems =
+      parsed && Array.isArray(parsed.questions)
+        ? parsed.questions
+        : Array.isArray(parsed)
+          ? parsed
+          : [parsed];
 
     if (rawItems.length === 0) {
       return {
@@ -200,7 +303,9 @@ export class QuestionManager {
       };
     }
 
-    const existingIds = new Set(this.getAllQuestionsCombined().map((q) => String(q.id).trim()));
+    const existingIds = new Set(
+      this.getAllQuestionsCombined().map((q) => String(q.id).trim()),
+    );
     const validToSave = [];
     const errors = [];
     let skippedDuplicateCount = 0;
@@ -226,9 +331,13 @@ export class QuestionManager {
         subject: this.formatSubjectDisplayName(subjKey),
         topic: String(item.topic || "").trim(),
         subtopic: String(item.subtopic || item.topic || "").trim(),
-        difficulty: String(item.difficulty || "").trim().toLowerCase(),
+        difficulty: String(item.difficulty || "")
+          .trim()
+          .toLowerCase(),
         question: String(item.question || "").trim(),
-        options: Array.isArray(item.options) ? item.options.map((o) => String(o).trim()) : [],
+        options: Array.isArray(item.options)
+          ? item.options.map((o) => String(o).trim())
+          : [],
         correctAnswer: String(item.correctAnswer || "").trim(),
         explanation: String(item.explanation || "").trim(),
         sourceType: "custom_bank",
@@ -237,7 +346,9 @@ export class QuestionManager {
 
       const check = hybridEngine.validateQuestionObject(normalizedQuestion);
       if (!check.valid) {
-        errors.push(`Soal #${rowNum} (${id || "Tanpa ID"}): ${check.errors.join(", ")}`);
+        errors.push(
+          `Soal #${rowNum} (${id || "Tanpa ID"}): ${check.errors.join(", ")}`,
+        );
         return;
       }
 
@@ -258,7 +369,12 @@ export class QuestionManager {
     };
   }
 
-  pickAdventureTopic(subject = "matematika", profile = null, explicitTopic = null, grade = 3) {
+  pickAdventureTopic(
+    subject = "matematika",
+    profile = null,
+    explicitTopic = null,
+    grade = 3,
+  ) {
     if (explicitTopic && explicitTopic !== "semua") return explicitTopic;
     const subjKey = this.normalizeSubjectKey(subject);
     const numGrade = Number(grade) === 4 ? 4 : 3;
@@ -289,11 +405,17 @@ export class QuestionManager {
     const settings = options.settings || {};
     const targetGrade = Number(options.grade) || Number(profile?.grade) || 3;
 
-    const chosenTopic = this.pickAdventureTopic(subjKey, profile, topicFilter, targetGrade);
+    const chosenTopic = this.pickAdventureTopic(
+      subjKey,
+      profile,
+      topicFilter,
+      targetGrade,
+    );
     const diffResolution = options.forceDifficulty
       ? {
           difficulty: options.forceDifficulty,
-          mode: options.modeLabel || settings.difficultyMode || "level_adventure",
+          mode:
+            options.modeLabel || settings.difficultyMode || "level_adventure",
           reason: `Mengikuti tingkat kesulitan level (${options.forceDifficulty})`,
         }
       : hybridEngine.resolveTargetDifficulty({
@@ -305,7 +427,7 @@ export class QuestionManager {
         });
 
     const targetDiff = diffResolution.difficulty;
-    const preferTemplateProb = subjKey === "matematika" ? 0.5 : 0.3;
+    const preferTemplateProb = subjKey === "matematika" ? 0.5 : 0.25;
 
     let selectedQuestion = null;
 
@@ -317,16 +439,36 @@ export class QuestionManager {
 
     if (!selectedQuestion) {
       selectedQuestion =
-        this.tryGenerateUniqueFromTemplate(subjKey, chosenTopic, targetDiff, targetGrade) ||
-        this.tryGenerateUniqueFromTemplate(subjKey, null, targetDiff, targetGrade);
+        this.tryGenerateUniqueFromTemplate(
+          subjKey,
+          chosenTopic,
+          targetDiff,
+          targetGrade,
+        ) ||
+        this.tryGenerateUniqueFromTemplate(
+          subjKey,
+          null,
+          targetDiff,
+          targetGrade,
+        );
     }
 
     if (!selectedQuestion) {
-      selectedQuestion = this.pickValidFromBank(subjKey, null, targetDiff, targetGrade);
+      selectedQuestion = this.pickValidFromBank(
+        subjKey,
+        null,
+        targetDiff,
+        targetGrade,
+      );
     }
 
     if (!selectedQuestion) {
-      selectedQuestion = this.pickValidFromBank(subjKey, null, null, targetGrade);
+      selectedQuestion = this.pickValidFromBank(
+        subjKey,
+        null,
+        null,
+        targetGrade,
+      );
     }
 
     if (!selectedQuestion) {
@@ -351,7 +493,12 @@ export class QuestionManager {
 
   tryGenerateUniqueFromTemplate(subject, topic, difficulty, grade = 3) {
     for (let attempt = 0; attempt < 12; attempt++) {
-      const candidate = hybridEngine.generateFromTemplate({ grade, subject, topic, difficulty });
+      const candidate = hybridEngine.generateFromTemplate({
+        grade,
+        subject,
+        topic,
+        difficulty,
+      });
       if (
         candidate &&
         !this.usedQuestionIds.has(candidate.id) &&
@@ -367,24 +514,34 @@ export class QuestionManager {
   pickValidFromBank(subject, topic = null, difficulty = null, grade = 3) {
     const bank = this.getSubjectBank(subject, grade);
     let pool = bank.filter(
-      (q) => !this.usedQuestionIds.has(q.id) && !this.usedQuestionSignatures.has(q.question),
+      (q) =>
+        !this.usedQuestionIds.has(q.id) &&
+        !this.usedQuestionSignatures.has(q.question),
     );
 
     if (topic && topic !== "semua") {
-      const byTopic = pool.filter((q) => q.topic.toLowerCase() === topic.toLowerCase());
+      const byTopic = pool.filter(
+        (q) => q.topic.toLowerCase() === topic.toLowerCase(),
+      );
       if (byTopic.length > 0) pool = byTopic;
       else return null;
     }
 
     if (difficulty && difficulty !== "semua") {
-      const byDiff = pool.filter((q) => q.difficulty.toLowerCase() === difficulty.toLowerCase());
+      const byDiff = pool.filter(
+        (q) => q.difficulty.toLowerCase() === difficulty.toLowerCase(),
+      );
       if (byDiff.length > 0) pool = byDiff;
       else return null;
     }
 
     const shuffled = hybridEngine.shuffleArray(pool);
     for (const item of shuffled) {
-      const normalized = { ...item, grade: Number(grade) || 3, sourceType: item.sourceType || "question_bank" };
+      const normalized = {
+        ...item,
+        grade: Number(grade) || 3,
+        sourceType: item.sourceType || "question_bank",
+      };
       const check = hybridEngine.validateQuestionObject(normalized);
       if (check.valid) {
         return normalized;
@@ -409,9 +566,17 @@ export class QuestionManager {
         : hybridEngine.pickRandom(this.getTopicsBySubject(subjKey, numGrade));
 
     let roundDifficulty = difficulty;
-    let adaptiveMeta = { mode: "manual", difficulty: roundDifficulty, reason: "Manual" };
+    let adaptiveMeta = {
+      mode: "manual",
+      difficulty: roundDifficulty,
+      reason: "Manual",
+    };
 
-    if (!roundDifficulty || roundDifficulty === "adaptif" || roundDifficulty === "semua") {
+    if (
+      !roundDifficulty ||
+      roundDifficulty === "adaptif" ||
+      roundDifficulty === "semua"
+    ) {
       adaptiveMeta = hybridEngine.resolveTargetDifficulty({
         settings: { ...settings, difficultyMode: "adaptif" },
         profile,
@@ -438,8 +603,12 @@ export class QuestionManager {
 
     if (studentQ.question === tutorQ.question) {
       const twin =
-        this.tryGenerateUniqueFromTemplate(subjKey, tutorQ.topic || roundTopic, roundDifficulty, numGrade) ||
-        this.pickValidFromBank(subjKey, null, null, numGrade);
+        this.tryGenerateUniqueFromTemplate(
+          subjKey,
+          tutorQ.topic || roundTopic,
+          roundDifficulty,
+          numGrade,
+        ) || this.pickValidFromBank(subjKey, null, null, numGrade);
       if (twin) {
         this.usedQuestionIds.add(twin.id);
         this.usedQuestionSignatures.add(twin.question);
