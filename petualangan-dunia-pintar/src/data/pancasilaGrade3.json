@@ -1,0 +1,206 @@
+[
+  {
+    "id": "PPKN3_001",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Makna dan Simbol Sila Pancasila",
+    "subtopic": "Makna Lambang Rantai Emas",
+    "difficulty": "mudah",
+    "question": "Simbol sila kedua Pancasila adalah rantai emas yang terdiri atas mata rantai berbentuk persegi dan lingkaran yang saling berkaitan. Makna dari mata rantai yang saling menyambung tersebut dalam kehidupan kita adalah ...",
+    "options": [
+      "Setiap manusia, baik laki-laki maupun perempuan, harus saling membantu dan membutuhkan satu sama lain",
+      "Kita hanya perlu menolong teman yang memiliki hobi yang sama dengan kita",
+      "Aturan di sekolah harus dibuat sekuat rantai besi agar ditakuti siswa",
+      "Kekayaan adalah hal paling utama dalam menjalin pertemanan"
+    ],
+    "correctAnswer": "Setiap manusia, baik laki-laki maupun perempuan, harus saling membantu dan membutuhkan satu sama lain",
+    "explanation": "Mata rantai persegi melambangkan laki-laki dan lingkaran melambangkan perempuan yang saling terikat erat, artinya sesama manusia harus saling menolong dan menghargai."
+  },
+  {
+    "id": "PPKN3_002",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Penerapan Nilai Pancasila",
+    "subtopic": "Penerapan Sila Pertama dalam Keseharian",
+    "difficulty": "mudah",
+    "question": "Saat sedang bermain di halaman rumah Budi, terdengar waktu beribadah bagi Edo. Sikap Budi yang paling tepat sesuai nilai sila pertama Pancasila adalah ...",
+    "options": [
+      "Menghentikan permainan sejenak dan mempersilakan Edo beribadah dengan tenang",
+      "Membujuk Edo agar menunda ibadahnya sampai permainan selesai",
+      "Marah kepada Edo karena permainan menjadi terhenti",
+      "Membuat suara gaduh di dekat tempat Edo beribadah"
+    ],
+    "correctAnswer": "Menghentikan permainan sejenak dan mempersilakan Edo beribadah dengan tenang",
+    "explanation": "Menghormati teman yang sedang menjalankan ibadah merupakan wujud nyata pengamalan sila pertama, Ketuhanan Yang Maha Esa."
+  },
+  {
+    "id": "PPKN3_003",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Aturan di Rumah dan Sekolah",
+    "subtopic": "Manfaat Mematuhi Aturan di Rumah",
+    "difficulty": "mudah",
+    "question": "Di keluarga Siti ada aturan untuk merapikan meja makan dan menaruh piring kotor ke tempat cuci piring setelah selesai makan. Apa akibatnya jika semua anggota keluarga mematuhi aturan tersebut?",
+    "options": [
+      "Ruang makan tetap bersih dan pekerjaan ibu menjadi lebih ringan",
+      "Waktu makan keluarga menjadi sangat lama dan membosankan",
+      "Piring di rumah menjadi cepat habis karena sering dicuci",
+      "Anggota keluarga tidak bisa lagi makan bersama-sama"
+    ],
+    "correctAnswer": "Ruang makan tetap bersih dan pekerjaan ibu menjadi lebih ringan",
+    "explanation": "Aturan di rumah dibuat agar kehidupan keluarga tertib, lingkungan rumah bersih, dan beban pekerjaan rumah tangga terasa ringan."
+  },
+  {
+    "id": "PPKN3_004",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Aturan di Rumah dan Sekolah",
+    "subtopic": "Memecahkan Masalah Ketertiban Sekolah",
+    "difficulty": "sedang",
+    "question": "Roni bangun kesiangan karena malam harinya bermain terlalu larut, sehingga ia datang terlambat saat upacara bendera sudah dimulai. Tindakan yang seharusnya dilakukan Roni adalah ...",
+    "options": [
+      "Menunggu dengan tertib sesuai arahan guru piket dan berjanji tidur tepat waktu agar tidak terlambat lagi",
+      "Berlari menerobos barisan upacara sambil mendorong teman-temannya",
+      "Pulang kembali ke rumah agar tidak ditegur oleh guru",
+      "Menyalahkan jam dinding di rumah di depan kepala sekolah"
+    ],
+    "correctAnswer": "Menunggu dengan tertib sesuai arahan guru piket dan berjanji tidur tepat waktu agar tidak terlambat lagi",
+    "explanation": "Ketika melakukan kesalahan melanggar tata tertib, sikap yang bertanggung jawab adalah mengikuti arahan guru dan memperbaiki kebiasaan diri."
+  },
+  {
+    "id": "PPKN3_005",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Hak dan Kewajiban Sederhana",
+    "subtopic": "Keseimbangan Hak dan Kewajiban di Sekolah",
+    "difficulty": "sedang",
+    "question": "Setiap siswa berhak belajar di ruang kelas yang bersih, sejuk, dan nyaman. Agar hak tersebut dapat dirasakan oleh semua warga kelas, kewajiban yang harus dilakukan siswa terlebih dahulu adalah ...",
+    "options": [
+      "Melaksanakan piket kelas dan membuang sampah pada tempatnya",
+      "Meminta petugas kebersihan sekolah membersihkan meja kita setiap jam",
+      "Membawa mainan yang banyak dari rumah ke dalam kelas",
+      "Menulis di dinding kelas agar terlihat berwarna-warni"
+    ],
+    "correctAnswer": "Melaksanakan piket kelas dan membuang sampah pada tempatnya",
+    "explanation": "Hak untuk mendapatkan kelas yang nyaman baru dapat terpenuhi apabila setiap siswa menjalankan kewajibannya menjaga kebersihan kelas."
+  },
+  {
+    "id": "PPKN3_006",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Hak dan Kewajiban Sederhana",
+    "subtopic": "Membedakan Hak dan Kewajiban Anak di Rumah",
+    "difficulty": "mudah",
+    "question": "Perhatikan dua kegiatan berikut: (1) Mendapatkan kasih sayang dan makanan bergizi dari orang tua. (2) Membantu ibu merapikan tempat tidur sendiri setelah bangun pagi. Manakah pernyataan yang tepat mengenai kedua kegiatan tersebut?",
+    "options": [
+      "Kegiatan (1) adalah hak anak, sedangkan kegiatan (2) adalah kewajiban anak",
+      "Kegiatan (1) adalah kewajiban anak, sedangkan kegiatan (2) adalah hak anak",
+      "Kedua kegiatan tersebut merupakan kewajiban orang tua sepenuhnya",
+      "Kedua kegiatan tersebut hanya boleh dilakukan saat hari libur"
+    ],
+    "correctAnswer": "Kegiatan (1) adalah hak anak, sedangkan kegiatan (2) adalah kewajiban anak",
+    "explanation": "Sesuatu yang kita terima (kasih sayang dan makanan bergizi) adalah hak, sedangkan sesuatu yang harus kita lakukan (merapikan tempat tidur) adalah kewajiban."
+  },
+  {
+    "id": "PPKN3_007",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Sikap Saling Menghargai dan Menghormati",
+    "subtopic": "Menghargai Perbedaan Kemampuan Teman",
+    "difficulty": "sedang",
+    "question": "Saat pelajaran olahraga, Adi belum mahir menangkap bola kasti sehingga timnya kalah satu poin. Sikap teman-teman satu tim Adi yang mencerminkan rasa saling menghargai adalah ...",
+    "options": [
+      "Memberi semangat kepada Adi dan mengajaknya berlatih menangkap bola bersama saat istirahat",
+      "Mengeluarkan Adi dari tim dan tidak mau bermain bersamanya lagi",
+      "Menertawakan Adi di depan tim lawan agar Adi merasa malu",
+      "Memarahi Adi karena dianggap membuat tim menjadi kalah"
+    ],
+    "correctAnswer": "Memberi semangat kepada Adi dan mengajaknya berlatih menangkap bola bersama saat istirahat",
+    "explanation": "Setiap anak memiliki kemampuan yang berbeda. Menghargai teman ditunjukkan dengan memberi dukungan dan membantu teman berlatih, bukan mengejeknya."
+  },
+  {
+    "id": "PPKN3_008",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Kerja Sama dan Gotong Royong",
+    "subtopic": "Bentuk Kerja Sama yang Boleh dan Tidak Boleh Dilakukan",
+    "difficulty": "sedang",
+    "question": "Kerja sama membuat pekerjaan menjadi lebih cepat selesai. Namun, ada kegiatan di sekolah yang TIDAK BOLEH dilakukan secara bekerja sama, yaitu ...",
+    "options": [
+      "Mengerjakan soal ulangan atau ujian mandiri di kelas",
+      "Membersihkan taman sekolah saat kegiatan Jumat Bersih",
+      "Menyiapkan hiasan kelas untuk lomba kemerdekaan",
+      "Merapikan buku-buku bacaan di pojok literasi kelas"
+    ],
+    "correctAnswer": "Mengerjakan soal ulangan atau ujian mandiri di kelas",
+    "explanation": "Ujian atau ulangan mandiri bertujuan mengukur kejujuran dan pemahaman masing-masing siswa, sehingga bekerja sama saat ujian termasuk perbuatan tidak jujur."
+  },
+  {
+    "id": "PPKN3_009",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Kerja Sama dan Gotong Royong",
+    "subtopic": "Manfaat Gotong Royong di Lingkungan",
+    "difficulty": "sulit",
+    "question": "Di halaman sekolah banyak daun kering yang berserakan setelah turun hujan angin. Jika hanya satu siswa yang menyapu, waktu yang dibutuhkan sangat lama. Jika seluruh siswa kelas 3 membagi tugas menyapu dan mengumpulkan daun bersama-sama, apa manfaat utama yang dirasakan?",
+    "options": [
+      "Pekerjaan berat terasa lebih ringan, cepat selesai, dan mempererat kekompakan teman sekelas",
+      "Siswa tidak perlu lagi mengikuti pelajaran di dalam kelas seharian",
+      "Setiap siswa bisa saling berebut sapu agar terlihat paling rajin",
+      "Pekerjaan menjadi semakin berantakan karena terlalu banyak anak"
+    ],
+    "correctAnswer": "Pekerjaan berat terasa lebih ringan, cepat selesai, dan mempererat kekompakan teman sekelas",
+    "explanation": "Gotong royong dengan pembagian tugas yang rapi membuat pekerjaan berat menjadi ringan, hemat waktu, dan menumbuhkan rasa persaudaraan."
+  },
+  {
+    "id": "PPKN3_010",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Keberagaman Identitas dan Budaya",
+    "subtopic": "Menyikapi Perbedaan Makanan dan Budaya Daerah",
+    "difficulty": "sulit",
+    "question": "Saat acara makan bersama di kelas, Dayu membawa kue tradisional dari Bali, sedangkan Lani membawa kue khas dari Jawa. Sikap terbaik yang dapat mereka tunjukkan untuk merayakan keberagaman budaya adalah ...",
+    "options": [
+      "Saling berbagi kue untuk dicicipi bersama dan memuji kelezatan makanan khas daerah teman",
+      "Hanya mau memakan bekal sendiri karena menganggap makanan daerah lain aneh",
+      "Membanding-bandingkan kue siapa yang paling mahal harganya",
+      "Menyembunyikan bekal masing-masing agar tidak dilihat teman lain"
+    ],
+    "correctAnswer": "Saling berbagi kue untuk dicicipi bersama dan memuji kelezatan makanan khas daerah teman",
+    "explanation": "Keberagaman makanan tradisional adalah kekayaan budaya Indonesia yang patut kita syukuri dengan saling berbagi dan menghargai."
+  },
+  {
+    "id": "PPKN3_011",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Musyawarah dan Hidup Rukun",
+    "subtopic": "Sikap Saat Pendapat Tidak Terpilih dalam Musyawarah",
+    "difficulty": "sulit",
+    "question": "Siswa kelas 3 sedang bermusyawarah memilih warna taplak meja kelas. Doni mengusulkan warna merah, tetapi hasil suara terbanyak memilih warna hijau. Sikap Doni yang sesuai dengan sila keempat Pancasila adalah ...",
+    "options": [
+      "Menerima keputusan bersama dengan lapang dada dan ikut menjaga kebersihan taplak meja hijau tersebut",
+      "Merajuk dan tidak mau duduk di kursi kelas karena usulnya ditolak",
+      "Mengotori taplak meja warna hijau secara diam-diam saat istirahat",
+      "Memaksa ketua kelas untuk mengganti hasil keputusan musyawarah"
+    ],
+    "correctAnswer": "Menerima keputusan bersama dengan lapang dada dan ikut menjaga kebersihan taplak meja hijau tersebut",
+    "explanation": "Dalam musyawarah, setiap keputusan yang telah disepakati bersama harus diterima dengan ikhlas dan dilaksanakan dengan penuh tanggung jawab."
+  },
+  {
+    "id": "PPKN3_012",
+    "grade": 3,
+    "subject": "Pendidikan Pancasila",
+    "topic": "Makna dan Simbol Sila Pancasila",
+    "subtopic": "Mengaitkan Perilaku dengan Simbol Sila",
+    "difficulty": "sulit",
+    "question": "Keluarga Pak Ahmad selalu membiasakan hidup sederhana, tidak suka pamer barang mewah, dan rajin menabung untuk masa depan. Perilaku keluarga Pak Ahmad tersebut sesuai dengan sila Pancasila yang berlambang ...",
+    "options": [
+      "Padi dan Kapas",
+      "Bintang Emas",
+      "Pohon Beringin",
+      "Kepala Banteng"
+    ],
+    "correctAnswer": "Padi dan Kapas",
+    "explanation": "Hidup hemat, sederhana, dan tidak boros merupakan pengamalan sila kelima (Keadilan sosial bagi seluruh rakyat Indonesia) yang dilambangkan dengan Padi dan Kapas."
+  }
+]
