@@ -104,6 +104,9 @@ export class AdventureScene extends Phaser.Scene {
       this.gateCollider = this.physics.add.collider(
         this.player,
         this.gateObject,
+        this.handleTriggerChallenge,
+        null,
+        this
       );
     }
 
@@ -315,7 +318,9 @@ export class AdventureScene extends Phaser.Scene {
   }
 
   handleTriggerChallenge(player, challengeObj) {
-    if (this.isQuizOpen || challengeObj.getData("solved")) return;
+    if (!challengeObj || this.isQuizOpen || this.levelCompleted || challengeObj.getData('solved')) {
+      return;
+    }
 
     this.isQuizOpen = true;
     player.setVelocity(0, 0);
