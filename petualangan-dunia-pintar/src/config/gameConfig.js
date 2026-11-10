@@ -82,6 +82,22 @@ export const GAME_CONFIG = {
       statusText: "Aktif",
       desc: "Greetings, Numbers, Colors, Animals, Vocabulary & Reading",
     },
+    {
+      id: "pendidikan_pancasila",
+      name: "Pendidikan Pancasila",
+      icon: "🦅",
+      active: true,
+      statusText: "Aktif",
+      desc: "Nilai Pancasila, Aturan, Hak & Kewajiban, Keberagaman & Musyawarah",
+    },
+    {
+      id: "seni_rupa",
+      name: "Seni Rupa",
+      icon: "🎨",
+      active: true,
+      statusText: "Aktif",
+      desc: "Unsur Rupa, Warna, Bentuk 2D/3D, Kolase, Mozaik & Apresiasi Karya",
+    },
   ],
 
   modes: [
