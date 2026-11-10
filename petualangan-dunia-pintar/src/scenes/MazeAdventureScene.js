@@ -54,24 +54,9 @@ export class MazeAdventureScene extends Phaser.Scene {
   create() {
     questionManager.resetSession();
 
-    const mapLayout = [
-      "WWWWWWWWWWWWWWWWWWWWWW",
-      "W S . . Q . W . C . KW",
-      "W WWWWW . WWW . WWWW W",
-      "W . Q . . . . . . Q .W",
-      "W . WWWWW . WWWWWW . W",
-      "W C . . W . W . . . QW",
-      "WWWW D WWW . WWWWW . W",
-      "W K . . . . . T . . CW",
-      "W . WWWWW . WWWWWW . W",
-      "W . Q . W . . . Q . .W",
-      "W WWW . WWWWW . WWWW W",
-      "W Q . . . T . . . G EW",
-      "WWWWWWWWWWWWWWWWWWWWWW",
-    ];
-
-    const rows = mapLayout.length;
-    const cols = mapLayout[0].replace(/\s+/g, "").length;
+    const grid = this.generateAndValidateMaze();
+    const rows = grid.length;
+    const cols = grid[0].length;
     const worldW = cols * this.tileSize;
     const worldH = rows * this.tileSize;
 
@@ -96,16 +81,16 @@ export class MazeAdventureScene extends Phaser.Scene {
     const questionQuotas = [1, 1, 1, 1, 1, 1, 2, 2];
 
     for (let r = 0; r < rows; r++) {
-      const rowChars = mapLayout[r].replace(/\s+/g, "").split("");
-      for (let c = 0; c < rowChars.length; c++) {
-        const ch = rowChars[c];
+      for (let c = 0; c < cols; c++) {
+        const ch = grid[r][c];
         const x = c * this.tileSize + this.tileSize / 2;
         const y = r * this.tileSize + this.tileSize / 2;
 
         this.add.image(x, y, "maze_floor_tile");
 
         if (ch === "W") {
-          this.wallsGroup.create(x, y, "maze_wall_tile");
+          const wall = this.wallsGroup.create(x, y, "maze_wall_tile");
+          wall.refreshBody();
         } else if (ch === "S") {
           startX = x;
           startY = y;
@@ -124,8 +109,11 @@ export class MazeAdventureScene extends Phaser.Scene {
           });
         } else if (ch === "D") {
           const kDoor = this.keyDoorsGroup.create(x, y, "maze_key_door");
+          kDoor.setDisplaySize(56, 56);
+          kDoor.refreshBody();
+          kDoor.body.setSize(52, 52);
           kDoor.setData("opened", false);
-          this.add
+          const doorLbl = this.add
             .text(x, y - 28, "🔑 Pintu Kunci", {
               fontSize: "11px",
               fontStyle: "bold",
@@ -135,8 +123,11 @@ export class MazeAdventureScene extends Phaser.Scene {
             })
             .setOrigin(0.5)
             .setDepth(10);
+          kDoor.setData("labelObj", doorLbl);
         } else if (ch === "T") {
-          this.trapsGroup.create(x, y, "obstacle_spike");
+          const trap = this.trapsGroup.create(x, y, "obstacle_spike");
+          trap.refreshBody();
+          trap.body.setSize(32, 26);
         } else if (ch === "Q" || ch === "G") {
           const quota = questionQuotas[qNodeIndex] || 1;
           qNodeIndex += 1;
@@ -144,9 +135,11 @@ export class MazeAdventureScene extends Phaser.Scene {
           const tex = isGate ? "math_gate" : "chest_closed";
           const node = this.questionNodesGroup.create(x, y, tex);
           if (isGate) {
-            node.setDisplaySize(58, 58);
-            node.body.setSize(58, 58);
+            node.setDisplaySize(54, 54);
           }
+          node.refreshBody();
+          node.body.setSize(48, 48);
+
           const lbl = this.add
             .text(
               x,
@@ -178,6 +171,7 @@ export class MazeAdventureScene extends Phaser.Scene {
             y,
             "maze_exit_portal",
           );
+          this.exitPortal.refreshBody();
           this.add
             .text(x, y - 34, "🏁 KELUAR", {
               fontSize: "13px",
@@ -194,10 +188,11 @@ export class MazeAdventureScene extends Phaser.Scene {
 
     const charId = this.profile?.character || "kiko";
     this.player = this.physics.add.sprite(startX, startY, `player_${charId}`);
-    this.player.setScale(0.75);
+    this.player.setScale(0.68);
     this.player.setCollideWorldBounds(true);
     this.player.body.allowGravity = false;
-    this.player.body.setSize(34, 42);
+    this.player.body.setSize(30, 34);
+    this.player.body.setOffset(11, 20);
 
     this.guideBanner = this.add
       .text(startX, startY - 40, "🧭 Cari Peti Soal & Kunci!", {
@@ -270,6 +265,191 @@ export class MazeAdventureScene extends Phaser.Scene {
     });
   }
 
+  generateAndValidateMaze() {
+    const candidateLayouts = [
+      [
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WS..Q...W...C..Q..KW",
+        "W.WWWWW.W.WWWWWWW.WW",
+        "W.C.....W.......W..W",
+        "W.WWWWW.WWWWWWW.W.QW",
+        "W...Q...W..T..C.W..W",
+        "WWWWWWW.W.WWWWW.WWWW",
+        "WK..C...D.....Q....W",
+        "W.WWWWW.W.WWWWWWW..W",
+        "W.Q.....W..T....W.CW",
+        "W.WWWWW.WWWWWWW.W..W",
+        "W...C......Q....G.EW",
+        "WWWWWWWWWWWWWWWWWWWW",
+      ],
+      [
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WS..C..Q..W....Q..KW",
+        "W.WWWWWWW.W.WWWWWWWW",
+        "W.......W.W........W",
+        "WWWWWWW.W.WWWWWWW..W",
+        "WK..Q...W...T...C.QW",
+        "W.WWWWW.WWWWWWW.W..W",
+        "W.C.....D.......W..W",
+        "W.WWWWW.W.WWWWWWW..W",
+        "W...Q...W.....Q....W",
+        "WWWWWWW.WWWWW.WWWW.W",
+        "W...C.....T.....G.EW",
+        "WWWWWWWWWWWWWWWWWWWW",
+      ],
+      [
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WS....Q...W..C..Q.KW",
+        "W.WWWWWWW.W.WWWWWW.W",
+        "W.C.......W........W",
+        "W.WWWWWWW.WWWWWWW..W",
+        "W...Q.....W..T..C.QW",
+        "WWWWWWWWW.W.WWWWW..W",
+        "WK..C.....D...Q....W",
+        "W.WWWWWWW.W.WWWWWW.W",
+        "W.Q.......W........W",
+        "W.WWWWWWW.WWWWWWW..W",
+        "W...C..T.....Q..G.EW",
+        "WWWWWWWWWWWWWWWWWWWW",
+      ],
+    ];
+
+    const shuffled = Phaser.Utils.Array.Shuffle([...candidateLayouts]);
+
+    for (const rawLayout of shuffled) {
+      const grid = rawLayout.map((row) => row.split(""));
+      if (this.validateMazeWithBFS(grid)) {
+        return grid;
+      }
+    }
+
+    const fallbackGrid = candidateLayouts[0].map((row) => row.split(""));
+    this.repairMazeConnectivity(fallbackGrid);
+    return fallbackGrid;
+  }
+
+  validateMazeWithBFS(grid) {
+    let startPos = null;
+    let exitPos = null;
+    const keyPositions = [];
+    const doorPositions = [];
+    const questionPositions = [];
+
+    for (let r = 0; r < grid.length; r++) {
+      for (let c = 0; c < grid[r].length; c++) {
+        const ch = grid[r][c];
+        if (ch === "S") startPos = { r, c };
+        else if (ch === "E") exitPos = { r, c };
+        else if (ch === "K") keyPositions.push({ r, c });
+        else if (ch === "D") doorPositions.push({ r, c });
+        else if (ch === "Q" || ch === "G") questionPositions.push({ r, c });
+      }
+    }
+
+    if (!startPos || !exitPos || questionPositions.length !== 8) {
+      return false;
+    }
+
+    const phase1Visited = this.bfsReachable(
+      grid,
+      startPos,
+      new Set(["W", "D", "G", "T"]),
+    );
+    const reachableKeysBeforeDoor = keyPositions.filter((k) =>
+      phase1Visited.has(`${k.r},${k.c}`),
+    );
+
+    if (doorPositions.length > 0 && reachableKeysBeforeDoor.length === 0) {
+      return false;
+    }
+
+    for (const d of doorPositions) {
+      if (!this.isAdjacentToVisited(d, phase1Visited)) {
+        return false;
+      }
+    }
+
+    const phase2Visited = this.bfsReachable(
+      grid,
+      startPos,
+      new Set(["W", "T"]),
+    );
+
+    for (const q of questionPositions) {
+      if (!phase2Visited.has(`${q.r},${q.c}`)) {
+        return false;
+      }
+    }
+
+    for (const k of keyPositions) {
+      if (!phase2Visited.has(`${k.r},${k.c}`)) {
+        return false;
+      }
+    }
+
+    if (!phase2Visited.has(`${exitPos.r},${exitPos.c}`)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bfsReachable(grid, startPos, blockedCharsSet) {
+    const rows = grid.length;
+    const cols = grid[0].length;
+    const visited = new Set();
+    const queue = [startPos];
+    visited.add(`${startPos.r},${startPos.c}`);
+
+    const dirs = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ];
+
+    while (queue.length > 0) {
+      const curr = queue.shift();
+      for (const [dr, dc] of dirs) {
+        const nr = curr.r + dr;
+        const nc = curr.c + dc;
+        if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+        const key = `${nr},${nc}`;
+        if (visited.has(key)) continue;
+
+        const ch = grid[nr][nc];
+        if (blockedCharsSet.has(ch)) continue;
+
+        visited.add(key);
+        queue.push({ r: nr, c: nc });
+      }
+    }
+
+    return visited;
+  }
+
+  isAdjacentToVisited(pos, visitedSet) {
+    const dirs = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ];
+    return dirs.some(([dr, dc]) =>
+      visitedSet.has(`${pos.r + dr},${pos.c + dc}`),
+    );
+  }
+
+  repairMazeConnectivity(grid) {
+    for (let r = 1; r < grid.length - 1; r++) {
+      for (let c = 1; c < grid[r].length - 1; c++) {
+        if (grid[r][c] === "W" && r % 2 === 1 && c % 4 === 0) {
+          grid[r][c] = ".";
+        }
+      }
+    }
+  }
+
   handleCollectCoin(player, coin) {
     if (coin.getData("collected")) return;
     coin.setData("collected", true);
@@ -305,6 +485,8 @@ export class MazeAdventureScene extends Phaser.Scene {
       this.keysOwned -= 1;
       door.setData("opened", true);
       door.disableBody(true, true);
+      const lbl = door.getData("labelObj");
+      if (lbl) lbl.setText("🔓 Terbuka");
       uiManager.playTone("correct");
       uiManager.updateAdventureHUD({
         hintText:
@@ -314,27 +496,22 @@ export class MazeAdventureScene extends Phaser.Scene {
       uiManager.playTone("wrong");
       uiManager.updateAdventureHUD({
         hintText:
-          "🔒 Pintu ini membutuhkan Kunci Emas (🔑)! Cari kunci di lorong cabang!",
+          "🔒 Pintu ini membutuhkan Kunci Emas (🔑)! Ambil kunci di jalur yang sudah terbuka!",
       });
     }
   }
 
   handleStepTrap(player, trap) {
     const now = this.time.now;
-    if (now - this.lastHitTime < 1000 || this.isQuizOpen) return;
+    if (now - this.lastHitTime < 1200 || this.isQuizOpen) return;
     this.lastHitTime = now;
 
     uiManager.playTone("wrong");
-    this.cameras.main.shake(120, 0.006);
-    const dx = player.x - trap.x;
-    const dy = player.y - trap.y;
-    player.setPosition(
-      player.x + Math.sign(dx || 1) * 24,
-      player.y + Math.sign(dy || 1) * 24,
-    );
+    this.cameras.main.shake(120, 0.005);
 
     uiManager.updateAdventureHUD({
-      hintText: "⚠️ Awas jebakan lantai berduri di lorong labirin!",
+      hintText:
+        "⚠️ Hati-hati jebakan lantai berduri! Lewati dari jalur di sebelahnya.",
     });
   }
 
@@ -442,7 +619,7 @@ export class MazeAdventureScene extends Phaser.Scene {
           if (labelObj) labelObj.setText("🔓 Terbuka!");
         } else {
           node.setTexture("chest_open");
-          node.body.enable = false;
+          node.disableBody(true, false);
           if (labelObj) labelObj.setText("✅ Selesai!");
         }
 
