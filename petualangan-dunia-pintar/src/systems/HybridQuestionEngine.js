@@ -28,10 +28,15 @@ export class HybridQuestionEngine {
     this.ipasTemplates = this.registerIpasTemplates();
     this.bindoTemplates = this.registerBindoTemplates();
     this.bingTemplates = this.registerBingTemplates();
+    this.pancasilaTemplates = this.registerPancasilaGrade3Templates();
+    this.senirupaTemplates = this.registerSenirupaGrade3Templates();
+
     this.mathGrade4Templates = this.registerMathGrade4Templates();
     this.ipasGrade4Templates = this.registerIpasGrade4Templates();
     this.bindoGrade4Templates = this.registerBindoGrade4Templates();
     this.bingGrade4Templates = this.registerBingGrade4Templates();
+    this.pancasilaGrade4Templates = this.registerPancasilaGrade4Templates();
+    this.senirupaGrade4Templates = this.registerSenirupaGrade4Templates();
   }
 
   randInt(min, max) {
@@ -101,7 +106,13 @@ export class HybridQuestionEngine {
     return allowed[allowed.length - 1];
   }
 
-  resolveTargetDifficulty({ settings = {}, profile = null, grade = 3, subject = "matematika", topic = null }) {
+  resolveTargetDifficulty({
+    settings = {},
+    profile = null,
+    grade = 3,
+    subject = "matematika",
+    topic = null,
+  }) {
     const mode = settings.difficultyMode || "adaptif";
     const manualLevel = settings.manualDifficulty || "sedang";
     const rangeBound = settings.adaptiveBounds || "mudah-sulit";
@@ -109,7 +120,9 @@ export class HybridQuestionEngine {
 
     if (mode === "manual") {
       return {
-        difficulty: ["mudah", "sedang", "sulit"].includes(manualLevel) ? manualLevel : "sedang",
+        difficulty: ["mudah", "sedang", "sulit"].includes(manualLevel)
+          ? manualLevel
+          : "sedang",
         mode: "manual",
         reason: "Ditentukan secara manual oleh Tutor",
       };
@@ -125,7 +138,9 @@ export class HybridQuestionEngine {
     }
 
     const numGrade = Number(grade) || Number(profile.grade) || 3;
-    const cleanSubj = String(subject).toLowerCase().replace(/^g\d+_/, "");
+    const cleanSubj = String(subject)
+      .toLowerCase()
+      .replace(/^g\d+_/, "");
     const scopedSubj = numGrade === 3 ? cleanSubj : `g${numGrade}_${cleanSubj}`;
     let topicPerf = null;
 
@@ -137,7 +152,9 @@ export class HybridQuestionEngine {
         .filter(([k]) => k.startsWith(`${scopedSubj}:`))
         .map(([, v]) => v);
       if (subjTopics.length > 0) {
-        subjTopics.sort((a, b) => (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0));
+        subjTopics.sort(
+          (a, b) => (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0),
+        );
         topicPerf = subjTopics[0];
       }
     }
@@ -1282,8 +1299,14 @@ export class HybridQuestionEngine {
           const isSubtraction = difficulty !== "mudah" && Math.random() > 0.45;
           const person = this.pickRandom(NAMES_POOL);
           if (isSubtraction) {
-            const a = difficulty === "sedang" ? this.randInt(4200, 6800) : this.randInt(6500, 9500);
-            const b = difficulty === "sedang" ? this.randInt(1350, 2900) : this.randInt(2450, 5200);
+            const a =
+              difficulty === "sedang"
+                ? this.randInt(4200, 6800)
+                : this.randInt(6500, 9500);
+            const b =
+              difficulty === "sedang"
+                ? this.randInt(1350, 2900)
+                : this.randInt(2450, 5200);
             const ans = a - b;
             const correctStr = this.formatThousand(ans);
             const opts = [
@@ -1300,8 +1323,14 @@ export class HybridQuestionEngine {
               params: { a, b, ans },
             };
           }
-          const a = difficulty === "mudah" ? this.randInt(1200, 3500) : this.randInt(3200, 5800);
-          const b = difficulty === "mudah" ? this.randInt(1100, 2400) : this.randInt(2150, 3900);
+          const a =
+            difficulty === "mudah"
+              ? this.randInt(1200, 3500)
+              : this.randInt(3200, 5800);
+          const b =
+            difficulty === "mudah"
+              ? this.randInt(1100, 2400)
+              : this.randInt(2150, 3900);
           const ans = a + b;
           const correctStr = this.formatThousand(ans);
           const opts = [
@@ -1331,10 +1360,20 @@ export class HybridQuestionEngine {
           const item = this.pickRandom(ITEMS_POOL);
 
           if (isDivision) {
-            const divisor = difficulty === "mudah" ? this.randInt(6, 9) : this.randInt(11, 16);
-            const quotient = difficulty === "mudah" ? this.randInt(11, 15) : this.randInt(12, 22);
+            const divisor =
+              difficulty === "mudah"
+                ? this.randInt(6, 9)
+                : this.randInt(11, 16);
+            const quotient =
+              difficulty === "mudah"
+                ? this.randInt(11, 15)
+                : this.randInt(12, 22);
             const dividend = divisor * quotient;
-            const options = this.buildPlausibleNumericOptions(quotient, item.unit, [-2, 2, -4, 4, 1, -1]);
+            const options = this.buildPlausibleNumericOptions(
+              quotient,
+              item.unit,
+              [-2, 2, -4, 4, 1, -1],
+            );
             return {
               question: `Panitia sekolah memiliki ${dividend} ${item.unit} ${item.name} yang akan dimasukkan sama banyak ke dalam ${divisor} ${item.container}. Berapa ${item.unit} isi setiap ${item.container}?`,
               options,
@@ -1344,10 +1383,21 @@ export class HybridQuestionEngine {
             };
           }
 
-          const a = difficulty === "mudah" ? this.randInt(12, 19) : this.randInt(21, 36);
-          const b = difficulty === "mudah" ? this.randInt(6, 9) : this.randInt(11, 18);
+          const a =
+            difficulty === "mudah"
+              ? this.randInt(12, 19)
+              : this.randInt(21, 36);
+          const b =
+            difficulty === "mudah" ? this.randInt(6, 9) : this.randInt(11, 18);
           const ans = a * b;
-          const options = this.buildPlausibleNumericOptions(ans, item.unit, [-10, 10, -b, b, 12, -12]);
+          const options = this.buildPlausibleNumericOptions(ans, item.unit, [
+            -10,
+            10,
+            -b,
+            b,
+            12,
+            -12,
+          ]);
           return {
             question: `Toko buku membeli ${b} ${item.container} ${item.name}. Setiap ${item.container} berisi ${a} ${item.unit}. Berapa ${item.unit} jumlah seluruh ${item.name}?`,
             options,
@@ -1364,8 +1414,10 @@ export class HybridQuestionEngine {
         topic: "Keliling dan Luas Bangun Datar",
         subtopic: "Menghitung Luas Persegi dan Persegi Panjang",
         generate: (difficulty) => {
-          const p = difficulty === "mudah" ? this.randInt(7, 12) : this.randInt(13, 22);
-          const l = difficulty === "mudah" ? this.randInt(4, 8) : this.randInt(9, 15);
+          const p =
+            difficulty === "mudah" ? this.randInt(7, 12) : this.randInt(13, 22);
+          const l =
+            difficulty === "mudah" ? this.randInt(4, 8) : this.randInt(9, 15);
           const luas = p * l;
           const keliling = 2 * (p + l);
           const options = this.buildPlausibleNumericOptions(luas, "cm²", [
@@ -1394,7 +1446,13 @@ export class HybridQuestionEngine {
           const base = this.randInt(4, 9);
           const seq = [base, base * 2, base * 3, base * 4];
           const nextVal = base * 5;
-          const options = this.buildPlausibleNumericOptions(nextVal, "", [-2, 2, base, -base, 3]);
+          const options = this.buildPlausibleNumericOptions(nextVal, "", [
+            -2,
+            2,
+            base,
+            -base,
+            3,
+          ]);
           return {
             question: `Perhatikan barisan bilangan kelipatan ${base} berikut: ${seq.join(", ")}, ... Bilangan kelipatan selanjutnya adalah ...`,
             options,
@@ -1418,15 +1476,36 @@ export class HybridQuestionEngine {
         generate: () => {
           const person = this.pickRandom(NAMES_POOL);
           const items = [
-            { act: "menarik busur panah yang terbuat dari karet elastis", gaya: "Gaya pegas", info: "dihasilkan oleh benda yang lentur atau elastis" },
-            { act: "mendekatkan magnet batang ke paku-paku besi kecil hingga menempel", gaya: "Gaya magnet", info: "tarikan atau dorongan yang dihasilkan oleh magnet terhadap benda logam tertentu" },
-            { act: "mengerem sepeda yang sedang melaju di jalan beraspal", gaya: "Gaya gesek", info: "terjadi karena dua permukaan benda (kampas rem dan roda) saling bersentuhan" },
-            { act: "mengangkat ember air dari dalam sumur menggunakan tangan", gaya: "Gaya otot", info: "menggunakan tenaga otot tubuh manusia" },
+            {
+              act: "menarik busur panah yang terbuat dari karet elastis",
+              gaya: "Gaya pegas",
+              info: "dihasilkan oleh benda yang lentur atau elastis",
+            },
+            {
+              act: "mendekatkan magnet batang ke paku-paku besi kecil hingga menempel",
+              gaya: "Gaya magnet",
+              info: "tarikan atau dorongan yang dihasilkan oleh magnet terhadap benda logam tertentu",
+            },
+            {
+              act: "mengerem sepeda yang sedang melaju di jalan beraspal",
+              gaya: "Gaya gesek",
+              info: "terjadi karena dua permukaan benda (kampas rem dan roda) saling bersentuhan",
+            },
+            {
+              act: "mengangkat ember air dari dalam sumur menggunakan tangan",
+              gaya: "Gaya otot",
+              info: "menggunakan tenaga otot tubuh manusia",
+            },
           ];
           const chosen = this.pickRandom(items);
           return {
             question: `Saat beraktivitas, ${person} ${chosen.act}. Jenis gaya yang bekerja pada kegiatan ${person} adalah ...`,
-            options: this.shuffleArray(["Gaya pegas", "Gaya magnet", "Gaya gesek", "Gaya otot"]),
+            options: this.shuffleArray([
+              "Gaya pegas",
+              "Gaya magnet",
+              "Gaya gesek",
+              "Gaya otot",
+            ]),
             correctAnswer: chosen.gaya,
             explanation: `${chosen.gaya} adalah gaya yang ${chosen.info}.`,
             params: {},
@@ -1441,9 +1520,21 @@ export class HybridQuestionEngine {
         subtopic: "Peran Makhluk Hidup dalam Rantai Makanan",
         generate: () => {
           const chains = [
-            { rantai: "Rumput -> Kelinci -> Ular -> Elang", tanya: "Kelinci", peran: "Konsumen tingkat I (Herbivora)" },
-            { rantai: "Padi -> Tikus -> Ular -> Elang", tanya: "Padi", peran: "Produsen penghasil makanan" },
-            { rantai: "Fitoplankton -> Ikan Kecil -> Ikan Besar -> Hiu", tanya: "Ikan Kecil", peran: "Konsumen tingkat I (Herbivora)" },
+            {
+              rantai: "Rumput -> Kelinci -> Ular -> Elang",
+              tanya: "Kelinci",
+              peran: "Konsumen tingkat I (Herbivora)",
+            },
+            {
+              rantai: "Padi -> Tikus -> Ular -> Elang",
+              tanya: "Padi",
+              peran: "Produsen penghasil makanan",
+            },
+            {
+              rantai: "Fitoplankton -> Ikan Kecil -> Ikan Besar -> Hiu",
+              tanya: "Ikan Kecil",
+              peran: "Konsumen tingkat I (Herbivora)",
+            },
           ];
           const c = this.pickRandom(chains);
           return {
@@ -1473,15 +1564,39 @@ export class HybridQuestionEngine {
         subtopic: "Memilih Kata Baku Sesuai KBBI",
         generate: () => {
           const pairs = [
-            { baku: "aktif", tidakBaku: "aktip", kalimat: "Siswa kelas 4 sangat ... bertanya saat berdiskusi." },
-            { baku: "nasihat", tidakBaku: "nasehat", kalimat: "Kita harus mendengarkan ... yang diberikan oleh orang tua." },
-            { baku: "jadwal", tidakBaku: "jadual", kalimat: "Ketua kelas menempelkan ... piket kebersihan di dinding." },
-            { baku: "praktik", tidakBaku: "praktek", kalimat: "Hari ini siswa kelas 4 melakukan ... menanam kacang hijau." },
+            {
+              baku: "aktif",
+              tidakBaku: "aktip",
+              kalimat: "Siswa kelas 4 sangat ... bertanya saat berdiskusi.",
+            },
+            {
+              baku: "nasihat",
+              tidakBaku: "nasehat",
+              kalimat:
+                "Kita harus mendengarkan ... yang diberikan oleh orang tua.",
+            },
+            {
+              baku: "jadwal",
+              tidakBaku: "jadual",
+              kalimat:
+                "Ketua kelas menempelkan ... piket kebersihan di dinding.",
+            },
+            {
+              baku: "praktik",
+              tidakBaku: "praktek",
+              kalimat:
+                "Hari ini siswa kelas 4 melakukan ... menanam kacang hijau.",
+            },
           ];
           const p = this.pickRandom(pairs);
           return {
             question: `Lengkapilah kalimat berikut dengan kata baku yang tepat! "${p.kalimat}"`,
-            options: this.shuffleArray([p.baku, p.tidakBaku, `${p.baku}s`, `${p.tidakBaku}an`]),
+            options: this.shuffleArray([
+              p.baku,
+              p.tidakBaku,
+              `${p.baku}s`,
+              `${p.tidakBaku}an`,
+            ]),
             correctAnswer: p.baku,
             explanation: `Penulisan kata baku yang tepat sesuai KBBI adalah "${p.baku}", bukan "${p.tidakBaku}".`,
             params: {},
@@ -1502,10 +1617,22 @@ export class HybridQuestionEngine {
         generate: () => {
           const person = this.pickRandom(NAMES_POOL);
           const scenarios = [
-            { act: "sleeps on a comfortable bed with a pillow and blanket", room: "Bedroom (Kamar tidur)" },
-            { act: "takes a bath using soap and water", room: "Bathroom (Kamar mandi)" },
-            { act: "cooks fried rice and boils water on the stove", room: "Kitchen (Dapur)" },
-            { act: "welcomes guests on the sofa", room: "Living room (Ruang tamu)" },
+            {
+              act: "sleeps on a comfortable bed with a pillow and blanket",
+              room: "Bedroom (Kamar tidur)",
+            },
+            {
+              act: "takes a bath using soap and water",
+              room: "Bathroom (Kamar mandi)",
+            },
+            {
+              act: "cooks fried rice and boils water on the stove",
+              room: "Kitchen (Dapur)",
+            },
+            {
+              act: "welcomes guests on the sofa",
+              room: "Living room (Ruang tamu)",
+            },
           ];
           const s = this.pickRandom(scenarios);
           return {
@@ -1525,27 +1652,299 @@ export class HybridQuestionEngine {
     ];
   }
 
-  generateFromTemplate({ grade = 3, subject = "matematika", topic = null, difficulty = "sedang" }) {
+  registerPancasilaGrade3Templates() {
+    return [
+      {
+        templateId: "TPL_PPKN3_KASUS_SILAPANCASILA",
+        grade: 3,
+        subject: "Pendidikan Pancasila",
+        topic: "Penerapan Nilai Pancasila",
+        subtopic: "Analisis Tindakan Sesuai Sila Pancasila",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Saat jam istirahat, bekal makanan milik teman sebangkumu tidak sengaja terjatuh hingga tumpah seluruhnya. Tindakan yang paling mencerminkan nilai kemanusiaan pada sila kedua Pancasila adalah ...",
+              correct:
+                "Membantu membersihkan makanan yang tumpah dan berbagi sebagian bekal makanan kita dengannya",
+              options: [
+                "Membantu membersihkan makanan yang tumpah dan berbagi sebagian bekal makanan kita dengannya",
+                "Membiarkannya kelaparan karena itu kesalahan dirinya sendiri yang kurang hati-hati",
+                "Menceritakan kejadian tersebut sambil tertawa kepada teman-teman di kelas lain",
+                "Meminta uang ganti rugi karena lantai dekat meja kita ikut menjadi kotor",
+              ],
+              explanation:
+                "Menolong teman yang sedang mengalami musibah dan berbagi makanan merupakan wujud sikap peduli dan beradab sesuai sila kedua Pancasila.",
+            },
+            {
+              question:
+                "Di kelas terdapat siswa baru yang logat bicaranya berbeda karena berasal dari pulau lain. Beberapa anak tampak ragu untuk mengajaknya bermain. Sikap yang sebaiknya kamu lakukan untuk menjaga persatuan di kelas adalah ...",
+              correct:
+                "Menyapanya lebih dulu dengan ramah dan mengajaknya bermain bersama teman-teman lainnya",
+              options: [
+                "Menyapanya lebih dulu dengan ramah dan mengajaknya bermain bersama teman-teman lainnya",
+                "Menirukan logat bicaranya sebagai bahan candaan agar suasana kelas ramai",
+                "Hanya mau berbicara dengannya jika ia sudah bisa menghilangkan logat daerahnya",
+                "Meminta guru memisahkan tempat duduk siswa baru tersebut di pojok belakang",
+              ],
+              explanation:
+                "Menyambut teman tanpa memandang asal daerah dan menghargai logat bahasanya adalah wujud pengamalan sila ketiga, Persatuan Indonesia.",
+            },
+            {
+              question:
+                "Ketika memilih lagu daerah yang akan dinyanyikan kelompok untuk pentas kelas, tiga anggota memilih lagu A dan satu anggota memilih lagu B. Agar masalah selesai dengan rukun, cara yang tepat ditempuh kelompok tersebut adalah ...",
+              correct:
+                "Menyepakati lagu A untuk pentas kali ini secara mufakat dan berjanji menyanyikan lagu B pada latihan berikutnya",
+              options: [
+                "Menyepakati lagu A untuk pentas kali ini secara mufakat dan berjanji menyanyikan lagu B pada latihan berikutnya",
+                "Membubarkan kelompok karena tidak semua anggota memiliki keinginan yang sama",
+                "Memaksa anggota yang memilih lagu B untuk keluar dari kelompok",
+                "Tidak jadi mengikuti pentas kelas agar tidak ada lagu yang dinyanyikan",
+              ],
+              explanation:
+                "Musyawarah yang bijaksana menghargai semua usulan dan mencari jalan keluar bersama yang adil serta menjaga kerukunan.",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_PPKN3_ATURAN_HAK_KEWAJIBAN",
+        grade: 3,
+        subject: "Pendidikan Pancasila",
+        topic: "Hak dan Kewajiban Sederhana",
+        subtopic: "Penalaran Sebab-Akibat Pelaksanaan Kewajiban",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Di rumah, ayah dan ibu memberikan hak kepada anak-anak untuk menonton televisi pada sore hari setelah selesai belajar. Mengapa kewajiban belajar harus didahulukan sebelum menuntut hak menonton televisi?",
+              correct:
+                "Agar tugas sekolah terselesaikan dengan baik dan waktu istirahat dapat dinikmati dengan tenang",
+              options: [
+                "Agar tugas sekolah terselesaikan dengan baik dan waktu istirahat dapat dinikmati dengan tenang",
+                "Karena televisi di rumah hanya bisa menyala jika buku pelajaran sudah dibuka",
+                "Supaya orang tua tidak ikut menonton acara televisi bersama anak-anak",
+                "Karena belajar merupakan hukuman bagi anak yang suka menonton televisi",
+              ],
+              explanation:
+                "Mendahulukan kewajiban sebelum menuntut hak melatih kedisiplinan dan tanggung jawab sebagai seorang pelajar.",
+            },
+            {
+              question:
+                "Perpustakaan sekolah memiliki aturan dilarang makan, minum, dan berbicara keras di ruang baca. Apa tujuan utama dibuatnya aturan tersebut bagi seluruh siswa?",
+              correct:
+                "Agar buku-buku tidak kotor/rusak terkena makanan dan semua siswa dapat membaca dengan konsentrasi",
+              options: [
+                "Agar buku-buku tidak kotor/rusak terkena makanan dan semua siswa dapat membaca dengan konsentrasi",
+                "Agar siswa merasa takut dan tidak mau lagi berkunjung ke perpustakaan",
+                "Supaya petugas perpustakaan bisa tidur siang tanpa diganggu siswa",
+                "Karena makanan di kantin sekolah tidak boleh dibawa melewati pintu kelas",
+              ],
+              explanation:
+                "Aturan di tempat fasilitas bersama bertujuan melindungi barang milik bersama (buku) dan menjaga hak orang lain untuk mendapatkan ketenangan.",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerPancasilaGrade4Templates() {
+    return [
+      {
+        templateId: "TPL_PPKN4_NORMA_TANGGUNGJAWAB",
+        grade: 4,
+        subject: "Pendidikan Pancasila",
+        topic: "Norma dan Aturan dalam Masyarakat",
+        subtopic: "Analisis Penerapan Norma dan Tanggung Jawab Sosial",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Saat malam hari, warga kampung sepakat memberlakukan aturan mematikan suara musik atau televisi yang keras di atas pukul 21.00 malam. Nilai norma dan tanggung jawab apa yang terkandung dalam kesepakatan warga tersebut?",
+              correct:
+                "Menghormati hak tetangga untuk beristirahat dengan tenang dan menjaga keharmonisan lingkungan",
+              options: [
+                "Menghormati hak tetangga untuk beristirahat dengan tenang dan menjaga keharmonisan lingkungan",
+                "Melarang warga memiliki televisi atau radio di dalam rumahnya masing-masing",
+                "Membuat suasana kampung menjadi menakutkan ketika malam tiba",
+                "Membatasi hak warga untuk berkumpul bersama keluarganya sendiri",
+              ],
+              explanation:
+                "Hidup bermasyarakat menuntut kita membatasi kebebasan diri agar tidak mengganggu hak ketenangan dan kenyamanan tetangga sekitar.",
+            },
+            {
+              question:
+                "Dalam diskusi kelompok membahas rencana penghijauan sekolah, usulan tanaman yang disampaikan oleh salah satu anggota ternyata kurang cocok karena berduri tajam. Cara menyampaikan ketidaksetujuan yang sesuai dengan etika musyawarah Pancasila adalah ...",
+              correct:
+                "Menyampaikan alasan secara santun tanpa memotong pembicaraannya, lalu menawarkan alternatif tanaman lain yang lebih aman",
+              options: [
+                "Menyampaikan alasan secara santun tanpa memotong pembicaraannya, lalu menawarkan alternatif tanaman lain yang lebih aman",
+                "Langsung membentak dan menyuruh teman tersebut diam karena usulnya berbahaya",
+                "Menertawakan usulan tersebut bersama anggota lain hingga teman itu merasa malu",
+                "Meninggalkan ruang diskusi karena tidak setuju dengan pendapat teman tersebut",
+              ],
+              explanation:
+                "Etika bermusyawarah mengajarkan kita menghargai setiap pendapat, tidak memotong pembicaraan, dan menyampaikan saran secara sopan disertai alasan yang logis.",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerSenirupaGrade3Templates() {
+    return [
+      {
+        templateId: "TPL_SR3_OBSERVASI_VISUAL",
+        grade: 3,
+        subject: "Seni Rupa",
+        topic: "Warna Primer dan Pencampuran Warna",
+        subtopic: "Pemecahan Masalah Pencampuran Warna dan Bentuk",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Saat menggambar buah jeruk matang yang segar, kamu ingin membuat warna ORANYE (Jingga), tetapi di kotak cat airmu hanya ada warna Merah, Kuning, dan Biru. Campuran manakah yang harus kamu buat di atas palet?",
+              correct: "Mencampurkan warna Merah dan Kuning secara merata",
+              options: [
+                "Mencampurkan warna Merah dan Kuning secara merata",
+                "Mencampurkan warna Biru dan Kuning secara merata",
+                "Mencampurkan warna Merah dan Biru secara merata",
+                "Mencampurkan ketiga warna primer sekaligus hingga menjadi cokelat gelap",
+              ],
+              explanation:
+                "Warna sekunder Oranye (Jingga) dihasilkan dari pencampuran dua warna primer, yaitu Merah dan Kuning.",
+            },
+            {
+              question:
+                "Bayangkan kamu mengamati dua benda di ruang kelas: selembar kertas gambar yang tipis dan sebuah kotak tempat pensil dari kayu. Mengapa kotak pensil kayu disebut karya tiga dimensi sedangkan kertas gambar disebut dua dimensi?",
+              correct:
+                "Karena kotak pensil kayu memiliki ukuran panjang, lebar, tinggi, serta rongga ruang di dalamnya, sedangkan kertas hanya berupa bidang datar",
+              options: [
+                "Karena kotak pensil kayu memiliki ukuran panjang, lebar, tinggi, serta rongga ruang di dalamnya, sedangkan kertas hanya berupa bidang datar",
+                "Karena kertas gambar warnanya putih sedangkan kotak pensil warnanya cokelat",
+                "Karena kotak pensil kayu tidak bisa digambari dengan pensil warna",
+                "Karena kertas gambar lebih berat daripada kotak pensil kayu",
+              ],
+              explanation:
+                "Ciri utama benda tiga dimensi (3D) adalah memiliki ketebalan/tinggi dan volume ruang sehingga dapat dilihat dari berbagai sisi.",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerSenirupaGrade4Templates() {
+    return [
+      {
+        templateId: "TPL_SR4_ANALISIS_TEKNIK_KOMPOSISI",
+        grade: 4,
+        subject: "Seni Rupa",
+        topic: "Teknik Kolase, Montase, dan Mozaik",
+        subtopic: "Analisis Perbandingan Teknik Tempel dan Komposisi",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Seorang siswa ingin membuat hiasan dinding bergambar burung hantu dengan menempelkan biji-bijian utuh yang beragam (biji jagung untuk sayap, kacang hijau untuk badan, dan beras merah untuk paruh) di atas kertas karton. Teknik berkarya seni rupa tempel yang digunakan siswa tersebut adalah ...",
+              correct:
+                "Teknik Kolase, karena memadukan berbagai jenis bahan berbeda yang ditempelkan pada permukaan pola gambar",
+              options: [
+                "Teknik Kolase, karena memadukan berbagai jenis bahan berbeda yang ditempelkan pada permukaan pola gambar",
+                "Teknik Montase, karena menggunting foto-foto dari majalah bekas",
+                "Teknik Pahat, karena mengurangi bahan keras menggunakan alat pahat",
+                "Teknik Cetak Tinggi, karena menggunakan cetakan stempel tinta",
+              ],
+              explanation:
+                "Kolase menggunakan bermacam-macam bahan berbeda (biji-bijian, daun kering, ranting, kain perca) yang dipadukan dan ditempel pada permukaan gambar.",
+            },
+            {
+              question:
+                "Dalam menggambar pemandangan di atas kertas, jika seluruh objek pohon, rumah, dan gunung hanya ditumpuk di pojok kiri bawah sementara sisa kertas sebelah kanan dibiarkan kosong melompong, maka gambar tersebut terasa kurang indah karena mengabaikan prinsip ...",
+              correct:
+                "Keseimbangan (Balance) dalam penyusunan komposisi bidang gambar",
+              options: [
+                "Keseimbangan (Balance) dalam penyusunan komposisi bidang gambar",
+                "Pencampuran warna primer menjadi warna sekunder",
+                "Penggunaan bahan daur ulang plastik",
+                "Pembuatan karya patung tiga dimensi",
+              ],
+              explanation:
+                "Prinsip keseimbangan (balance) mengatur tata letak objek di bidang gambar agar tidak berat sebelah antara sisi kiri, kanan, atas, dan bawah.",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  generateFromTemplate({ grade = 3, subject = 'matematika', topic = null, difficulty = 'sedang' }) {
     const numGrade = Number(grade) || 3;
-    const subjKey = String(subject).toLowerCase().replace(/^g\d+_/, "");
+    const subjKey = String(subject).toLowerCase().replace(/^g\d+_/, '');
 
     let pool = numGrade === 4 ? this.mathGrade4Templates : this.mathTemplates;
-    if (subjKey === "ipas") {
+    if (subjKey === 'ipas') {
       pool = numGrade === 4 ? this.ipasGrade4Templates : this.ipasTemplates;
-    } else if (subjKey === "bahasa_indonesia" || subjKey === "bahasa indonesia") {
+    } else if (subjKey === 'bahasa_indonesia' || subjKey === 'bahasa indonesia') {
       pool = numGrade === 4 ? this.bindoGrade4Templates : this.bindoTemplates;
-    } else if (subjKey === "bahasa_inggris" || subjKey === "bahasa inggris") {
+    } else if (subjKey === 'bahasa_inggris' || subjKey === 'bahasa inggris') {
       pool = numGrade === 4 ? this.bingGrade4Templates : this.bingTemplates;
+    } else if (subjKey === 'pendidikan_pancasila' || subjKey === 'pendidikan pancasila' || subjKey === 'ppkn') {
+      pool = numGrade === 4 ? this.pancasilaGrade4Templates : this.pancasilaTemplates;
+    } else if (subjKey === 'seni_rupa' || subjKey === 'seni rupa') {
+      pool = numGrade === 4 ? this.senirupaGrade4Templates : this.senirupaTemplates;
     }
 
     let candidates = pool;
-    if (topic && topic !== "semua") {
+    if (topic && topic !== 'semua') {
       const matched = pool.filter((t) => t.topic.toLowerCase() === topic.toLowerCase());
       if (matched.length > 0) candidates = matched;
     }
 
     const chosenTemplate = this.pickRandom(candidates);
-    const cleanDiff = ["mudah", "sedang", "sulit"].includes(difficulty) ? difficulty : "sedang";
+    const cleanDiff = ['mudah', 'sedang', 'sulit'].includes(difficulty) ? difficulty : 'sedang';
     const rawResult = chosenTemplate.generate(cleanDiff);
 
     const questionObj = {
@@ -1559,8 +1958,8 @@ export class HybridQuestionEngine {
       options: rawResult.options,
       correctAnswer: rawResult.correctAnswer,
       explanation: rawResult.explanation,
-      sourceType: "template_generator",
-      generatorParams: rawResult.params || {},
+      sourceType: 'template_generator',
+      generatorParams: rawResult.params || {}
     };
 
     const validation = this.validateQuestionObject(questionObj);
@@ -1586,12 +1985,17 @@ export class HybridQuestionEngine {
 
     const subj = String(q.subject || "").toLowerCase();
     const validSubjects = [
-      "matematika",
-      "ipas",
-      "bahasa indonesia",
-      "bahasa_indonesia",
-      "bahasa inggris",
-      "bahasa_inggris",
+      'matematika',
+      'ipas',
+      'bahasa indonesia',
+      'bahasa_indonesia',
+      'bahasa inggris',
+      'bahasa_inggris',
+      'pendidikan pancasila',
+      'pendidikan_pancasila',
+      'ppkn',
+      'seni rupa',
+      'seni_rupa'
     ];
     if (!validSubjects.includes(subj)) {
       errors.push(`Mata pelajaran tidak didukung: ${q.subject}`);
@@ -1672,6 +2076,8 @@ export class HybridQuestionEngine {
       ...(questionBanks.ipas || []),
       ...(questionBanks.bahasa_indonesia || []),
       ...(questionBanks.bahasa_inggris || []),
+      ...(questionBanks.pendidikan_pancasila || []),
+      ...(questionBanks.seni_rupa || [])
     ];
     let bankInvalidCount = 0;
     const seenBankIds = new Set();
@@ -1714,14 +2120,12 @@ export class HybridQuestionEngine {
       );
     };
 
-    testTemplatePool("Matematika", "matematika", this.mathTemplates);
-    testTemplatePool("IPAS", "ipas", this.ipasTemplates);
-    testTemplatePool(
-      "Bahasa Indonesia",
-      "bahasa_indonesia",
-      this.bindoTemplates,
-    );
-    testTemplatePool("Bahasa Inggris", "bahasa_inggris", this.bingTemplates);
+    testTemplatePool('Matematika', 'matematika', this.mathTemplates);
+    testTemplatePool('IPAS', 'ipas', this.ipasTemplates);
+    testTemplatePool('Bahasa Indonesia', 'bahasa_indonesia', this.bindoTemplates);
+    testTemplatePool('Bahasa Inggris', 'bahasa_inggris', this.bingTemplates);
+    testTemplatePool('Pendidikan Pancasila', 'pendidikan_pancasila', this.pancasilaTemplates);
+    testTemplatePool('Seni Rupa', 'seni_rupa', this.senirupaTemplates);
 
     return report;
   }
