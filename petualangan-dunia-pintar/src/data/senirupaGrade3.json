@@ -1,0 +1,201 @@
+[
+  {
+    "id": "SR3_001",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Unsur Seni Rupa: Titik, Garis, Bentuk, Warna, Tekstur",
+    "subtopic": "Kesan Visual Berbagai Jenis Garis",
+    "difficulty": "mudah",
+    "question": "Ketika Siti ingin menggambar ombak air laut yang bergerak lembut dan berayun-ayun di pantai, jenis garis yang paling tepat digunakan oleh Siti adalah ...",
+    "options": [
+      "Garis lengkung bergelombang",
+      "Garis lurus tegak kaku",
+      "Garis patah-patah tajam (zig-zag)",
+      "Garis titik-titik putus"
+    ],
+    "correctAnswer": "Garis lengkung bergelombang",
+    "explanation": "Garis lengkung dan bergelombang memberikan kesan visual yang luwes, lembut, dan mengalir seperti gerakan ombak air atau awan."
+  },
+  {
+    "id": "SR3_002",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Unsur Seni Rupa: Titik, Garis, Bentuk, Warna, Tekstur",
+    "subtopic": "Mengenal Tekstur Kasar dan Halus",
+    "difficulty": "mudah",
+    "question": "Budi meraba permukaan kulit buah salak dan permukaan kaca jendela. Saat diraba dengan ujung jari, kulit salak terasa berlekuk tajam sedangkan kaca terasa licin rata. Sifat permukaan benda yang dapat dirasakan melalui indra peraba dan penglihatan ini dalam seni rupa disebut ...",
+    "options": ["Tekstur", "Warna", "Titik", "Garis"],
+    "correctAnswer": "Tekstur",
+    "explanation": "Tekstur adalah sifat atau nilai raba suatu permukaan benda, seperti kasar, halus, licin, berbulu, atau bergelombang."
+  },
+  {
+    "id": "SR3_003",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Warna Primer dan Pencampuran Warna",
+    "subtopic": "Mengenal Tiga Warna Pokok (Primer)",
+    "difficulty": "mudah",
+    "question": "Dalam seni rupa, terdapat tiga warna dasar (warna primer) yang tidak dapat dibuat dari campuran warna lain, tetapi justru menjadi induk untuk menghasilkan warna-warna baru. Ketiga warna primer tersebut adalah ...",
+    "options": [
+      "Merah, Kuning, dan Biru",
+      "Hijau, Ungu, dan Oranye",
+      "Hitam, Putih, dan Abu-abu",
+      "Merah Muda, Cokelat, dan Emas"
+    ],
+    "correctAnswer": "Merah, Kuning, dan Biru",
+    "explanation": "Merah, Kuning, dan Biru adalah warna primer (warna pokok). Hijau, Oranye, dan Ungu adalah hasil pencampuran warna primer."
+  },
+  {
+    "id": "SR3_004",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Warna Primer dan Pencampuran Warna",
+    "subtopic": "Praktik Mencampur Warna Dasar",
+    "difficulty": "sedang",
+    "question": "Rina sedang melukis pohon mangga dengan cat air, tetapi cat warna HIJAU miliknya habis. Di paletnya masih tersedia cat warna Merah, Kuning, dan Biru. Dua warna apa yang harus dicampurkan Rina dengan takaran seimbang agar menghasilkan warna hijau?",
+    "options": [
+      "Kuning dicampur dengan Biru",
+      "Merah dicampur dengan Kuning",
+      "Merah dicampur dengan Biru",
+      "Merah dicampur dengan Putih"
+    ],
+    "correctAnswer": "Kuning dicampur dengan Biru",
+    "explanation": "Campuran warna Kuning dan Biru menghasilkan warna Hijau. Adapun Merah + Kuning = Oranye, dan Merah + Biru = Ungu."
+  },
+  {
+    "id": "SR3_005",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Bentuk Geometris dan Nongeometris",
+    "subtopic": "Membedakan Bentuk Terukur dan Bentuk Organik Alam",
+    "difficulty": "sedang",
+    "question": "Perhatikan objek-objek yang digambar Edo berikut: (1) Pintu rumah berbentuk persegi panjang, (2) Roda sepeda berbentuk lingkaran, (3) Awan mendung yang lekukannya bebas, (4) Batu kali yang bentuknya tidak beraturan. Manakah yang termasuk bentuk NONGEOMETRIS (organik)?",
+    "options": [
+      "Objek (3) dan (4)",
+      "Objek (1) dan (2)",
+      "Objek (1) dan (3)",
+      "Objek (2) dan (4)"
+    ],
+    "correctAnswer": "Objek (3) dan (4)",
+    "explanation": "Bentuk nongeometris (organik) adalah bentuk bebas yang meniru unsur alam dan tidak memiliki ukuran sudut/sisi baku, seperti awan, batu kali, dan dedaunan."
+  },
+  {
+    "id": "SR3_006",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Karya Dua Dimensi dan Tiga Dimensi",
+    "subtopic": "Ciri Karya Dua Dimensi vs Tiga Dimensi",
+    "difficulty": "sedang",
+    "question": "Lani memajang dua karya seni di kelas: sebuah lukisan pemandangan di atas kertas gambar, dan sebuah celengan berbentuk ayam yang dibuat dari tanah liat. Perbedaan utama kedua karya tersebut adalah ...",
+    "options": [
+      "Lukisan hanya memiliki panjang dan lebar (2D), sedangkan celengan tanah liat memiliki ruang/volume dan bisa dilihat dari segala arah (3D)",
+      "Lukisan termasuk karya tiga dimensi, sedangkan celengan tanah liat termasuk karya dua dimensi",
+      "Celengan tanah liat hanya bisa dilihat dari arah depan saja seperti kertas gambar",
+      "Lukisan kertas memiliki isi rongga di dalamnya untuk menyimpan uang koin"
+    ],
+    "correctAnswer": "Lukisan hanya memiliki panjang dan lebar (2D), sedangkan celengan tanah liat memiliki ruang/volume dan bisa dilihat dari segala arah (3D)",
+    "explanation": "Karya 2 dimensi hanya memiliki ukuran panjang dan lebar (dilihat dari depan), sedangkan karya 3 dimensi memiliki panjang, lebar, tinggi/volume, serta dapat diamati dari berbagai sisi."
+  },
+  {
+    "id": "SR3_007",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Pola dan Motif Sederhana",
+    "subtopic": "Irama Pengulangan Bentuk pada Bingkai Hias",
+    "difficulty": "sedang",
+    "question": "Adi menghias tepi kartu ucapan dengan susunan bentuk berulang secara teratur: Segitiga Merah - Lingkaran Kuning - Segitiga Merah - Lingkaran Kuning - ... Bentuk dan warna apakah yang tepat digambar Adi selanjutnya agar polanya tetap konsisten?",
+    "options": [
+      "Segitiga Merah lalu Lingkaran Kuning",
+      "Persegi Biru lalu Segitiga Hijau",
+      "Lingkaran Kuning lalu Lingkaran Kuning",
+      "Segitiga Biru lalu Persegi Merah"
+    ],
+    "correctAnswer": "Segitiga Merah lalu Lingkaran Kuning",
+    "explanation": "Pola hias selang-seling (A - B - A - B) menjaga keindahan irama visual dengan mengulang urutan Segitiga Merah kemudian Lingkaran Kuning."
+  },
+  {
+    "id": "SR3_008",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Menggambar Objek di Lingkungan Sekitar",
+    "subtopic": "Kesan Jauh dan Dekat (Perspektif Sederhana)",
+    "difficulty": "sulit",
+    "question": "Saat menggambar pemandangan jalan desa yang memanjang ke arah gunung di kejauhan, pohon yang letaknya sangat dekat dengan kita digambar berukuran besar, sedangkan pohon yang berada jauh di kaki gunung digambar ...",
+    "options": [
+      "Berukuran lebih kecil agar terlihat berada jauh di belakang",
+      "Berukuran dua kali lebih besar daripada pohon di depan",
+      "Terbalik dengan akar di bagian atas langit",
+      "Melebihi ukuran kertas gambar"
+    ],
+    "correctAnswer": "Berukuran lebih kecil agar terlihat berada jauh di belakang",
+    "explanation": "Dalam pengamatan visual, benda yang letaknya semakin jauh dari mata pengamat akan tampak semakin kecil dibandingkan benda yang dekat."
+  },
+  {
+    "id": "SR3_009",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Kolase dan Karya Bahan Sederhana",
+    "subtopic": "Langkah Membuat Karya Kolase Daun Kering",
+    "difficulty": "sulit",
+    "question": "Dayu ingin membuat karya kolase berbentuk burung merak menggunakan daun-daun kering yang jatuh di halaman. Urutan langkah kerja yang paling rapi dan tepat dilakukan Dayu adalah ...",
+    "options": [
+      "Membuat sketsa gambar burung di kertas -> menyiapkan dan menggunting daun kering -> mengoleskan lem -> menempelkan daun dengan rapi pada sketsa",
+      "Menumpahkan seluruh lem ke kertas kosong -> menabur daun basah secara acak -> baru menggambar sketsa di atas daun",
+      "Mencuci kertas gambar dengan air -> menempelkan daun tanpa lem -> menjemurnya di tempat gelap",
+      "Menggunting kertas gambar menjadi potongan kecil -> membuang daun kering -> mewarnai meja dengan krayon"
+    ],
+    "correctAnswer": "Membuat sketsa gambar burung di kertas -> menyiapkan dan menggunting daun kering -> mengoleskan lem -> menempelkan daun dengan rapi pada sketsa",
+    "explanation": "Pembuatan kolase dimulai dengan pola/sketsa dasar sebagai panduan, menyiapkan bahan tempel (daun kering), lalu merekatkannya dengan lem secara rapi."
+  },
+  {
+    "id": "SR3_010",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Alat dan Bahan Berkarya Seni",
+    "subtopic": "Karakteristik Alat Mewarnai Kering vs Basah",
+    "difficulty": "mudah",
+    "question": "Doni ingin mewarnai gambarnya menggunakan teknik basah yang membutuhkan kuas, palet, dan campuran sedikit air agar warnanya menyebar tipis dan transparan. Alat pewarna yang harus dipilih Doni adalah ...",
+    "options": [
+      "Cat air (Watercolor)",
+      "Pensil warna kayu",
+      "Krayon minyak (Oil pastel)",
+      "Arang gambar"
+    ],
+    "correctAnswer": "Cat air (Watercolor)",
+    "explanation": "Cat air adalah media pewarna basah yang diencerkan dengan air dan disapukan menggunakan kuas, berbeda dengan pensil warna dan krayon yang merupakan media kering."
+  },
+  {
+    "id": "SR3_011",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Alat dan Bahan Berkarya Seni",
+    "subtopic": "Keamanan dan Kerapian Menggunakan Alat Seni",
+    "difficulty": "sulit",
+    "question": "Setelah selesai membuat karya kerajinan menggunakan gunting, lem kertas, dan potongan karton warna, tindakan bertanggung jawab yang harus dilakukan siswa adalah ...",
+    "options": [
+      "Menutup kembali botol lem agar tidak kering, menyimpan gunting di tempat aman, dan membuang sisa potongan kertas ke tempat sampah",
+      "Meninggalkan gunting terbuka di lantai kelas dan membiarkan lem tumpah di meja",
+      "Melempar sisa potongan karton ke meja teman sebelah",
+      "Mencuci gunting besi di dalam ember cat lalu menyimpannya di tas dalam keadaan basah"
+    ],
+    "correctAnswer": "Menutup kembali botol lem agar tidak kering, menyimpan gunting di tempat aman, dan membuang sisa potongan kertas ke tempat sampah",
+    "explanation": "Merawat alat berkarya seni dan menjaga kebersihan tempat kerja adalah bagian penting dari sikap disiplin dan keselamatan kerja."
+  },
+  {
+    "id": "SR3_012",
+    "grade": 3,
+    "subject": "Seni Rupa",
+    "topic": "Mengamati dan Mengapresiasi Karya Seni",
+    "subtopic": "Cara Menyampaikan Apresiasi Karya Teman",
+    "difficulty": "sulit",
+    "question": "Saat pameran kelas, Bima melihat lukisan kapal laut karya Tono. Warna lautnya sangat cerah dan rapi, meskipun bentuk layarnya sedikit miring. Kalimat apresiasi yang santun dan membangun dari Bima adalah ...",
+    "options": [
+      "'Wah, perpaduan warna biru lautmu sangat cerah dan rapi, Tono! Kalau garis layarnya sedikit diluruskan pasti makin gagah.'",
+      "'Lukisanmu jelek sekali karena layar kapalnya miring seperti mau tenggelam!'",
+      "'Gambar seperti ini saja adikku yang masih TK juga bisa membuatnya.'",
+      "Diam saja sambil mencoret lukisan Tono menggunakan pensil"
+    ],
+    "correctAnswer": "'Wah, perpaduan warna biru lautmu sangat cerah dan rapi, Tono! Kalau garis layarnya sedikit diluruskan pasti makin gagah.'",
+    "explanation": "Mengapresiasi karya seni berarti menghargai kelebihan karya teman terlebih dahulu dan memberikan saran perbaikan dengan bahasa yang sopan."
+  }
+]

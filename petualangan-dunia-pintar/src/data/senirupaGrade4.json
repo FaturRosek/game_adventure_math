@@ -1,0 +1,206 @@
+[
+  {
+    "id": "SR4_001",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Unsur dan Prinsip Dasar Seni Rupa",
+    "subtopic": "Prinsip Ritme (Irama) dalam Karya Seni",
+    "difficulty": "sedang",
+    "question": "Seorang pengrajin batik menyusun motif bunga besar dan bunga kecil secara bergantian dan berulang di sepanjang kain sehingga tampak seolah-olah bergerak teratur. Penyusunan unsur rupa secara berulang dan teratur ini menerapkan prinsip ...",
+    "options": [
+      "Irama (Ritme)",
+      "Tekstur semu",
+      "Bahan buatan",
+      "Ukuran tunggal"
+    ],
+    "correctAnswer": "Irama (Ritme)",
+    "explanation": "Irama atau ritme dalam seni rupa tercipta dari pengulangan satu atau lebih unsur rupa (bentuk, garis, atau warna) secara teratur dan bervariasi."
+  },
+  {
+    "id": "SR4_002",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Garis, Bentuk, Ruang, Tekstur, dan Warna",
+    "subtopic": "Perbedaan Tekstur Nyata dan Tekstur Semu",
+    "difficulty": "sedang",
+    "question": "Rاني mengamati sebuah lukisan batang pohon kayu di atas kertas halus. Ketika dilihat dengan mata, batang pohon pada lukisan itu tampak sangat kasar dan berserat, tetapi ketika diraba dengan tangan permukaannya terasa rata dan halus. Jenis tekstur pada lukisan tersebut disebut ...",
+    "options": [
+      "Tekstur semu (maya)",
+      "Tekstur nyata (asli)",
+      "Ruang tiga dimensi",
+      "Warna komplementer"
+    ],
+    "correctAnswer": "Tekstur semu (maya)",
+    "explanation": "Tekstur semu adalah kesan permukaan benda yang terlihat kasar/bertekstur oleh mata karena teknik gambar/gelap-terang, tetapi saat diraba terasa halus."
+  },
+  {
+    "id": "SR4_003",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Warna Primer, Sekunder, dan Pencampurannya",
+    "subtopic": "Kesan Warna Hangat dan Warna Dingin",
+    "difficulty": "mudah",
+    "question": "Dalam melukis suasana matahari terbenam atau api unggun yang memberikan kesan semangat dan hangat, kelompok warna yang paling tepat dipilih siswa adalah ...",
+    "options": [
+      "Merah, Oranye (Jingga), dan Kuning",
+      "Biru tua, Hijau lumut, dan Ungu kebiruan",
+      "Abu-abu pucat dan Putih tulang",
+      "Hijau daun dan Biru laut"
+    ],
+    "correctAnswer": "Merah, Oranye (Jingga), dan Kuning",
+    "explanation": "Merah, Jingga (Oranye), dan Kuning termasuk keluarga warna hangat (warm colors), sedangkan Biru dan Hijau termasuk warna dingin/sejuk (cool colors)."
+  },
+  {
+    "id": "SR4_004",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Komposisi dan Keseimbangan",
+    "subtopic": "Keseimbangan Simetris vs Asimetris",
+    "difficulty": "sedang",
+    "question": "Dika menggambar sebuah kupu-kupu tepat di tengah kertas. Bentuk, ukuran, dan motif sayap sebelah kiri dibuat sama persis seperti cerminan dengan sayap sebelah kanan. Jenis keseimbangan komposisi yang diterapkan Dika adalah ...",
+    "options": [
+      "Keseimbangan simetris",
+      "Keseimbangan asimetris",
+      "Komposisi berat sebelah",
+      "Proporsi tidak beraturan"
+    ],
+    "correctAnswer": "Keseimbangan simetris",
+    "explanation": "Keseimbangan simetris terjadi apabila bagian kiri dan bagian kanan bidang gambar memiliki bentuk, ukuran, dan susunan yang sama persis bagaikan cermin."
+  },
+  {
+    "id": "SR4_005",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Proporsi dan Pola",
+    "subtopic": "Pengertian Proporsi dalam Menggambar Bentuk",
+    "difficulty": "sedang",
+    "question": "Ketika menggambar cangkir teh di samping teko air pada satu meja, ukuran cangkir digambar lebih kecil daripada ukuran teko agar terlihat wajar seperti aslinya. Perbandingan ukuran yang serasi dan seimbang antarbagian benda ini disebut ...",
+    "options": [
+      "Proporsi",
+      "Mozaik",
+      "Montase",
+      "Tekstur"
+    ],
+    "correctAnswer": "Proporsi",
+    "explanation": "Proporsi adalah prinsip seni rupa yang mengatur kesebandingan ukuran yang ideal dan wajar antara satu bagian dengan bagian lainnya."
+  },
+  {
+    "id": "SR4_006",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Karya Dua Dimensi dan Tiga Dimensi",
+    "subtopic": "Karya Seni Rupa Terapan Tiga Dimensi",
+    "difficulty": "mudah",
+    "question": "Di antara karya seni rupa berikut, manakah yang termasuk karya seni rupa TIGA DIMENSI yang sekaligus memiliki fungsi pakai dalam kehidupan sehari-hari (seni rupa terapan)?",
+    "options": [
+      "Guci keramik tempat air dan keranjang anyaman bambu",
+      "Lukisan dinding kanvas dan foto pemandangan",
+      "Poster kebersihan sekolah dan stiker buku",
+      "Gambar sketsa wajah di buku tulis"
+    ],
+    "correctAnswer": "Guci keramik tempat air dan keranjang anyaman bambu",
+    "explanation": "Guci keramik dan keranjang anyaman memiliki ruang/volume (3D) serta dapat digunakan secara langsung untuk menyimpan barang (seni terapan)."
+  },
+  {
+    "id": "SR4_007",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Teknik Menggambar dan Mewarnai",
+    "subtopic": "Teknik Arsir, Gradasi, dan Gelap Terang",
+    "difficulty": "sulit",
+    "question": "Siti menggambar sebuah buah apel yang disinari cahaya lampu dari arah kanan atas. Agar gambar apel tersebut tampak bulat bervolume (tidak datar), bagaimana Siti harus mengatur pewarnaan atau arsirannya?",
+    "options": [
+      "Bagian kanan atas yang terkena cahaya diwarnai lebih terang, lalu bergradasi semakin gelap pada sisi kiri bawah yang membelakangi cahaya",
+      "Seluruh bagian apel diwarnai hitam pekat tanpa menyisakan warna terang sedikit pun",
+      "Bagian yang terkena cahaya lampu justru diarsir paling gelap dan tebal",
+      "Hanya menggambar garis tepi lingkaran tanpa memberi warna atau arsiran"
+    ],
+    "correctAnswer": "Bagian kanan atas yang terkena cahaya diwarnai lebih terang, lalu bergradasi semakin gelap pada sisi kiri bawah yang membelakangi cahaya",
+    "explanation": "Prinsip gelap-terang dan gradasi warna membuat objek 2 dimensi tampak memiliki volume 3 dimensi: sisi yang terkena cahaya tampak terang dan sisi sebaliknya tampak berbayang gelap."
+  },
+  {
+    "id": "SR4_008",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Teknik Kolase, Montase, dan Mozaik",
+    "subtopic": "Membedakan Teknik Kolase, Montase, dan Mozaik",
+    "difficulty": "sulit",
+    "question": "Perhatikan tiga cara berkarya berikut: (1) Beni menempelkan kepingan-kepingan kecil kulit telur dan potongan keramik sejenis untuk mengisi pola gambar ikan. (2) Lani menggunting gambar rumah dari majalah lama dan gambar pohon dari koran, lalu menempelkannya di satu kertas menjadi suasana desa baru. Manakah pernyataan yang benar?",
+    "options": [
+      "Karya Beni adalah Mozaik, sedangkan karya Lani adalah Montase",
+      "Karya Beni adalah Montase, sedangkan karya Lani adalah Lukisan",
+      "Kedua karya tersebut dibuat dengan teknik pahat kayu",
+      "Karya Beni adalah Patung, sedangkan karya Lani adalah Mozaik"
+    ],
+    "correctAnswer": "Karya Beni adalah Mozaik, sedangkan karya Lani adalah Montase",
+    "explanation": "Mozaik menyusun kepingan kecil bahan sejenis (kaca, keramik, cangkang telur, kertas kecil) untuk membentuk gambar, sedangkan Montase menggabungkan potongan gambar-gambar jadi dari berbagai sumber (majalah/koran) menjadi komposisi cerita baru."
+  },
+  {
+    "id": "SR4_009",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Motif Hias dan Ragam Hias",
+    "subtopic": "Mengenal Ragam Hias Flora, Fauna, dan Geometris",
+    "difficulty": "mudah",
+    "question": "Kain batik tradisional sering dihias dengan gambar sulur-sulur tangkai, dedaunan, dan kuncup bunga yang digayakan menjadi indah. Motif hias yang mengambil inspirasi dari tumbuh-tumbuhan tersebut dinamakan ragam hias ...",
+    "options": [
+      "Ragam hias Flora",
+      "Ragam hias Fauna",
+      "Ragam hias Figuratif (Manusia)",
+      "Ragam hias Bangun Ruang"
+    ],
+    "correctAnswer": "Ragam hias Flora",
+    "explanation": "Ragam hias flora menggunakan bentuk tumbuhan (bunga, daun, sulur), ragam hias fauna menggunakan bentuk hewan, dan figuratif menggunakan bentuk manusia."
+  },
+  {
+    "id": "SR4_010",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Penggunaan Bahan Alam dan Bahan Buatan",
+    "subtopic": "Klasifikasi dan Daur Ulang Bahan",
+    "difficulty": "mudah",
+    "question": "Siswa kelas 4 diminta membawa bahan untuk membuat kerajinan tangan. Edo membawa tanah liat dan pelepah pisang kering, sedangkan Adi membawa botol plastik bekas dan sedotan warna-warni. Perbedaan jenis bahan yang dibawa keduanya adalah ...",
+    "options": [
+      "Edo membawa bahan alam, sedangkan Adi membawa bahan buatan (daur ulang)",
+      "Edo membawa bahan buatan pabrik, sedangkan Adi membawa bahan alam",
+      "Kedua bahan tersebut sama-sama tidak dapat dibentuk menjadi kerajinan",
+      "Tanah liat dan pelepah pisang termasuk limbah plastik buatan"
+    ],
+    "correctAnswer": "Edo membawa bahan alam, sedangkan Adi membawa bahan buatan (daur ulang)",
+    "explanation": "Tanah liat, daun, ranting, dan pelepah pisang berasal langsung dari alam (bahan alam), sedangkan plastik dan sedotan merupakan bahan olahan pabrik (bahan buatan)."
+  },
+  {
+    "id": "SR4_011",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Penggunaan Bahan Alam dan Bahan Buatan",
+    "subtopic": "Memilih Perekat dan Teknik Konstruksi yang Tepat",
+    "difficulty": "sulit",
+    "question": "Kelompok Rina ingin merakit miniatur mobil-mobilan dari kardus tebal dan tutup botol plastik. Jika mereka hanya menggunakan lem kertas cair yang tipis, roda tutup botol mudah lepas saat dijalankan. Solusi teknis yang paling tepat dan aman dilakukan kelompok Rina adalah ...",
+    "options": [
+      "Menggunakan tusuk sate kayu sebagai poros roda yang menembus kardus dan merekatkan sambungannya dengan lem tembak/lem kayu bersama pengawasan guru",
+      "Merendam seluruh kardus di dalam ember berisi air agar tutup botol menempel sendiri",
+      "Mengganti kardus dengan tisu basah supaya lebih ringan",
+      "Membiarkan roda tidak menempel dan membatalkan pembuatan karya"
+    ],
+    "correctAnswer": "Menggunakan tusuk sate kayu sebagai poros roda yang menembus kardus dan merekatkan sambungannya dengan lem tembak/lem kayu bersama pengawasan guru",
+    "explanation": "Untuk konstruksi benda 3 dimensi berbahan kardus dan plastik, penggunaan poros tusuk sate membuat roda dapat berputar dan perekat kuat menjaga keutuhan karya."
+  },
+  {
+    "id": "SR4_012",
+    "grade": 4,
+    "subject": "Seni Rupa",
+    "topic": "Mengamati, Menjelaskan, dan Mengapresiasi Karya Seni",
+    "subtopic": "Tahapan Apresiasi Karya Seni Rupa",
+    "difficulty": "sulit",
+    "question": "Ketika mengunjungi pameran seni sekolah, seorang siswa mengamati lukisan dengan saksama, membaca judul dan bahan yang digunakan, lalu menceritakan pesan keindahan lukisan tersebut dengan sopan kepada teman-temannya. Sikap yang ditunjukkan siswa tersebut adalah ...",
+    "options": [
+      "Apresiasi seni yang baik melalui pengamatan, pemahaman makna, dan penghargaan terhadap karya",
+      "Sikap meniru karya orang lain untuk diakui sebagai milik sendiri",
+      "Tindakan merusak karya seni karena terlalu lama mengamati",
+      "Sikap acuh tak acuh terhadap hasil kerja keras perupa"
+    ],
+    "correctAnswer": "Apresiasi seni yang baik melalui pengamatan, pemahaman makna, dan penghargaan terhadap karya",
+    "explanation": "Apresiasi seni rupa mencakup kegiatan mengamati karya secara teliti, memahami teknik serta pesan yang disampaikan, dan menghargai karya tersebut."
+  }
+]
