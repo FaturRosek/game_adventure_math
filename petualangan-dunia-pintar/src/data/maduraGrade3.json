@@ -1,0 +1,186 @@
+[
+  {
+    "id": "MDR3_001",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Kosakata Dasar (Oca' Dasar)",
+    "subtopic": "Anggota Tubuh dan Benda Sekitar",
+    "difficulty": "mudah",
+    "question": "Dalam Bahasa Madura halus (Engghi-Bhunten) ketika berbicara tentang orang tua atau guru, kata yang tepat untuk menyebut 'Mata' adalah ..., sedangkan dalam bahasa sehari-hari (Enja'-Iya) disebut 'Mata'.",
+    "options": ["Soca", "Kopeng", "Cethak", "Tanang"],
+    "correctAnswer": "Soca",
+    "explanation": "Dalam Bahasa Madura halus (Engghi-Bhunten), 'mata' disebut 'soca', 'telinga' disebut 'karna' (Enja'-Iya: kopeng), dan 'kepala' disebut 'mostaka' (Enja'-Iya: cethak)."
+  },
+  {
+    "id": "MDR3_002",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Kosakata Dasar (Oca' Dasar)",
+    "subtopic": "Nama Hewan (Nyama Keban)",
+    "difficulty": "mudah",
+    "question": "Perhatikan kalimat Bahasa Madura berikut: 'Sapena Pa' Tani ngakan rebbha e tegghal' (Sapinya Pak Tani makan rumput di ladang). Arti kata 'rebbha' dalam Bahasa Indonesia adalah ...",
+    "options": ["Rumput", "Jagung", "Air", "Padi"],
+    "correctAnswer": "Rumput",
+    "explanation": "'Sape' = sapi, 'ngakan' = makan, 'rebbha' = rumput, dan 'tegghal' = tegalan/ladang."
+  },
+  {
+    "id": "MDR3_003",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Kosakata Dasar (Oca' Dasar)",
+    "subtopic": "Angka dan Bilangan Bahasa Madura",
+    "difficulty": "mudah",
+    "question": "Saat menghitung buah mangga dalam Bahasa Madura: 'Settong, dhuwa', tello', empa', lema', ennem, ...'. Bilangan Bahasa Madura setelah 'ennem' (enam) adalah ...",
+    "options": ["Petto' (Tujuh)", "Ballu' (Delapan)", "Sanga' (Sembilan)", "Sapolo (Sepuluh)"],
+    "correctAnswer": "Petto' (Tujuh)",
+    "explanation": "Urutan bilangan Bahasa Madura 1–10: Settong (1), Dhuwa' (2), Tello' (3), Empa' (4), Lema' (5), Ennem (6), Petto' (7), Ballu' (8), Sanga' (9), Sapolo (10)."
+  },
+  {
+    "id": "MDR3_004",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Ungkapan Sehari-hari",
+    "subtopic": "Ucapan Terima Kasih yang Sopan",
+    "difficulty": "mudah",
+    "question": "Ketika Ibu Guru memberikan buku tulis kepada Badrus, ungkapan terima kasih yang paling sopan dalam Bahasa Madura halus (Engghi-Bhunten) yang harus diucapkan Badrus adalah ...",
+    "options": [
+      "Mator sakalangkong",
+      " Nyoon sapora",
+      "Kaula badhi entar",
+      " Enja' ta' endha'"
+    ],
+    "correctAnswer": "Mator sakalangkong",
+    "explanation": "'Mator sakalangkong' artinya 'Terima kasih banyak' dalam tingkatan bahasa halus yang sopan kepada guru dan orang tua."
+  },
+  {
+    "id": "MDR3_005",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Ungkapan Sehari-hari",
+    "subtopic": "Permintaan Maaf dan Meminta Izin",
+    "difficulty": "sedang",
+    "question": "Siti tidak sengaja menjatuhkan pensil milik Ibu Guru. Ungkapan permintaan maaf yang santun dalam Bahasa Madura halus yang harus diucapkan Siti adalah ...",
+    "options": [
+      "Nyoon sapora, Bhu Guru",
+      "Mator sakalangkong, Bhu Guru",
+      "Badha ponapa, Bhu Guru",
+      "Kemma bukuna, Bhu Guru"
+    ],
+    "correctAnswer": "Nyoon sapora, Bhu Guru",
+    "explanation": "'Nyoon sapora' (atau 'Nyo'on sapora') artinya 'Mohon maaf' dalam Bahasa Madura halus."
+  },
+  {
+    "id": "MDR3_006",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Tingkatan Bahasa Madura (Undhak-Usuk Bhasa)",
+    "subtopic": "Membedakan Enja'-Iya, Engghi-Enten, dan Engghi-Bhunten",
+    "difficulty": "sedang",
+    "question": "Dalam Bahasa Madura terdapat tiga tingkatan bahasa utama. Ketika seorang anak berbicara kepada orang tua (Eppa' dan Ebhu) atau kepada Guru, tingkatan bahasa yang wajib digunakan agar sopan adalah ...",
+    "options": [
+      "Bhasa Engghi-Bhunten (Tingkatan paling halus)",
+      "Bhasa Enja'-Iya (Tingkatan kasar/akrab sesama teman sebaya)",
+      "Bhasa campuran tanpa aturan",
+      "Bhasa teriakan keras"
+    ],
+    "correctAnswer": "Bhasa Engghi-Bhunten (Tingkatan paling halus)",
+    "explanation": "Bhasa Engghi-Bhunten adalah tingkatan paling halus dan hormat yang digunakan anak kepada orang tua, guru, dan orang yang lebih tua."
+  },
+  {
+    "id": "MDR3_007",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Tingkatan Bahasa Madura (Undhak-Usuk Bhasa)",
+    "subtopic": "Pilihan Kata Kerja Sesuai Lawan Bicara",
+    "difficulty": "sulit",
+    "question": "Perhatikan kalimat berikut: 'Eppa' gi' buru ... dhari kantor, terros ... nase' e meja.' (Ayah baru saja pulang dari kantor, lalu makan nasi di meja). Pasangan kata halus (Engghi-Bhunten) yang tepat untuk mengisi titik-titik tersebut adalah ...",
+    "options": [
+      "rabu — adha'ar",
+      "dhateng — ngakan",
+      "mole — ngakan",
+      "rabu — tedhung"
+    ],
+    "correctAnswer": "rabu — adha'ar",
+    "explanation": "Untuk orang tua (Eppa'/Ayah), kata 'datang/pulang' menggunakan 'rabu' (bukan dhateng/mole) dan kata 'makan' menggunakan 'adha'ar' (bukan ngakan)."
+  },
+  {
+    "id": "MDR3_008",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Tingkatan Bahasa Madura (Undhak-Usuk Bhasa)",
+    "subtopic": "Kata Ganti Saya dan Kamu dalam Engghi-Bhunten",
+    "difficulty": "sedang",
+    "question": "Saat berbicara sopan kepada guru menggunakan bahasa Engghi-Bhunten, kata untuk menyebut 'Saya' adalah 'Kaula' (atau Abdina), sedangkan kata sopan untuk menyebut 'Anda/Bapak/Ibu' adalah ...",
+    "options": ["Panjhennengngan", "Ba'na", "Sengko'", "Kake"],
+    "correctAnswer": "Panjhennengngan",
+    "explanation": "'Sengko'' dan 'Ba'na' adalah bahasa Enja'-Iya (untuk teman sebaya). Dalam Engghi-Bhunten, 'saya' adalah 'Kaula/Abdina' dan 'Anda' adalah 'Panjhennengngan' (atau Ajunan)."
+  },
+  {
+    "id": "MDR3_009",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Membaca dan Memahami",
+    "subtopic": "Memahami Kalimat Kegiatan Sehari-hari",
+    "difficulty": "sedang",
+    "question": "Bacalah kalimat Bahasa Madura berikut! 'Sabban lagghu sabellunna mangkat ka sakola'an, Hasanabiyyah nolongi ebhuna nyapowe taneyan.' Apa yang dilakukan Hasanabiyyah setiap pagi sebelum berangkat sekolah?",
+    "options": [
+      "Membantu ibunya menyapu halaman rumah (taneyan)",
+      "Bermain bersama teman di lapangan desa",
+      "Membeli jajan di pasar tradisional",
+      "Tidur kembali di dalam kamar"
+    ],
+    "correctAnswer": "Membantu ibunya menyapu halaman rumah (taneyan)",
+    "explanation": "'Sabban lagghu' = setiap pagi, 'nolongi ebhuna' = membantu ibunya, 'nyapowe taneyan' = menyapu halaman."
+  },
+  {
+    "id": "MDR3_010",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Membaca dan Memahami",
+    "subtopic": "Melengkapi Percakapan Pendek di Sekolah",
+    "difficulty": "sulit",
+    "question": "Perhatikan percakapan antara Guru dan Murid berikut!\nPak Guru: 'Ali, aponapa ba'ari' ma' ta' maso' sakola?' (Ali, mengapa kemarin tidak masuk sekolah?)\nAli: '..., Pa' Guru. Ba'ari' kaula songkan panas.' (..., Pak Guru. Kemarin saya sakit demam).\nKata pembuka yang sopan untuk melengkapi jawaban Ali adalah ...",
+    "options": [
+      "Engghi, nyoon sapora",
+      "Enja', sengko' males",
+      "Ta' tao, Pa' Guru",
+      "Mayu amaen"
+    ],
+    "correctAnswer": "Engghi, nyoon sapora",
+    "explanation": "Ketika menjawab pertanyaan guru dengan bahasa halus, murid mengawali dengan 'Engghi, nyoon sapora' (Iya, mohon maaf) dan menyebut sakit untuk diri sendiri dengan 'songkan'."
+  },
+  {
+    "id": "MDR3_011",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Budaya Madura",
+    "subtopic": "Mengenal Kesenian dan Tradisi Khas Madura",
+    "difficulty": "mudah",
+    "question": "Perlombaan pacuan sepasang sapi jantan yang dihias indah (kaleles) dan menjadi kebanggaan budaya masyarakat Pulau Madura dikenal dengan nama ...",
+    "options": [
+      "Kerrabhan Sape (Karapan Sapi)",
+      "Lomba Perahu Layar",
+      "Tari Piring",
+      "Wayang Golek"
+    ],
+    "correctAnswer": "Kerrabhan Sape (Karapan Sapi)",
+    "explanation": "Kerrabhan Sape (Karapan Sapi) adalah tradisi dan kesenian khas masyarakat Madura yang terkenal hingga mancanegara."
+  },
+  {
+    "id": "MDR3_012",
+    "grade": 3,
+    "subject": "Bahasa Madura",
+    "topic": "Budaya Madura",
+    "subtopic": "Nilai Sopan Santun (Andhap Asor) Masyarakat Madura",
+    "difficulty": "sulit",
+    "question": "Dalam budaya masyarakat Madura, anak-anak diajarkan sikap 'Andhap Asor'. Bagaimana contoh perilaku 'Andhap Asor' ketika berjalan melewati orang yang lebih tua yang sedang duduk?",
+    "options": [
+      "Berjalan pelan sambil sedikit membungkukkan badan, menurunkan tangan, dan mengucapkan 'Ghallu'wak, Pa'/Bhu'' (Permisi)",
+      "Berjalan tegak sambil berlari kencang di depan orang tua tanpa menyapa",
+      "Berbicara dengan suara keras menggunakan bahasa Enja'-Iya kepada orang tua",
+      "Menyuruh orang yang lebih tua minggir dari jalan"
+    ],
+    "correctAnswer": "Berjalan pelan sambil sedikit membungkukkan badan, menurunkan tangan, dan mengucapkan 'Ghallu'wak, Pa'/Bhu'' (Permisi)",
+    "explanation": "'Andhap Asor' berarti rendah hati, santun, dan tahu tata krama menghormati orang yang lebih tua baik dalam sikap tubuh maupun tutur kata."
+  }
+]

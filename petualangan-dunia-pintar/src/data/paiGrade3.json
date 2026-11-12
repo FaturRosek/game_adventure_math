@@ -1,0 +1,196 @@
+[
+  {
+    "id": "PAI3_001",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Al-Qur'an dan Hadis",
+    "subtopic": "Mengenal Harakat dan Bacaan Al-Qur'an",
+    "difficulty": "mudah",
+    "question": "Saat belajar membaca Al-Qur'an, Ahmad melihat tanda garis miring kecil yang terletak di bawah huruf hijaiyah sehingga huruf 'Ba' dibaca 'Bi'. Tanda baca (harakat) tersebut dinamakan ...",
+    "options": ["Kasrah", "Fathah", "Dammah", "Sukun"],
+    "correctAnswer": "Kasrah",
+    "explanation": "Harakat kasrah terletak di bawah huruf hijaiyah dan menghasilkan bunyi vokal 'i', sedangkan fathah di atas ('a') dan dammah menghasilkan bunyi 'u'."
+  },
+  {
+    "id": "PAI3_002",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Al-Qur'an dan Hadis",
+    "subtopic": "Pesan Pokok Surah An-Nasr",
+    "difficulty": "sedang",
+    "question": "Surah An-Nasr mengajarkan bahwa ketika kita berhasil meraih kemenangan atau pertolongan dari Allah SWT, misalnya mendapat nilai bagus setelah rajin belajar, sikap yang harus segera kita lakukan adalah ...",
+    "options": [
+      "Bertasbih memuji Allah SWT dan memohon ampunan-Nya dengan rendah hati",
+      "Membanggakan diri di depan teman-teman bahwa kita paling pintar",
+      "Berhenti belajar karena merasa sudah pasti selalu menang",
+      "Meremehkan teman lain yang nilainya belum bagus"
+    ],
+    "correctAnswer": "Bertasbih memuji Allah SWT dan memohon ampunan-Nya dengan rendah hati",
+    "explanation": "Ayat terakhir Surah An-Nasr memerintahkan kita untuk bertasbih memuji Tuhanmu (fasabbih bihamdi rabbika) dan memohon ampun kepada-Nya (wastaghfirh) saat meraih keberhasilan."
+  },
+  {
+    "id": "PAI3_003",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Al-Qur'an dan Hadis",
+    "subtopic": "Hadis tentang Kebersihan dan Perilaku Baik",
+    "difficulty": "mudah",
+    "question": "Dalam ajaran Islam dikenal ungkapan hadis bahwa 'At-thuhuru syathrul iman' (Kebersihan itu adalah sebagian dari iman). Contoh penerapan hadis tersebut ketika berada di sekolah adalah ...",
+    "options": [
+      "Menjaga kebersihan pakaian seragam dan membuang sampah jajanan ke tempat sampah",
+      "Membiarkan laci meja kelas penuh dengan kertas bekas dan bungkus permen",
+      "Mencoret-coret tembok kamar mandi sekolah menggunakan spidol",
+      "Hanya mau membersihkan kelas jika diberi hadiah uang oleh guru"
+    ],
+    "correctAnswer": "Menjaga kebersihan pakaian seragam dan membuang sampah jajanan ke tempat sampah",
+    "explanation": "Anak beriman mencintai kebersihan diri, pakaian, dan lingkungan sekitar termasuk ruang kelas di sekolah."
+  },
+  {
+    "id": "PAI3_004",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Akidah",
+    "subtopic": "Mengenal Asmaul Husna Al-Wahhab dan Al-'Alim",
+    "difficulty": "sedang",
+    "question": "Allah SWT memiliki Asmaul Husna 'Al-Wahhab' yang artinya Allah Maha Pemberi Karunia tanpa mengharap imbalan. Cara kita meneladani sifat Al-Wahhab dalam kehidupan sehari-hari adalah ...",
+    "options": [
+      "Senang berbagi dan bersedekah kepada teman atau orang yang membutuhkan dengan ikhlas",
+      "Hanya mau menolong teman jika teman tersebut berjanji memberi hadiah balasan",
+      "Menyimpan semua mainan dan makanan untuk diri sendiri saja",
+      "Meminta bayaran setiap kali membantu adik merapikan buku"
+    ],
+    "correctAnswer": "Senang berbagi dan bersedekah kepada teman atau orang yang membutuhkan dengan ikhlas",
+    "explanation": "Meneladani sifat Al-Wahhab (Maha Pemberi) dilakukan dengan gemar memberi bantuan dan berbagi secara tulus ikhlas tanpa pamrih."
+  },
+  {
+    "id": "PAI3_005",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Akidah",
+    "subtopic": "Mengenal Rukun Iman dan Allah Maha Pencipta",
+    "difficulty": "mudah",
+    "question": "Ketika kita memandang langit yang luas, gunung yang tinggi, serta beragam hewan dan tumbuhan, kita meyakini bahwa semua itu diciptakan oleh Allah SWT. Keyakinan bahwa Allah adalah satu-satunya Tuhan Pencipta alam semesta merupakan bagian dari rukun iman yang ...",
+    "options": [
+      "Pertama (Iman kepada Allah SWT)",
+      "Kedua (Iman kepada Malaikat)",
+      "Ketiga (Iman kepada Kitab-kitab)",
+      "Keempat (Iman kepada Rasul)"
+    ],
+    "correctAnswer": "Pertama (Iman kepada Allah SWT)",
+    "explanation": "Rukun iman yang pertama adalah beriman kepada Allah SWT sebagai Al-Khaliq (Maha Pencipta) seluruh alam semesta."
+  },
+  {
+    "id": "PAI3_006",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Akhlak",
+    "subtopic": "Bersikap Jujur dan Amanah",
+    "difficulty": "sedang",
+    "question": "Ibu menitipkan uang kepada Siti untuk dibelikan gula pasir di warung. Ternyata setelah dibelikan gula, masih ada uang kembalian Rp2.000. Sikap amanah dan jujur yang harus dilakukan Siti adalah ...",
+    "options": [
+      "Menyerahkan gula pasir beserta seluruh uang kembalian Rp2.000 kepada Ibu",
+      "Menggunakan uang kembalian tersebut untuk membeli es lilin tanpa izin Ibu",
+      "Mengatakan kepada Ibu bahwa tidak ada uang kembalian dari warung",
+      "Menyembunyikan uang kembalian di dalam tas sekolah"
+    ],
+    "correctAnswer": "Menyerahkan gula pasir beserta seluruh uang kembalian Rp2.000 kepada Ibu",
+    "explanation": "Amanah artinya dapat dipercaya. Menjaga titipan orang tua dan mengembalikan sisa uang dengan jujur adalah akhlak terpuji."
+  },
+  {
+    "id": "PAI3_007",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Akhlak",
+    "subtopic": "Menghormati Orang Tua dan Guru",
+    "difficulty": "mudah",
+    "question": "Saat Bapak atau Ibu Guru sedang berbicara dan memberikan nasihat di dalam kelas, adab terpuji seorang murid adalah ...",
+    "options": [
+      "Mendengarkan dengan penuh perhatian, duduk sopan, dan tidak memotong pembicaraan guru",
+      "Berbicara keras-keras dengan teman sebangku sambil tertawa",
+      "Membalikkan badan dan pura-pura tidak mendengar nasihat guru",
+      "Keluar dari ruang kelas tanpa meminta izin terlebih dahulu"
+    ],
+    "correctAnswer": "Mendengarkan dengan penuh perhatian, duduk sopan, dan tidak memotong pembicaraan guru",
+    "explanation": "Guru adalah orang tua kita di sekolah yang mendidik kita dengan ilmu, sehingga wajib kita hormati dan dengarkan nasihatnya."
+  },
+  {
+    "id": "PAI3_008",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Fikih",
+    "subtopic": "Tata Cara dan Urutan Wudu",
+    "difficulty": "sedang",
+    "question": "Sebelum melaksanakan salat, umat Islam wajib berwudu secara tertib (berurutan). Setelah membasuh kedua tangan sampai siku, anggota tubuh selanjutnya yang harus diusap dalam rukun wudu adalah ...",
+    "options": [
+      "Mengusap sebagian kepala",
+      "Membasuh kedua kaki sampai mata kaki",
+      "Berkumur-kumur tiga kali",
+      "Membasuh wajah sambil berniat"
+    ],
+    "correctAnswer": "Mengusap sebagian kepala",
+    "explanation": "Urutan rukun wudu adalah: Niat -> Membasuh wajah -> Membasuh kedua tangan sampai siku -> Mengusap sebagian kepala -> Membasuh kedua kaki sampai mata kaki -> Tertib."
+  },
+  {
+    "id": "PAI3_009",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Fikih",
+    "subtopic": "Salat Lima Waktu dan Bacaan Dasar Salat",
+    "difficulty": "sulit",
+    "question": "Salat fardu lima waktu adalah tiang agama yang wajib dikerjakan setiap hari. Salat fardu yang dikerjakan pada sore hari sebanyak 4 rakaat sebelum matahari terbenam adalah salat ...",
+    "options": ["Asar", "Subuh", "Magrib", "Isya"],
+    "correctAnswer": "Asar",
+    "explanation": "Salat Asar dikerjakan pada sore hari sebanyak 4 rakaat. Adapun Subuh 2 rakaat, Zuhur 4 rakaat, Magrib 3 rakaat, dan Isya 4 rakaat."
+  },
+  {
+    "id": "PAI3_010",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Fikih",
+    "subtopic": "Puasa Ramadan dan Zakat Sederhana",
+    "difficulty": "sulit",
+    "question": "Pada bulan suci Ramadan, umat Islam berpuasa menahan lapar, haus, dan perbuatan buruk sejak terbit fajar (waktu Subuh) hingga ...",
+    "options": [
+      "Terbenamnya matahari (waktu Magrib)",
+      "Tengah hari saat waktu Zuhur",
+      "Tengah malam pukul dua belas",
+      "Terbitnya matahari pagi hari"
+    ],
+    "correctAnswer": "Terbenamnya matahari (waktu Magrib)",
+    "explanation": "Waktu berpuasa dimulai sejak terbit fajar sadiq (masuk waktu Subuh) sampai terbenam matahari (masuk waktu Magrib)."
+  },
+  {
+    "id": "PAI3_011",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Sejarah Peradaban Islam",
+    "subtopic": "Sifat Terpuji Nabi Muhammad SAW (Al-Amin)",
+    "difficulty": "mudah",
+    "question": "Sejak masa kanak-kanak hingga dewasa, Nabi Muhammad SAW tidak pernah berbohong dan selalu menjaga amanah masyarakat Makkah, sehingga beliau diberi gelar ...",
+    "options": [
+      "Al-Amin (Orang yang dapat dipercaya)",
+      "Al-Faruq (Pembeda)",
+      "Dzunnurain (Pemilik dua cahaya)",
+      "Asadullah (Singa Allah)"
+    ],
+    "correctAnswer": "Al-Amin (Orang yang dapat dipercaya)",
+    "explanation": "Gelar Al-Amin diberikan oleh masyarakat Makkah kepada Nabi Muhammad SAW karena kejujuran dan sifat dapat dipercaya beliau yang luar biasa."
+  },
+  {
+    "id": "PAI3_012",
+    "grade": 3,
+    "subject": "Pendidikan Agama Islam",
+    "topic": "Sejarah Peradaban Islam",
+    "subtopic": "Keteladanan Mandiri dan Kasih Sayang Rasulullah SAW",
+    "difficulty": "sulit",
+    "question": "Ketika masih muda, Nabi Muhammad SAW rajin membantu pamannya Abu Thalib dengan menggembala kambing secara sabar, tekun, dan mandiri. Pelajaran terbaik yang dapat dicontoh siswa kelas 3 dari kisah masa muda Nabi Muhammad SAW tersebut adalah ...",
+    "options": [
+      "Membiasakan diri hidup mandiri, rajin membantu meringankan pekerjaan orang tua, dan sabar",
+      "Menyerahkan semua pekerjaan rumah kepada orang tua saja",
+      "Mengeluh setiap kali diminta membantu merapikan kamar tidur",
+      "Hanya mau bekerja jika dilihat oleh banyak orang"
+    ],
+    "correctAnswer": "Membiasakan diri hidup mandiri, rajin membantu meringankan pekerjaan orang tua, dan sabar",
+    "explanation": "Kisah masa muda Rasulullah SAW mengajarkan kemandirian, kesabaran, dan kepedulian membantu keluarga."
+  }
+]
