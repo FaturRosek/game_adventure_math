@@ -77,7 +77,9 @@ class LocalDatabase {
   }
 
   getScopedSubjectKey(subjectId = "matematika", grade = 3) {
-    const cleanSubj = String(subjectId || "matematika").toLowerCase().replace(/^g\d+_/, "");
+    const cleanSubj = String(subjectId || "matematika")
+      .toLowerCase()
+      .replace(/^g\d+_/, "");
     const numGrade = Number(grade) || 3;
     return numGrade === 3 ? cleanSubj : `g${numGrade}_${cleanSubj}`;
   }
@@ -157,17 +159,39 @@ class LocalDatabase {
     profile.topicsToReview = profile.topicsToReview || [];
     profile.adventureProgress = profile.adventureProgress || {};
 
-    const activeGrades = GAME_CONFIG.classes.filter((c) => c.active).map((c) => c.grade);
+    const activeGrades = GAME_CONFIG.classes
+      .filter((c) => c.active)
+      .map((c) => c.grade);
     activeGrades.forEach((g) => {
       GAME_CONFIG.subjects.forEach((sub) => {
+        if (
+          Array.isArray(sub.allowedGrades) &&
+          !sub.allowedGrades.includes(g)
+        ) {
+          return;
+        }
         const scopedKey = this.getScopedSubjectKey(sub.id, g);
         if (!profile.subjectPerformance[scopedKey]) {
-          profile.subjectPerformance[scopedKey] = { grade: g, subject: sub.id, answered: 0, correct: 0, wrong: 0 };
+          profile.subjectPerformance[scopedKey] = {
+            grade: g,
+            subject: sub.id,
+            answered: 0,
+            correct: 0,
+            wrong: 0,
+          };
         }
-        if (!profile.adventureProgress[scopedKey] || !profile.adventureProgress[scopedKey].levels) {
-          profile.adventureProgress[scopedKey] = this.createDefaultSubjectAdventureProgress(profile.id, sub.id, g);
+        if (
+          !profile.adventureProgress[scopedKey] ||
+          !profile.adventureProgress[scopedKey].levels
+        ) {
+          profile.adventureProgress[scopedKey] =
+            this.createDefaultSubjectAdventureProgress(profile.id, sub.id, g);
         } else {
-          const def = this.createDefaultSubjectAdventureProgress(profile.id, sub.id, g);
+          const def = this.createDefaultSubjectAdventureProgress(
+            profile.id,
+            sub.id,
+            g,
+          );
           ["easy", "medium", "hard"].forEach((lvlKey) => {
             profile.adventureProgress[scopedKey].levels[lvlKey] = {
               ...def.levels[lvlKey],
@@ -194,7 +218,12 @@ class LocalDatabase {
     const targetGrade = Number(grade) || Number(profile.grade) || 3;
     const scopedKey = this.getScopedSubjectKey(subjectId, targetGrade);
     if (!profile.adventureProgress[scopedKey]) {
-      profile.adventureProgress[scopedKey] = this.createDefaultSubjectAdventureProgress(profile.id, subjectId, targetGrade);
+      profile.adventureProgress[scopedKey] =
+        this.createDefaultSubjectAdventureProgress(
+          profile.id,
+          subjectId,
+          targetGrade,
+        );
     }
     return profile.adventureProgress[scopedKey];
   }
@@ -317,19 +346,29 @@ class LocalDatabase {
 
     const currentSettings = settings || (await this.getSettings());
     const targetGrade = Number(attemptData.grade) || Number(profile.grade) || 3;
-    const cleanSubj = String(attemptData.subject || "matematika").toLowerCase().replace(/^g\d+_/, "");
+    const cleanSubj = String(attemptData.subject || "matematika")
+      .toLowerCase()
+      .replace(/^g\d+_/, "");
     const scopedSubjKey = this.getScopedSubjectKey(cleanSubj, targetGrade);
     const topicName = attemptData.topic || "Umum";
     const topicKey = `${scopedSubjKey}:${topicName}`;
     const isCorrect = Boolean(attemptData.isCorrect);
-    const difficultyUsed = String(attemptData.difficulty || "mudah").toLowerCase();
+    const difficultyUsed = String(
+      attemptData.difficulty || "mudah",
+    ).toLowerCase();
 
     profile.totalQuestionsAnswered += 1;
     if (isCorrect) profile.totalCorrect += 1;
     else profile.totalWrong += 1;
 
     if (!profile.subjectPerformance[scopedSubjKey]) {
-      profile.subjectPerformance[scopedSubjKey] = { grade: targetGrade, subject: cleanSubj, answered: 0, correct: 0, wrong: 0 };
+      profile.subjectPerformance[scopedSubjKey] = {
+        grade: targetGrade,
+        subject: cleanSubj,
+        answered: 0,
+        correct: 0,
+        wrong: 0,
+      };
     }
     profile.subjectPerformance[scopedSubjKey].answered += 1;
     if (isCorrect) profile.subjectPerformance[scopedSubjKey].correct += 1;
@@ -419,7 +458,10 @@ class LocalDatabase {
 
     profile.topicsToReview = Object.values(profile.topicPerformance)
       .filter((tp) => tp.needsReview || tp.wrong > tp.correct)
-      .map((tp) => `[Kls ${tp.grade || 3}] ${tp.subject.toUpperCase()}: ${tp.topic}`);
+      .map(
+        (tp) =>
+          `[Kls ${tp.grade || 3}] ${tp.subject.toUpperCase()}: ${tp.topic}`,
+      );
 
     profile.questionHistory.push({
       questionId: attemptData.questionId,
@@ -440,12 +482,25 @@ class LocalDatabase {
     return profile;
   }
 
-  async saveIncompleteAdventureSession(profileId, subjectId, sessionSnapshot, grade = null) {
+  async saveIncompleteAdventureSession(
+    profileId,
+    subjectId,
+    sessionSnapshot,
+    grade = null,
+  ) {
     const profile = await this.getProfileById(profileId);
     if (!profile) return null;
 
-    const targetGrade = Number(grade) || Number(sessionSnapshot?.grade) || Number(profile.grade) || 3;
-    const subjProg = this.getSubjectAdventureProgress(profile, subjectId, targetGrade);
+    const targetGrade =
+      Number(grade) ||
+      Number(sessionSnapshot?.grade) ||
+      Number(profile.grade) ||
+      3;
+    const subjProg = this.getSubjectAdventureProgress(
+      profile,
+      subjectId,
+      targetGrade,
+    );
     subjProg.incompleteSession = {
       ...sessionSnapshot,
       grade: targetGrade,
@@ -461,10 +516,13 @@ class LocalDatabase {
     if (!profile) return null;
 
     const targetGrade = Number(result.grade) || Number(profile.grade) || 3;
-    const subjKey = String(result.subject || "matematika").toLowerCase().replace(/^g\d+_/, "");
+    const subjKey = String(result.subject || "matematika")
+      .toLowerCase()
+      .replace(/^g\d+_/, "");
     const scopedSubjKey = this.getScopedSubjectKey(subjKey, targetGrade);
     const levelKey = result.levelKey || "easy";
-    const requiredCount = levelKey === "easy" ? 5 : levelKey === "medium" ? 7 : 10;
+    const requiredCount =
+      levelKey === "easy" ? 5 : levelKey === "medium" ? 7 : 10;
 
     const minCorrectRequired = Math.ceil(requiredCount * 0.8);
     const correctCount = result.correctCount || 0;
@@ -476,7 +534,8 @@ class LocalDatabase {
 
     const scoreEarned = correctCount * 100 + (result.coinsEarned || 0) * 2;
     profile.coins = (profile.coins || 0) + (result.coinsEarned || 0);
-    profile.stars = (profile.stars || 0) + (isPassed ? result.starsEarned || 0 : 0);
+    profile.stars =
+      (profile.stars || 0) + (isPassed ? result.starsEarned || 0 : 0);
     profile.totalScore = (profile.totalScore || 0) + scoreEarned;
 
     const uniqueLevelId = `${scopedSubjKey}_${levelKey}`;
@@ -484,15 +543,27 @@ class LocalDatabase {
       profile.completedLevels.push(uniqueLevelId);
     }
 
-    if (isPassed && result.badgeEarned && !profile.badges.includes(result.badgeEarned)) {
+    if (
+      isPassed &&
+      result.badgeEarned &&
+      !profile.badges.includes(result.badgeEarned)
+    ) {
       profile.badges.push(result.badgeEarned);
     }
 
-    if (isPassed && result.collectibleItem && !profile.collectibles.includes(result.collectibleItem)) {
+    if (
+      isPassed &&
+      result.collectibleItem &&
+      !profile.collectibles.includes(result.collectibleItem)
+    ) {
       profile.collectibles.push(result.collectibleItem);
     }
 
-    const subjProg = this.getSubjectAdventureProgress(profile, subjKey, targetGrade);
+    const subjProg = this.getSubjectAdventureProgress(
+      profile,
+      subjKey,
+      targetGrade,
+    );
     const lvlRecord = subjProg.levels[levelKey];
 
     if (lvlRecord && isFullyAnswered) {
