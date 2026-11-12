@@ -24,12 +24,17 @@ const DIFFICULTY_ORDER = ["mudah", "sedang", "sulit"];
 
 export class HybridQuestionEngine {
   constructor() {
+    this.grade1Templates = this.registerGrade1Templates();
+    this.grade2Templates = this.registerGrade2Templates();
+
     this.mathTemplates = this.registerMathTemplates();
     this.ipasTemplates = this.registerIpasTemplates();
     this.bindoTemplates = this.registerBindoTemplates();
     this.bingTemplates = this.registerBingTemplates();
     this.pancasilaTemplates = this.registerPancasilaGrade3Templates();
     this.senirupaTemplates = this.registerSenirupaGrade3Templates();
+    this.paiTemplates = this.registerPaiGrade3Templates();
+    this.maduraTemplates = this.registerMaduraGrade3Templates();
 
     this.mathGrade4Templates = this.registerMathGrade4Templates();
     this.ipasGrade4Templates = this.registerIpasGrade4Templates();
@@ -1920,31 +1925,531 @@ export class HybridQuestionEngine {
     ];
   }
 
-  generateFromTemplate({ grade = 3, subject = 'matematika', topic = null, difficulty = 'sedang' }) {
-    const numGrade = Number(grade) || 3;
-    const subjKey = String(subject).toLowerCase().replace(/^g\d+_/, '');
+  registerGrade1Templates() {
+    return {
+      matematika: [
+        {
+          templateId: "TPL_MTK1_HITUNG_20",
+          grade: 1,
+          subject: "Matematika",
+          topic: "Penjumlahan dan Pengurangan Sederhana",
+          subtopic: "Operasi Hitung Bilangan 1 sampai 20",
+          generate: (difficulty) => {
+            const isSub = difficulty !== "mudah" && Math.random() > 0.5;
+            if (isSub) {
+              const a = this.randInt(11, 19);
+              const b = this.randInt(3, 8);
+              const ans = a - b;
+              const options = this.buildPlausibleNumericOptions(
+                ans,
+                "buah",
+                [-2, -1, 1, 2, 3],
+              );
+              return {
+                question: `Di keranjang ada ${a} buah jeruk. Sebanyak ${b} buah jeruk dimakan bersama keluarga. Berapa buah jeruk yang masih tersisa?`,
+                options,
+                correctAnswer: `${ans} buah`,
+                explanation: `Karena dimakan, jumlahnya berkurang: ${a} - ${b} = ${ans} buah jeruk.`,
+                params: { a, b, ans },
+              };
+            }
+            const a = this.randInt(5, 11);
+            const b = this.randInt(4, 8);
+            const ans = a + b;
+            const options = this.buildPlausibleNumericOptions(
+              ans,
+              "",
+              [-2, -1, 1, 2, 3],
+            );
+            return {
+              question: `Hasil penjumlahan dari ${a} + ${b} adalah ...`,
+              options,
+              correctAnswer: `${ans}`,
+              explanation: `${a} ditambah ${b} hasilnya adalah ${ans}.`,
+              params: { a, b, ans },
+            };
+          },
+        },
+      ],
+      ipas: [
+        {
+          templateId: "TPL_IPAS1_PANCAINDRA",
+          grade: 1,
+          subject: "IPAS",
+          topic: "Mengenal Pancaindra",
+          subtopic: "Fungsi Alat Indra Manusia",
+          generate: () => {
+            const items = [
+              {
+                act: "mendengarkan kicauan burung yang merdu di pagi hari",
+                indra: "Telinga",
+                info: "mendengar berbagai suara",
+              },
+              {
+                act: "melihat warna-warni pelangi yang indah di langit",
+                indra: "Mata",
+                info: "melihat benda dan warna di sekitar kita",
+              },
+              {
+                act: "merasakan manisnya madu dan asinnya garam",
+                indra: "Lidah",
+                info: "mengecap rasa makanan",
+              },
+            ];
+            const chosen = this.pickRandom(items);
+            return {
+              question: `Anggota tubuh (pancaindra) yang kita gunakan untuk ${chosen.act} adalah ...`,
+              options: this.shuffleArray(["Telinga", "Mata", "Lidah", "Kulit"]),
+              correctAnswer: chosen.indra,
+              explanation: `${chosen.indra} adalah pancaindra yang berfungsi untuk ${chosen.info}.`,
+              params: {},
+            };
+          },
+        },
+      ],
+      bahasa_indonesia: [
+        {
+          templateId: "TPL_BINDO1_VOKAL_SUKUKATA",
+          grade: 1,
+          subject: "Bahasa Indonesia",
+          topic: "Membaca Suku Kata dan Kata Sederhana",
+          subtopic: "Menghitung Jumlah Suku Kata",
+          generate: () => {
+            const words = [
+              { word: "BONEKA", split: "bo - ne - ka", count: "3 suku kata" },
+              { word: "BUKU", split: "bu - ku", count: "2 suku kata" },
+              {
+                word: "MATAHARI",
+                split: "ma - ta - ha - ri",
+                count: "4 suku kata",
+              },
+            ];
+            const w = this.pickRandom(words);
+            return {
+              question: `Kata "${w.word}" jika diucapkan per suku kata menjadi "${w.split}". Berapa jumlah suku kata pada kata ${w.word}?`,
+              options: this.shuffleArray([
+                "2 suku kata",
+                "3 suku kata",
+                "4 suku kata",
+                "5 suku kata",
+              ]),
+              correctAnswer: w.count,
+              explanation: `Kata ${w.word} (${w.split}) memiliki ${w.count}.`,
+              params: {},
+            };
+          },
+        },
+      ],
+      bahasa_inggris: [
+        {
+          templateId: "TPL_BING1_NUMBERS_10",
+          grade: 1,
+          subject: "Bahasa Inggris",
+          topic: "Numbers 1-10",
+          subtopic: "Mengenal Angka 1 sampai 10",
+          generate: () => {
+            const pairs = [
+              { n: 3, eng: "Three", w: ["Two", "Four", "Ten"] },
+              { n: 7, eng: "Seven", w: ["Six", "Eight", "Nine"] },
+              { n: 10, eng: "Ten", w: ["One", "Eight", "Five"] },
+            ];
+            const p = this.pickRandom(pairs);
+            return {
+              question: `Bahasa Inggris dari angka "${p.n}" adalah ...`,
+              options: this.shuffleArray([p.eng, ...p.w]),
+              correctAnswer: p.eng,
+              explanation: `Angka ${p.n} dalam Bahasa Inggris adalah "${p.eng}".`,
+              params: {},
+            };
+          },
+        },
+      ],
+      pendidikan_pancasila: [
+        {
+          templateId: "TPL_PPKN1_SIKAP_BAIK",
+          grade: 1,
+          subject: "Pendidikan Pancasila",
+          topic: "Sikap Baik kepada Keluarga dan Teman",
+          subtopic: "Perilaku Santun Sehari-hari",
+          generate: () => {
+            return {
+              question:
+                "Saat tidak sengaja menjatuhkan pensil milik teman di meja, kata baik yang harus segera kita ucapkan adalah ...",
+              options: this.shuffleArray([
+                "Maaf",
+                "Awas",
+                "Biar saja",
+                "Cepat ambil",
+              ]),
+              correctAnswer: "Maaf",
+              explanation:
+                'Mengucapkan kata "Maaf" ketika melakukan kesalahan adalah sikap anak yang sopan dan bertanggung jawab.',
+              params: {},
+            };
+          },
+        },
+      ],
+      seni_rupa: [
+        {
+          templateId: "TPL_SR1_WARNA_BENDA",
+          grade: 1,
+          subject: "Seni Rupa",
+          topic: "Mengenal Warna Primer",
+          subtopic: "Mengamati Warna Objek Sekitar",
+          generate: () => {
+            return {
+              question:
+                "Saat cuaca sangat cerah di siang hari, warna langit di atas kita tampak berwarna ...",
+              options: this.shuffleArray([
+                "Biru cerah",
+                "Hijau tua",
+                "Hitam pekat",
+                "Merah tua",
+              ]),
+              correctAnswer: "Biru cerah",
+              explanation:
+                "Pada siang hari yang cerah, langit tampak berwarna biru cerah.",
+              params: {},
+            };
+          },
+        },
+      ],
+    };
+  }
 
-    let pool = numGrade === 4 ? this.mathGrade4Templates : this.mathTemplates;
-    if (subjKey === 'ipas') {
-      pool = numGrade === 4 ? this.ipasGrade4Templates : this.ipasTemplates;
-    } else if (subjKey === 'bahasa_indonesia' || subjKey === 'bahasa indonesia') {
-      pool = numGrade === 4 ? this.bindoGrade4Templates : this.bindoTemplates;
-    } else if (subjKey === 'bahasa_inggris' || subjKey === 'bahasa inggris') {
-      pool = numGrade === 4 ? this.bingGrade4Templates : this.bingTemplates;
-    } else if (subjKey === 'pendidikan_pancasila' || subjKey === 'pendidikan pancasila' || subjKey === 'ppkn') {
-      pool = numGrade === 4 ? this.pancasilaGrade4Templates : this.pancasilaTemplates;
-    } else if (subjKey === 'seni_rupa' || subjKey === 'seni rupa') {
-      pool = numGrade === 4 ? this.senirupaGrade4Templates : this.senirupaTemplates;
+  registerGrade2Templates() {
+    return {
+      matematika: [
+        {
+          templateId: "TPL_MTK2_HITUNG_100",
+          grade: 2,
+          subject: "Matematika",
+          topic: "Penjumlahan dan Pengurangan Sampai 100",
+          subtopic: "Penjumlahan dan Pengurangan Bilangan Dua Angka",
+          generate: (difficulty) => {
+            const isSub = difficulty !== "mudah" && Math.random() > 0.5;
+            if (isSub) {
+              const a = this.randInt(52, 95);
+              const b = this.randInt(18, 39);
+              const ans = a - b;
+              const options = this.buildPlausibleNumericOptions(
+                ans,
+                "",
+                [-10, 10, -2, 2, 5],
+              );
+              return {
+                question: `Hasil pengurangan dari ${a} - ${b} adalah ...`,
+                options,
+                correctAnswer: `${ans}`,
+                explanation: `Pengurangan bersusun: ${a} - ${b} = ${ans}.`,
+                params: { a, b, ans },
+              };
+            }
+            const a = this.randInt(24, 58);
+            const b = this.randInt(15, 37);
+            const ans = a + b;
+            const options = this.buildPlausibleNumericOptions(
+              ans,
+              "",
+              [-10, 10, -2, 2, 4],
+            );
+            return {
+              question: `Hasil penjumlahan dari ${a} + ${b} adalah ...`,
+              options,
+              correctAnswer: `${ans}`,
+              explanation: `Penjumlahan bersusun: ${a} + ${b} = ${ans}.`,
+              params: { a, b, ans },
+            };
+          },
+        },
+      ],
+      ipas: [
+        {
+          templateId: "TPL_IPAS2_WUJUD_LINGKUNGAN",
+          grade: 2,
+          subject: "IPAS",
+          topic: "Perubahan Wujud Benda Sederhana",
+          subtopic: "Mencair dan Membeku di Rumah",
+          generate: () => {
+            return {
+              question:
+                "Ibu memasukkan air minum ke dalam cetakan es lalu menaruhnya di dalam freezer kulkas. Beberapa jam kemudian air berubah menjadi es batu yang keras. Perubahan wujud dari cair menjadi padat ini disebut ...",
+              options: this.shuffleArray([
+                "Membeku",
+                "Mencair",
+                "Menguap",
+                "Membakar",
+              ]),
+              correctAnswer: "Membeku",
+              explanation:
+                "Membeku adalah perubahan wujud benda dari cair (air) menjadi padat (es batu) karena didinginkan.",
+              params: {},
+            };
+          },
+        },
+      ],
+      bahasa_indonesia: [
+        {
+          templateId: "TPL_BINDO2_KATA_TANYA",
+          grade: 2,
+          subject: "Bahasa Indonesia",
+          topic: "Mengenal Kata Tanya",
+          subtopic: "Memilih Kata Tanya Sesuai Jawaban",
+          generate: () => {
+            return {
+              question:
+                '"... nama teman baru yang duduk di sebelah Siti?" — Jawab: "Namanya adalah Lani." Kata tanya yang tepat untuk melengkapi kalimat tersebut adalah ...',
+              options: this.shuffleArray([
+                "Siapa",
+                "Kapan",
+                "Di mana",
+                "Berapa",
+              ]),
+              correctAnswer: "Siapa",
+              explanation:
+                'Kata tanya "Siapa" digunakan untuk menanyakan nama orang atau tokoh.',
+              params: {},
+            };
+          },
+        },
+      ],
+      bahasa_inggris: [
+        {
+          templateId: "TPL_BING2_NUMBERS_20",
+          grade: 2,
+          subject: "Bahasa Inggris",
+          topic: "Numbers 1-20",
+          subtopic: "Mengenal Angka 11 sampai 20",
+          generate: () => {
+            const pairs = [
+              { n: 14, eng: "Fourteen", w: ["Forty", "Four", "Sixteen"] },
+              { n: 17, eng: "Seventeen", w: ["Seven", "Seventy", "Thirteen"] },
+              { n: 20, eng: "Twenty", w: ["Twelve", "Two", "Ten"] },
+            ];
+            const p = this.pickRandom(pairs);
+            return {
+              question: `Bahasa Inggris yang benar untuk bilangan "${p.n}" adalah ...`,
+              options: this.shuffleArray([p.eng, ...p.w]),
+              correctAnswer: p.eng,
+              explanation: `Bilangan ${p.n} dalam Bahasa Inggris adalah "${p.eng}".`,
+              params: {},
+            };
+          },
+        },
+      ],
+      pendidikan_pancasila: [
+        {
+          templateId: "TPL_PPKN2_GOTONG_ROYONG",
+          grade: 2,
+          subject: "Pendidikan Pancasila",
+          topic: "Mempraktikkan Gotong Royong",
+          subtopic: "Manfaat Bekerja Sama di Sekolah",
+          generate: () => {
+            return {
+              question:
+                "Saat merapikan buku-buku cerita di pojok baca kelas bersama teman-teman, sikap yang harus kita tunjukkan agar pekerjaan cepat selesai adalah ...",
+              options: this.shuffleArray([
+                "Membagi tugas dengan adil dan bekerja sama dengan tertib",
+                "Duduk melihat teman bekerja sambil bermain kertas",
+                "Melempar buku ke rak dari jarak jauh",
+                "Berebut buku cerita sehingga rak menjadi berantakan",
+              ]),
+              correctAnswer:
+                "Membagi tugas dengan adil dan bekerja sama dengan tertib",
+              explanation:
+                "Pembagian tugas dan kerja sama yang tertib membuat pekerjaan bersama cepat selesai dan rapi.",
+              params: {},
+            };
+          },
+        },
+      ],
+      seni_rupa: [
+        {
+          templateId: "TPL_SR2_CAMPURAN_WARNA",
+          grade: 2,
+          subject: "Seni Rupa",
+          topic: "Warna Primer dan Sekunder",
+          subtopic: "Pencampuran Dua Warna Primer",
+          generate: () => {
+            return {
+              question:
+                "Jika kita mencampurkan cat warna Merah dan cat warna Kuning dengan jumlah yang sama di atas palet, maka akan menghasilkan warna sekunder yaitu ...",
+              options: this.shuffleArray([
+                "Oranye (Jingga)",
+                "Hijau",
+                "Ungu",
+                "Biru muda",
+              ]),
+              correctAnswer: "Oranye (Jingga)",
+              explanation:
+                "Merah + Kuning menghasilkan Oranye (Jingga), Kuning + Biru = Hijau, dan Merah + Biru = Ungu.",
+              params: {},
+            };
+          },
+        },
+      ],
+    };
+  }
+
+  registerPaiGrade3Templates() {
+    return [
+      {
+        templateId: "TPL_PAI3_AKHLAK_IBADAH",
+        grade: 3,
+        subject: "Pendidikan Agama Islam",
+        topic: "Akhlak",
+        subtopic: "Penerapan Akhlak Terpuji dan Ibadah Harian",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Ketika hendak masuk ke dalam masjid untuk melaksanakan salat berjamaah, adab yang dicontohkan oleh Rasulullah SAW adalah mendahulukan kaki ... sambil membaca doa masuk masjid.",
+              correct: "Kaki kanan terlebih dahulu",
+              options: [
+                "Kaki kanan terlebih dahulu",
+                "Kaki kiri terlebih dahulu",
+                "Melompat dengan kedua kaki sekaligus",
+                "Berlari kencang tanpa melepas alas kaki",
+              ],
+              explanation:
+                "Untuk hal-hal yang mulia dan baik seperti masuk masjid dan memakai pakaian, Rasulullah SAW mencontohkan mendahulukan sebelah kanan.",
+            },
+            {
+              question:
+                'Allah SWT memiliki Asmaul Husna "As-Sami\'" yang artinya Allah Maha Mendengar segala suara, baik yang diucapkan keras maupun yang berbisik di dalam hati. Cara kita mengamalkan keyakinan tersebut adalah ...',
+              correct:
+                "Menjaga lisan agar selalu berkata baik, jujur, dan rajin berdoa kepada Allah SWT",
+              options: [
+                "Menjaga lisan agar selalu berkata baik, jujur, dan rajin berdoa kepada Allah SWT",
+                "Berbisik-bisik membicarakan keburukan teman karena mengira tidak ada yang mendengar",
+                "Berteriak keras-keras saat berdoa di dalam ruang kelas",
+                "Menutup telinga ketika orang tua sedang memberikan nasihat",
+              ],
+              explanation:
+                "Karena Allah Maha Mendengar (As-Sami'), kita harus menjaga perkataan kita dari ucapan buruk meskipun sedang tidak dilihat manusia.",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  registerMaduraGrade3Templates() {
+    return [
+      {
+        templateId: "TPL_MDR3_UNDHAK_USUK",
+        grade: 3,
+        subject: "Bahasa Madura",
+        topic: "Tingkatan Bahasa Madura (Undhak-Usuk Bhasa)",
+        subtopic: "Penerapan Bahasa Engghi-Bhunten di Rumah dan Sekolah",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Ketika kamu hendak berangkat ke sekolah pada pagi hari, kalimat pamitan yang paling sopan dalam Bahasa Madura halus (Engghi-Bhunten) kepada Ibu adalah ...",
+              correct: '"Ebhu, kaula nyoona edi badhi mangkat ka sakola\'an."',
+              options: [
+                '"Ebhu, kaula nyoona edi badhi mangkat ka sakola\'an."',
+                "\"Ebhu, sengko' mangkaddha ka sakola'an ya!\"",
+                "\"Ba'na entara ka sakola'an sateya.\"",
+                '"Mayu mangkat amaen ka taneyan."',
+              ],
+              explanation:
+                'Dalam bahasa Engghi-Bhunten kepada Ibu, gunakan "kaula" (saya), "nyoona edi" (mohon izin), dan "badhi mangkat" (hendak berangkat).',
+            },
+            {
+              question:
+                'Perhatikan perbandingan kosakata berikut: Dalam bahasa Enja\'-Iya (kepada teman sebaya), kata "Tidur" adalah "Tedhung". Sedangkan apabila berbicara tentang Kakek atau Ayah yang sedang tidur, kata halus (Engghi-Bhunten) yang benar adalah ...',
+              correct: "Asaren",
+              options: ["Asaren", "Tedhung", "Adha'ar", "Alengghi"],
+              correctAnswer: "Asaren",
+              explanation:
+                'Bahasa halus (Engghi-Bhunten) dari "tedhung" (tidur) adalah "asaren". Adapun "adha\'ar" artinya makan, dan "alengghi" artinya duduk.',
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {},
+          };
+        },
+      },
+    ];
+  }
+
+  generateFromTemplate({
+    grade = 3,
+    subject = "matematika",
+    topic = null,
+    difficulty = "sedang",
+  }) {
+    const numGrade = [1, 2, 3, 4].includes(Number(grade)) ? Number(grade) : 3;
+    const rawSubj = String(subject)
+      .toLowerCase()
+      .replace(/^g\d+_/, "");
+
+    let subjKey = "matematika";
+    if (rawSubj === "ipas") subjKey = "ipas";
+    else if (rawSubj.includes("indonesia") || rawSubj === "bindo")
+      subjKey = "bahasa_indonesia";
+    else if (rawSubj.includes("inggris") || rawSubj === "bing")
+      subjKey = "bahasa_inggris";
+    else if (rawSubj.includes("pancasila") || rawSubj === "ppkn")
+      subjKey = "pendidikan_pancasila";
+    else if (rawSubj.includes("seni") || rawSubj === "senirupa")
+      subjKey = "seni_rupa";
+    else if (rawSubj === "pai" || rawSubj.includes("agama islam"))
+      subjKey = "pai";
+    else if (rawSubj.includes("madura")) subjKey = "bahasa_madura";
+
+    let pool = [];
+    if (numGrade === 1) {
+      pool = this.grade1Templates[subjKey] || this.grade1Templates.matematika;
+    } else if (numGrade === 2) {
+      pool = this.grade2Templates[subjKey] || this.grade2Templates.matematika;
+    } else if (numGrade === 4) {
+      if (subjKey === "ipas") pool = this.ipasGrade4Templates;
+      else if (subjKey === "bahasa_indonesia") pool = this.bindoGrade4Templates;
+      else if (subjKey === "bahasa_inggris") pool = this.bingGrade4Templates;
+      else if (subjKey === "pendidikan_pancasila")
+        pool = this.pancasilaGrade4Templates;
+      else if (subjKey === "seni_rupa") pool = this.senirupaGrade4Templates;
+      else pool = this.mathGrade4Templates;
+    } else {
+      if (subjKey === "ipas") pool = this.ipasTemplates;
+      else if (subjKey === "bahasa_indonesia") pool = this.bindoTemplates;
+      else if (subjKey === "bahasa_inggris") pool = this.bingTemplates;
+      else if (subjKey === "pendidikan_pancasila")
+        pool = this.pancasilaTemplates;
+      else if (subjKey === "seni_rupa") pool = this.senirupaTemplates;
+      else if (subjKey === "pai") pool = this.paiTemplates;
+      else if (subjKey === "bahasa_madura") pool = this.maduraTemplates;
+      else pool = this.mathTemplates;
     }
 
     let candidates = pool;
-    if (topic && topic !== 'semua') {
-      const matched = pool.filter((t) => t.topic.toLowerCase() === topic.toLowerCase());
+    if (topic && topic !== "semua") {
+      const matched = pool.filter(
+        (t) => t.topic.toLowerCase() === topic.toLowerCase(),
+      );
       if (matched.length > 0) candidates = matched;
     }
 
     const chosenTemplate = this.pickRandom(candidates);
-    const cleanDiff = ['mudah', 'sedang', 'sulit'].includes(difficulty) ? difficulty : 'sedang';
+    const cleanDiff = ["mudah", "sedang", "sulit"].includes(difficulty)
+      ? difficulty
+      : "sedang";
     const rawResult = chosenTemplate.generate(cleanDiff);
 
     const questionObj = {
@@ -1958,8 +2463,8 @@ export class HybridQuestionEngine {
       options: rawResult.options,
       correctAnswer: rawResult.correctAnswer,
       explanation: rawResult.explanation,
-      sourceType: 'template_generator',
-      generatorParams: rawResult.params || {}
+      sourceType: "template_generator",
+      generatorParams: rawResult.params || {},
     };
 
     const validation = this.validateQuestionObject(questionObj);
@@ -1985,17 +2490,21 @@ export class HybridQuestionEngine {
 
     const subj = String(q.subject || "").toLowerCase();
     const validSubjects = [
-      'matematika',
-      'ipas',
-      'bahasa indonesia',
-      'bahasa_indonesia',
-      'bahasa inggris',
-      'bahasa_inggris',
-      'pendidikan pancasila',
-      'pendidikan_pancasila',
-      'ppkn',
-      'seni rupa',
-      'seni_rupa'
+      "matematika",
+      "ipas",
+      "bahasa indonesia",
+      "bahasa_indonesia",
+      "bahasa inggris",
+      "bahasa_inggris",
+      "pendidikan pancasila",
+      "pendidikan_pancasila",
+      "ppkn",
+      "seni rupa",
+      "seni_rupa",
+      "pendidikan agama islam",
+      "pai",
+      "bahasa madura",
+      "bahasa_madura",
     ];
     if (!validSubjects.includes(subj)) {
       errors.push(`Mata pelajaran tidak didukung: ${q.subject}`);
@@ -2077,7 +2586,9 @@ export class HybridQuestionEngine {
       ...(questionBanks.bahasa_indonesia || []),
       ...(questionBanks.bahasa_inggris || []),
       ...(questionBanks.pendidikan_pancasila || []),
-      ...(questionBanks.seni_rupa || [])
+      ...(questionBanks.seni_rupa || []),
+      ...(questionBanks.pai || []),
+      ...(questionBanks.bahasa_madura || []),
     ];
     let bankInvalidCount = 0;
     const seenBankIds = new Set();
@@ -2120,12 +2631,22 @@ export class HybridQuestionEngine {
       );
     };
 
-    testTemplatePool('Matematika', 'matematika', this.mathTemplates);
-    testTemplatePool('IPAS', 'ipas', this.ipasTemplates);
-    testTemplatePool('Bahasa Indonesia', 'bahasa_indonesia', this.bindoTemplates);
-    testTemplatePool('Bahasa Inggris', 'bahasa_inggris', this.bingTemplates);
-    testTemplatePool('Pendidikan Pancasila', 'pendidikan_pancasila', this.pancasilaTemplates);
-    testTemplatePool('Seni Rupa', 'seni_rupa', this.senirupaTemplates);
+    testTemplatePool("Matematika", "matematika", this.mathTemplates);
+    testTemplatePool("IPAS", "ipas", this.ipasTemplates);
+    testTemplatePool(
+      "Bahasa Indonesia",
+      "bahasa_indonesia",
+      this.bindoTemplates,
+    );
+    testTemplatePool("Bahasa Inggris", "bahasa_inggris", this.bingTemplates);
+    testTemplatePool(
+      "Pendidikan Pancasila",
+      "pendidikan_pancasila",
+      this.pancasilaTemplates,
+    );
+    testTemplatePool("Seni Rupa", "seni_rupa", this.senirupaTemplates);
+    testTemplatePool("Pendidikan Agama Islam", "pai", this.paiTemplates);
+    testTemplatePool("Bahasa Madura", "bahasa_madura", this.maduraTemplates);
 
     return report;
   }
