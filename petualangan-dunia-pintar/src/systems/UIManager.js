@@ -162,7 +162,12 @@ export class UIManager {
 
   stopAllGameplayScenes() {
     if (!this.phaserGame) return;
-    ['AdventureScene', 'CarRacingScene', 'MazeAdventureScene', 'DuelScene'].forEach((scKey) => {
+    [
+      "AdventureScene",
+      "CarRacingScene",
+      "MazeAdventureScene",
+      "DuelScene",
+    ].forEach((scKey) => {
       if (this.phaserGame.scene.isActive(scKey)) {
         this.phaserGame.scene.stop(scKey);
       }
@@ -171,7 +176,11 @@ export class UIManager {
 
   getActiveAdventureSceneInstance() {
     if (!this.phaserGame) return null;
-    for (const key of ['AdventureScene', 'CarRacingScene', 'MazeAdventureScene']) {
+    for (const key of [
+      "AdventureScene",
+      "CarRacingScene",
+      "MazeAdventureScene",
+    ]) {
       if (this.phaserGame.scene.isActive(key)) {
         return this.phaserGame.scene.getScene(key);
       }
@@ -303,10 +312,10 @@ export class UIManager {
               <div class="form-group">
                 <label for="inp-student-grade">Kelas:</label>
                 <select id="inp-student-grade" class="input-cartoon">
+                  <option value="1">Kelas 1 SD (Aktif)</option>
+                  <option value="2">Kelas 2 SD (Aktif)</option>
                   <option value="3" selected>Kelas 3 SD (Aktif)</option>
                   <option value="4">Kelas 4 SD (Aktif)</option>
-                  <option value="1" disabled>Kelas 1 SD (Coming Soon)</option>
-                  <option value="2" disabled>Kelas 2 SD (Coming Soon)</option>
                   <option value="5" disabled>Kelas 5 SD (Coming Soon)</option>
                   <option value="6" disabled>Kelas 6 SD (Coming Soon)</option>
                 </select>
@@ -422,8 +431,8 @@ export class UIManager {
       <div class="screen-overlay">
         <div class="cartoon-panel">
           ${this.renderProfileBanner()}
-          <h2 class="panel-header-title">🎒 Pilih Kelas Kamu</h2>
-          <p class="game-subtitle">Saat ini petualangan tersedia untuk Kelas 3 SD!</p>
+         <h2 class="panel-header-title">🎒 Pilih Kelas Kamu</h2>
+          <p class="game-subtitle">Pilih jenjang Kelas 1, 2, 3, atau 4 SD untuk memulai petualangan!</p>
 
           <div class="selection-grid-3">
             ${gradeCardsHtml}
@@ -454,16 +463,28 @@ export class UIManager {
     });
   }
 
+  getSubjectsForGrade(grade = this.selectedGrade) {
+    const g = Number(grade) || 3;
+    return GAME_CONFIG.subjects.filter(
+      (sub) =>
+        !Array.isArray(sub.allowedGrades) || sub.allowedGrades.includes(g),
+    );
+  }
   showSubjectSelection() {
-    const subjectCardsHtml = GAME_CONFIG.subjects
+    const availableSubjects = this.getSubjectsForGrade(this.selectedGrade);
+    if (!availableSubjects.some((s) => s.id === this.selectedSubject)) {
+      this.selectedSubject = availableSubjects[0]?.id || "matematika";
+    }
+
+    const subjectCardsHtml = availableSubjects
       .map(
         (sub) => `
       <div class="choice-card ${sub.active ? "" : "card-disabled"} ${this.selectedSubject === sub.id ? "selected" : ""}" data-id="${sub.id}" data-active="${sub.active}">
         <div class="card-icon">${sub.icon}</div>
-        <div class="card-title">${sub.name}</div>
-        <div class="card-desc">${sub.desc}</div>
+        <div class="card-title">${this.escapeHtml(sub.name)}</div>
+        <div class="card-desc">${this.escapeHtml(sub.desc)}</div>
         <span class="status-badge ${sub.active ? "badge-active" : "badge-soon"}">
-          ${sub.statusText}
+          ${this.escapeHtml(sub.statusText)}
         </span>
       </div>
     `,
@@ -474,7 +495,7 @@ export class UIManager {
       <div class="screen-overlay">
         <div class="cartoon-panel">
           ${this.renderProfileBanner()}
-          <h2 class="panel-header-title">📚 Pilih Mata Pelajaran (Kelas ${this.selectedGrade})</h2>
+          <h2 class="panel-header-title">📚 Pilih Mata Pelajaran (Kelas ${this.selectedGrade} SD)</h2>
           <p class="game-subtitle">Setiap mata pelajaran memiliki progres petualangan masing-masing!</p>
 
           <div class="selection-grid">
@@ -856,7 +877,7 @@ export class UIManager {
 
   startAdventureMode(levelKey = null) {
     this.stopAllGameplayScenes();
-    const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || 'easy';
+    const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || "easy";
     this.selectedAdventureLevelKey = chosenLevelKey;
 
     const levelMeta =
@@ -868,42 +889,42 @@ export class UIManager {
 
     this.renderAdventureHUD({
       characterEmoji: charInfo.emoji,
-      playerName: this.activeProfile?.name || 'Petualang',
+      playerName: this.activeProfile?.name || "Petualang",
       subjectName: subInfo.name,
       levelName: levelMeta.name,
-      genre: levelMeta.genre || 'platformer',
-      controlHint: levelMeta.controlHint || '',
+      genre: levelMeta.genre || "platformer",
+      controlHint: levelMeta.controlHint || "",
       coins: 0,
       answeredCount: 0,
-      totalChallenges: levelMeta.totalQuestions
+      totalChallenges: levelMeta.totalQuestions,
     });
 
     const targetSceneKey =
-      chosenLevelKey === 'medium'
-        ? 'CarRacingScene'
-        : chosenLevelKey === 'hard'
-          ? 'MazeAdventureScene'
-          : 'AdventureScene';
+      chosenLevelKey === "medium"
+        ? "CarRacingScene"
+        : chosenLevelKey === "hard"
+          ? "MazeAdventureScene"
+          : "AdventureScene";
 
     this.phaserGame.scene.start(targetSceneKey, {
       profile: this.activeProfile,
       grade: this.selectedGrade,
       subject: this.selectedSubject,
-      levelKey: chosenLevelKey
+      levelKey: chosenLevelKey,
     });
   }
 
   renderAdventureHUD(stats) {
-    let touchHtml = '<div></div>';
+    let touchHtml = "<div></div>";
     if (this.settings.showTouchControls) {
-      if (stats.genre === 'racing') {
+      if (stats.genre === "racing") {
         touchHtml = `
           <div class="hud-touch-controls">
             <button id="touch-left" class="btn-touch" style="width:110px;" aria-label="Geser Kiri">◀ KIRI</button>
             <button id="touch-right" class="btn-touch" style="width:110px;" aria-label="Geser Kanan">KANAN ▶</button>
           </div>
         `;
-      } else if (stats.genre === 'maze') {
+      } else if (stats.genre === "maze") {
         touchHtml = `
           <div class="hud-touch-controls">
             <div class="touch-dpad">
@@ -953,7 +974,7 @@ export class UIManager {
         </div>
 
         <div id="hud-hint-banner" style="align-self: center; background: rgba(44,62,80,0.92); color: #fff; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.98rem; display: block;">
-          🎮 ${this.escapeHtml(stats.controlHint || 'Gunakan tombol arah untuk bermain!')}
+          🎮 ${this.escapeHtml(stats.controlHint || "Gunakan tombol arah untuk bermain!")}
         </div>
 
         ${touchHtml}
@@ -961,32 +982,34 @@ export class UIManager {
     `;
 
     setTimeout(() => {
-      const hintEl = document.getElementById('hud-hint-banner');
-      if (hintEl && hintEl.textContent.startsWith('🎮')) {
-        hintEl.style.display = 'none';
+      const hintEl = document.getElementById("hud-hint-banner");
+      if (hintEl && hintEl.textContent.startsWith("🎮")) {
+        hintEl.style.display = "none";
       }
     }, 4000);
 
-    document.getElementById('btn-hud-exit').addEventListener('click', async () => {
-      this.playTone('click');
-      const advScene = this.getActiveAdventureSceneInstance();
-      if (advScene && this.activeProfile && !advScene.levelCompleted) {
-        this.activeProfile = await db.saveIncompleteAdventureSession(
-          this.activeProfile.id,
-          this.selectedSubject,
-          {
-            grade: this.selectedGrade,
-            levelKey: advScene.levelKey,
-            questionsAnswered: advScene.questionsAnswered,
-            totalChallenges: advScene.totalChallenges,
-            correctAnswers: advScene.correctAnswers,
-            wrongAnswers: advScene.wrongAnswers
-          },
-          this.selectedGrade
-        );
-      }
-      this.showAdventureLevelSelection();
-    });
+    document
+      .getElementById("btn-hud-exit")
+      .addEventListener("click", async () => {
+        this.playTone("click");
+        const advScene = this.getActiveAdventureSceneInstance();
+        if (advScene && this.activeProfile && !advScene.levelCompleted) {
+          this.activeProfile = await db.saveIncompleteAdventureSession(
+            this.activeProfile.id,
+            this.selectedSubject,
+            {
+              grade: this.selectedGrade,
+              levelKey: advScene.levelKey,
+              questionsAnswered: advScene.questionsAnswered,
+              totalChallenges: advScene.totalChallenges,
+              correctAnswers: advScene.correctAnswers,
+              wrongAnswers: advScene.wrongAnswers,
+            },
+            this.selectedGrade,
+          );
+        }
+        this.showAdventureLevelSelection();
+      });
 
     this.bindTouchButtons();
   }
@@ -1022,14 +1045,14 @@ export class UIManager {
         }
       };
 
-      ['mousedown', 'touchstart'].forEach((evt) => {
+      ["mousedown", "touchstart"].forEach((evt) => {
         btn.addEventListener(evt, (e) => {
           e.preventDefault();
           setVal(true);
         });
       });
 
-      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach((evt) => {
+      ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach((evt) => {
         btn.addEventListener(evt, (e) => {
           e.preventDefault();
           setVal(false);
@@ -1037,11 +1060,11 @@ export class UIManager {
       });
     };
 
-    bindKey('touch-left', 'left');
-    bindKey('touch-right', 'right');
-    bindKey('touch-up', 'up');
-    bindKey('touch-down', 'down');
-    bindKey('touch-jump', 'jump');
+    bindKey("touch-left", "left");
+    bindKey("touch-right", "right");
+    bindKey("touch-up", "up");
+    bindKey("touch-down", "down");
+    bindKey("touch-jump", "jump");
   }
 
   showQuestionModal({ questionData, triggerTitle, onComplete }) {
@@ -1318,7 +1341,10 @@ export class UIManager {
     let studentChar = this.activeProfile?.character || "kiko";
 
     const renderSetupHTML = () => {
-      const topics = questionManager.getTopicsBySubject(chosenSubject, this.selectedGrade);
+      const topics = questionManager.getTopicsBySubject(
+        chosenSubject,
+        this.selectedGrade,
+      );
       const topicOptionsHtml = [
         `<option value="semua">Semua Topik (${chosenSubject.toUpperCase()})</option>`,
         ...topics.map(
@@ -1360,7 +1386,7 @@ export class UIManager {
                 <div class="form-group">
                   <label for="duel-sel-subject">📘 Mata Pelajaran:</label>
                   <select id="duel-sel-subject" class="input-cartoon">
-                    ${GAME_CONFIG.subjects
+                    ${this.getSubjectsForGrade(this.selectedGrade)
                       .filter((s) => s.active)
                       .map(
                         (s) => `
@@ -2220,9 +2246,18 @@ export class UIManager {
     });
   }
 
-  renderSubjectAdventureTableForTutor(profile, subjectId, subjectTitle, grade = null) {
+  renderSubjectAdventureTableForTutor(
+    profile,
+    subjectId,
+    subjectTitle,
+    grade = null,
+  ) {
     const targetGrade = Number(grade) || Number(profile?.grade) || 3;
-    const subjProg = db.getSubjectAdventureProgress(profile, subjectId, targetGrade);
+    const subjProg = db.getSubjectAdventureProgress(
+      profile,
+      subjectId,
+      targetGrade,
+    );
     const rowsHtml = GAME_CONFIG.adventureLevels
       .map((lvl) => {
         const st = subjProg?.levels?.[lvl.id] || {
@@ -2458,16 +2493,17 @@ export class UIManager {
         const sTotal = sCorrect + sWrong;
         const sAcc = sTotal > 0 ? Math.round((sCorrect / sTotal) * 100) : 0;
 
-        const advTablesHtml = GAME_CONFIG.subjects
+        const advTablesHtml = this.getSubjectsForGrade(targetProfile.grade || 3)
           .filter((s) => s.active)
           .map((s) =>
             this.renderSubjectAdventureTableForTutor(
               targetProfile,
               s.id,
-              `${s.icon} Progres Adventure ${s.name} (Terpisah dari Mapel Lain & Mode Duel):`,
-            ),
+              `${s.icon} Progres Adventure ${s.name} (Kelas ${targetProfile.grade || 3}):`,
+              targetProfile.grade || 3
+            )
           )
-          .join("");
+          .join('');
 
         const topicEntries = Object.values(
           targetProfile.topicPerformance || {},

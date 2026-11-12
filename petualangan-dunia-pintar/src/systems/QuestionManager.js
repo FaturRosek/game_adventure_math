@@ -1,9 +1,14 @@
+import { GRADE_1_BANKS } from "../data/grade1Banks.js";
+import { GRADE_2_BANKS } from "../data/grade2Banks.js";
+
 import mathGrade3Data from "../data/mathGrade3.json";
 import ipasGrade3Data from "../data/ipasGrade3.json";
 import bindoGrade3Data from "../data/bindoGrade3.json";
 import bingGrade3Data from "../data/bingGrade3.json";
 import pancasilaGrade3Data from "../data/pancasilaGrade3.json";
 import senirupaGrade3Data from "../data/senirupaGrade3.json";
+import paiGrade3Data from "../data/paiGrade3.json";
+import maduraGrade3Data from "../data/maduraGrade3.json";
 
 import mathGrade4Data from "../data/mathGrade4.json";
 import ipasGrade4Data from "../data/ipasGrade4.json";
@@ -22,11 +27,79 @@ const ALL_SUBJECT_KEYS = [
   "bahasa_inggris",
   "pendidikan_pancasila",
   "seni_rupa",
+  "pai",
+  "bahasa_madura",
 ];
+
+const SUPPORTED_GRADES = [1, 2, 3, 4];
 
 export class QuestionManager {
   constructor() {
     this.baseBanksByGrade = {
+      1: {
+        matematika: GRADE_1_BANKS.matematika.map((q) => ({
+          ...q,
+          grade: 1,
+          sourceType: "question_bank",
+        })),
+        ipas: GRADE_1_BANKS.ipas.map((q) => ({
+          ...q,
+          grade: 1,
+          sourceType: "question_bank",
+        })),
+        bahasa_indonesia: GRADE_1_BANKS.bahasa_indonesia.map((q) => ({
+          ...q,
+          grade: 1,
+          sourceType: "question_bank",
+        })),
+        bahasa_inggris: GRADE_1_BANKS.bahasa_inggris.map((q) => ({
+          ...q,
+          grade: 1,
+          sourceType: "question_bank",
+        })),
+        pendidikan_pancasila: GRADE_1_BANKS.pendidikan_pancasila.map((q) => ({
+          ...q,
+          grade: 1,
+          sourceType: "question_bank",
+        })),
+        seni_rupa: GRADE_1_BANKS.seni_rupa.map((q) => ({
+          ...q,
+          grade: 1,
+          sourceType: "question_bank",
+        })),
+      },
+      2: {
+        matematika: GRADE_2_BANKS.matematika.map((q) => ({
+          ...q,
+          grade: 2,
+          sourceType: "question_bank",
+        })),
+        ipas: GRADE_2_BANKS.ipas.map((q) => ({
+          ...q,
+          grade: 2,
+          sourceType: "question_bank",
+        })),
+        bahasa_indonesia: GRADE_2_BANKS.bahasa_indonesia.map((q) => ({
+          ...q,
+          grade: 2,
+          sourceType: "question_bank",
+        })),
+        bahasa_inggris: GRADE_2_BANKS.bahasa_inggris.map((q) => ({
+          ...q,
+          grade: 2,
+          sourceType: "question_bank",
+        })),
+        pendidikan_pancasila: GRADE_2_BANKS.pendidikan_pancasila.map((q) => ({
+          ...q,
+          grade: 2,
+          sourceType: "question_bank",
+        })),
+        seni_rupa: GRADE_2_BANKS.seni_rupa.map((q) => ({
+          ...q,
+          grade: 2,
+          sourceType: "question_bank",
+        })),
+      },
       3: {
         matematika: mathGrade3Data.map((q) => ({
           ...q,
@@ -54,6 +127,16 @@ export class QuestionManager {
           sourceType: "question_bank",
         })),
         seni_rupa: senirupaGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        pai: paiGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
+        bahasa_madura: maduraGrade3Data.map((q) => ({
           ...q,
           grade: 3,
           sourceType: "question_bank",
@@ -93,16 +176,21 @@ export class QuestionManager {
       },
     };
 
-    this.banksByGrade = { 3: {}, 4: {} };
-    [3, 4].forEach((g) => {
+    this.banksByGrade = { 1: {}, 2: {}, 3: {}, 4: {} };
+    SUPPORTED_GRADES.forEach((g) => {
       ALL_SUBJECT_KEYS.forEach((k) => {
-        this.banksByGrade[g][k] = [...this.baseBanksByGrade[g][k]];
+        this.banksByGrade[g][k] = [...(this.baseBanksByGrade[g][k] || [])];
       });
     });
 
     this.banks = this.banksByGrade[3];
     this.usedQuestionIds = new Set();
     this.usedQuestionSignatures = new Set();
+  }
+
+  normalizeGrade(grade = 3) {
+    const g = Number(grade);
+    return SUPPORTED_GRADES.includes(g) ? g : 3;
   }
 
   normalizeSubjectKey(subject = "matematika") {
@@ -137,6 +225,20 @@ export class QuestionManager {
     if (raw === "seni_rupa" || raw === "seni rupa" || raw === "senirupa") {
       return "seni_rupa";
     }
+    if (
+      raw === "pai" ||
+      raw === "pendidikan agama islam" ||
+      raw === "pendidikan_agama_islam"
+    ) {
+      return "pai";
+    }
+    if (
+      raw === "bahasa_madura" ||
+      raw === "bahasa madura" ||
+      raw === "madura"
+    ) {
+      return "bahasa_madura";
+    }
     return "matematika";
   }
 
@@ -147,14 +249,16 @@ export class QuestionManager {
     if (k === "bahasa_inggris") return "Bahasa Inggris";
     if (k === "pendidikan_pancasila") return "Pendidikan Pancasila";
     if (k === "seni_rupa") return "Seni Rupa";
+    if (k === "pai") return "Pendidikan Agama Islam";
+    if (k === "bahasa_madura") return "Bahasa Madura";
     return "Matematika";
   }
 
   async loadCustomQuestionsFromDB() {
     const customList = await db.getCustomQuestions();
-    [3, 4].forEach((g) => {
+    SUPPORTED_GRADES.forEach((g) => {
       ALL_SUBJECT_KEYS.forEach((k) => {
-        this.banksByGrade[g][k] = [...this.baseBanksByGrade[g][k]];
+        this.banksByGrade[g][k] = [...(this.baseBanksByGrade[g][k] || [])];
       });
     });
 
@@ -168,7 +272,7 @@ export class QuestionManager {
       const check = hybridEngine.validateQuestionObject(withSource);
       if (!check.valid) return;
 
-      const g = Number(q.grade) === 4 ? 4 : 3;
+      const g = this.normalizeGrade(q.grade);
       const subjKey = this.normalizeSubjectKey(q.subject);
       this.banksByGrade[g][subjKey].push(withSource);
       existingIds.add(q.id);
@@ -183,14 +287,14 @@ export class QuestionManager {
   }
 
   getSubjectBank(subject = "matematika", grade = 3) {
-    const g = Number(grade) === 4 ? 4 : 3;
+    const g = this.normalizeGrade(grade);
     const key = this.normalizeSubjectKey(subject);
     return this.banksByGrade[g][key] || this.banksByGrade[g].matematika;
   }
 
   getAllQuestionsCombined() {
     const all = [];
-    [3, 4].forEach((g) => {
+    SUPPORTED_GRADES.forEach((g) => {
       ALL_SUBJECT_KEYS.forEach((k) => {
         all.push(...(this.banksByGrade[g][k] || []));
       });
@@ -212,22 +316,28 @@ export class QuestionManager {
       total: 0,
       mathTemplateCount:
         hybridEngine.mathTemplates.length +
-        hybridEngine.mathGrade4Templates.length,
+        hybridEngine.mathGrade4Templates.length +
+        2,
       ipasTemplateCount:
         hybridEngine.ipasTemplates.length +
-        hybridEngine.ipasGrade4Templates.length,
+        hybridEngine.ipasGrade4Templates.length +
+        2,
       bindoTemplateCount:
         hybridEngine.bindoTemplates.length +
-        hybridEngine.bindoGrade4Templates.length,
+        hybridEngine.bindoGrade4Templates.length +
+        2,
       bingTemplateCount:
         hybridEngine.bingTemplates.length +
-        hybridEngine.bingGrade4Templates.length,
+        hybridEngine.bingGrade4Templates.length +
+        2,
       pancasilaTemplateCount:
         hybridEngine.pancasilaTemplates.length +
-        hybridEngine.pancasilaGrade4Templates.length,
+        hybridEngine.pancasilaGrade4Templates.length +
+        2,
       senirupaTemplateCount:
         hybridEngine.senirupaTemplates.length +
-        hybridEngine.senirupaGrade4Templates.length,
+        hybridEngine.senirupaGrade4Templates.length +
+        2,
       bySubject: {},
     };
 
@@ -241,7 +351,7 @@ export class QuestionManager {
       };
     });
 
-    [3, 4].forEach((g) => {
+    SUPPORTED_GRADES.forEach((g) => {
       ALL_SUBJECT_KEYS.forEach((subj) => {
         const list = this.banksByGrade[g][subj] || [];
         stats.bySubject[subj].total += list.length;
@@ -265,7 +375,7 @@ export class QuestionManager {
   exportQuestionBankPayload() {
     return {
       app: "Petualangan Dunia Pintar - Question Bank Export",
-      version: "1.0.0-6subjects-grade3-4",
+      version: "1.0.0-grade1-2-3-4",
       exportedAt: new Date().toISOString(),
       totalQuestions: this.getAllQuestionsCombined().length,
       questions: this.getAllQuestionsCombined(),
@@ -324,7 +434,7 @@ export class QuestionManager {
       }
 
       const subjKey = this.normalizeSubjectKey(item.subject);
-      const itemGrade = Number(item.grade) === 4 ? 4 : 3;
+      const itemGrade = this.normalizeGrade(item.grade);
       const normalizedQuestion = {
         id,
         grade: itemGrade,
@@ -377,14 +487,14 @@ export class QuestionManager {
   ) {
     if (explicitTopic && explicitTopic !== "semua") return explicitTopic;
     const subjKey = this.normalizeSubjectKey(subject);
-    const numGrade = Number(grade) === 4 ? 4 : 3;
+    const numGrade = this.normalizeGrade(grade);
     const allTopics = this.getTopicsBySubject(subjKey, numGrade);
 
     if (profile && profile.topicPerformance) {
       const remedialTopics = Object.values(profile.topicPerformance)
         .filter(
           (tp) =>
-            (Number(tp.grade) || 3) === numGrade &&
+            this.normalizeGrade(tp.grade) === numGrade &&
             tp.subject === subjKey &&
             (tp.needsReview || tp.wrong > tp.correct),
         )
@@ -403,7 +513,9 @@ export class QuestionManager {
     const subjKey = this.normalizeSubjectKey(subject);
     const profile = options.profile || null;
     const settings = options.settings || {};
-    const targetGrade = Number(options.grade) || Number(profile?.grade) || 3;
+    const targetGrade = this.normalizeGrade(
+      options.grade || profile?.grade || 3,
+    );
 
     const chosenTopic = this.pickAdventureTopic(
       subjKey,
@@ -427,7 +539,7 @@ export class QuestionManager {
         });
 
     const targetDiff = diffResolution.difficulty;
-    const preferTemplateProb = subjKey === "matematika" ? 0.5 : 0.25;
+    const preferTemplateProb = subjKey === "matematika" ? 0.35 : 0.2;
 
     let selectedQuestion = null;
 
@@ -539,7 +651,7 @@ export class QuestionManager {
     for (const item of shuffled) {
       const normalized = {
         ...item,
-        grade: Number(grade) || 3,
+        grade: this.normalizeGrade(grade),
         sourceType: item.sourceType || "question_bank",
       };
       const check = hybridEngine.validateQuestionObject(normalized);
@@ -558,7 +670,7 @@ export class QuestionManager {
     profile = null,
     settings = {},
   }) {
-    const numGrade = Number(grade) || Number(profile?.grade) || 3;
+    const numGrade = this.normalizeGrade(grade || profile?.grade || 3);
     const subjKey = this.normalizeSubjectKey(subject);
     const roundTopic =
       topic && topic !== "semua"
