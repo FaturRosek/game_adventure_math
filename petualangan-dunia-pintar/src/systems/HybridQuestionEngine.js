@@ -35,6 +35,7 @@ export class HybridQuestionEngine {
     this.senirupaTemplates = this.registerSenirupaGrade3Templates();
     this.paiTemplates = this.registerPaiGrade3Templates();
     this.maduraTemplates = this.registerMaduraGrade3Templates();
+    this.pjokTemplates = this.registerPjokGrade3Templates();
 
     this.mathGrade4Templates = this.registerMathGrade4Templates();
     this.ipasGrade4Templates = this.registerIpasGrade4Templates();
@@ -2388,6 +2389,52 @@ export class HybridQuestionEngine {
     ];
   }
 
+  registerPjokGrade3Templates() {
+    return [
+      {
+        templateId: 'TPL_PJOK3_GERAK_KESEHATAN',
+        grade: 3,
+        subject: 'PJOK',
+        topic: 'Gerak Dasar',
+        subtopic: 'Analisis Gerak Dasar dan Pola Hidup Sehat',
+        generate: () => {
+          const cases = [
+            {
+              question: 'Saat bermain lompat tali (skipping) di halaman sekolah, tubuh kita melakukan tolakan dua kaki ke atas melewati tali. Perbedaan utama antara gerakan "Melompat" dan "Meloncat" dalam PJOK adalah ...',
+              correct: 'Melompat menggunakan tumpuan satu kaki, sedangkan meloncat menggunakan tumpuan dua kaki secara bersamaan',
+              options: [
+                'Melompat menggunakan tumpuan satu kaki, sedangkan meloncat menggunakan tumpuan dua kaki secara bersamaan',
+                'Melompat dilakukan sambil duduk, sedangkan meloncat dilakukan sambil tidur',
+                'Melompat tidak berpindah tempat, sedangkan meloncat menggunakan bola',
+                'Keduanya hanya boleh dilakukan di dalam kolam renang'
+              ],
+              explanation: 'Dalam gerak dasar lokomotor, melompat bertumpu pada satu kaki (seperti lompat jauh), sedangkan meloncat bertumpu pada dua kaki sekaligus (seperti loncat katak).'
+            },
+            {
+              question: 'Agar tubuh anak usia sekolah dasar dapat tumbuh sehat, bugar, dan bersemangat mengikuti pelajaran di pagi hari, kebiasaan pola makan dan istirahat yang paling tepat adalah ...',
+              correct: 'Tidur malam tepat waktu (8–10 jam) dan selalu sarapan makanan bergizi seimbang sebelum berangkat sekolah',
+              options: [
+                'Tidur malam tepat waktu (8–10 jam) dan selalu sarapan makanan bergizi seimbang sebelum berangkat sekolah',
+                'Begadang bermain game sampai tengah malam lalu berangkat sekolah tanpa sarapan',
+                'Hanya makan permen dan kerupuk setiap pagi tanpa minum air putih',
+                'Berolahraga berat di bawah terik matahari siang saat perut sedang kosong'
+              ],
+              explanation: 'Tidur yang cukup dan sarapan makanan bergizi (karbohidrat, lauk berprotein, sayur, buah, dan air putih) memberikan energi bagi otak dan otot untuk beraktivitas.'
+            }
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            params: {}
+          };
+        }
+      }
+    ];
+  }
+
   generateFromTemplate({
     grade = 3,
     subject = "matematika",
@@ -2412,6 +2459,8 @@ export class HybridQuestionEngine {
     else if (rawSubj === "pai" || rawSubj.includes("agama islam"))
       subjKey = "pai";
     else if (rawSubj.includes("madura")) subjKey = "bahasa_madura";
+    else if (rawSubj === "pjok" || rawSubj.includes("jasmani") || rawSubj.includes("olahraga"))
+      subjKey = "pjok";
 
     let pool = [];
     if (numGrade === 1) {
@@ -2435,6 +2484,7 @@ export class HybridQuestionEngine {
       else if (subjKey === "seni_rupa") pool = this.senirupaTemplates;
       else if (subjKey === "pai") pool = this.paiTemplates;
       else if (subjKey === "bahasa_madura") pool = this.maduraTemplates;
+      else if (subjKey === "pjok") pool = this.pjokTemplates;
       else pool = this.mathTemplates;
     }
 
@@ -2505,6 +2555,8 @@ export class HybridQuestionEngine {
       "pai",
       "bahasa madura",
       "bahasa_madura",
+      "pjok",
+      "pendidikan jasmani, olahraga, dan kesehatan",
     ];
     if (!validSubjects.includes(subj)) {
       errors.push(`Mata pelajaran tidak didukung: ${q.subject}`);
@@ -2589,6 +2641,7 @@ export class HybridQuestionEngine {
       ...(questionBanks.seni_rupa || []),
       ...(questionBanks.pai || []),
       ...(questionBanks.bahasa_madura || []),
+      ...(questionBanks.pjok || []),
     ];
     let bankInvalidCount = 0;
     const seenBankIds = new Set();
@@ -2647,6 +2700,7 @@ export class HybridQuestionEngine {
     testTemplatePool("Seni Rupa", "seni_rupa", this.senirupaTemplates);
     testTemplatePool("Pendidikan Agama Islam", "pai", this.paiTemplates);
     testTemplatePool("Bahasa Madura", "bahasa_madura", this.maduraTemplates);
+    testTemplatePool("PJOK", "pjok", this.pjokTemplates);
 
     return report;
   }
