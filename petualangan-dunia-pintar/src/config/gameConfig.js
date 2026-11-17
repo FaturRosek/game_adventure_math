@@ -110,7 +110,7 @@ export const GAME_CONFIG = {
       icon: "🕌",
       active: true,
       allowedGrades: [3],
-      statusText: "Aktif (Khusus Kelas 3)",
+      statusText: "Aktif",
       desc: "Al-Qur'an & Hadis, Akidah, Akhlak Terpuji, Fikih Ibadah & Kisah Nabi",
     },
     {
@@ -119,8 +119,17 @@ export const GAME_CONFIG = {
       icon: "🏝️",
       active: true,
       allowedGrades: [3],
-      statusText: "Aktif (Khusus Kelas 3)",
+      statusText: "Aktif",
       desc: "Kosakata Madura, Undhak-Usuk Bahasa (Engghi-Bhunten) & Budaya Madura",
+    },
+    {
+      id: "pjok",
+      name: "PJOK",
+      icon: "⚽",
+      active: true,
+      allowedGrades: [3],
+      statusText: "Aktif",
+      desc: "Gerak Dasar, Permainan Bola, Kebugaran, Senam & Hidup Sehat",
     },
   ],
 

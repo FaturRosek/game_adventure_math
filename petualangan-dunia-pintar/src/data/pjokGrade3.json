@@ -1,0 +1,206 @@
+[
+  {
+    "id": "PJOK3_001",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Gerak Dasar",
+    "subtopic": "Membedakan Gerak Lokomotor dan Nonlokomotor",
+    "difficulty": "mudah",
+    "question": "Saat pemanasan di lapangan, Budi memutar kedua lengan dan membungkukkan badan di tempat tanpa melangkahkan kaki. Gerakan yang dilakukan Budi tanpa berpindah tempat tersebut termasuk gerak dasar ...",
+    "options": [
+      "Nonlokomotor",
+      "Lokomotor",
+      "Manipulatif",
+      "Atletik lari"
+    ],
+    "correctAnswer": "Nonlokomotor",
+    "explanation": "Gerak nonlokomotor adalah gerakan tubuh yang dilakukan tanpa berpindah tempat, seperti membungkuk, memutar, mengayun, dan menekuk."
+  },
+  {
+    "id": "PJOK3_002",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Gerak Dasar",
+    "subtopic": "Kombinasi Gerak Lokomotor dan Manipulatif",
+    "difficulty": "sedang",
+    "question": "Dalam permainan sepak bola mini, Adi berlari mengejar bola lalu menendang bola tersebut ke arah gawang. Kegiatan Adi tersebut menggabungkan dua gerak dasar secara berurutan, yaitu ...",
+    "options": [
+      "Gerak lokomotor (berlari) dan gerak manipulatif (menendang bola)",
+      "Gerak nonlokomotor (diam) dan gerak keseimbangan",
+      "Gerak tidur telentang dan gerak memutar kepala",
+      "Gerak manipulatif saja tanpa berpindah tempat"
+    ],
+    "correctAnswer": "Gerak lokomotor (berlari) dan gerak manipulatif (menendang bola)",
+    "explanation": "Berlari berpindah tempat adalah gerak lokomotor, sedangkan menendang menggunakan alat/objek berupa bola adalah gerak manipulatif."
+  },
+  {
+    "id": "PJOK3_003",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Permainan dan Olahraga",
+    "subtopic": "Teknik Dasar Menendang dan Menghentikan Bola",
+    "difficulty": "sedang",
+    "question": "Ketika bermain oper-operan bola bersama teman dalam jarak dekat, bagian kaki yang paling tepat digunakan agar arah jalannya bola lebih terarah dan akurat kepada teman adalah ...",
+    "options": [
+      "Kaki bagian dalam",
+      "Tumit bagian belakang",
+      "Telapak sepatu bagian bawah",
+      "Lutut kaki"
+    ],
+    "correctAnswer": "Kaki bagian dalam",
+    "explanation": "Menendang dan mengumpan bola jarak dekat menggunakan kaki bagian dalam memiliki bidang sentuh yang luas sehingga arah bola lebih akurat."
+  },
+  {
+    "id": "PJOK3_004",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Permainan dan Olahraga",
+    "subtopic": "Teknik Dasar Melempar dan Menangkap Bola Kecil",
+    "difficulty": "sedang",
+    "question": "Saat bermain kasti, Rina bersiap menangkap bola melambung yang dilempar oleh temannya. Agar bola dapat ditangkap dengan aman dan tidak terlepas, posisi kedua telapak tangan Rina sebaiknya ...",
+    "options": [
+      "Membentuk seperti corong atau mangkuk menghadap arah datangnya bola dengan pandangan fokus ke bola",
+      "Dikepalkan rapat-rapat sambil memejamkan kedua mata",
+      "Disembunyikan di belakang punggung sampai bola jatuh ke tanah",
+      "Direntangkan lurus kaku ke samping kiri dan kanan"
+    ],
+    "correctAnswer": "Membentuk seperti corong atau mangkuk menghadap arah datangnya bola dengan pandangan fokus ke bola",
+    "explanation": "Membentuk kedua tangan seperti mangkuk/corong dan menariknya sedikit mengikuti arah bola membantu meredam pantulan sehingga bola mudah ditangkap."
+  },
+  {
+    "id": "PJOK3_005",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Permainan dan Olahraga",
+    "subtopic": "Permainan Tradisional dan Sportivitas",
+    "difficulty": "mudah",
+    "question": "Dalam permainan tradisional Gobak Sodor (Galah Asin), satu regu bertugas menjaga garis dan regu lainnya berusaha melewati penjagaan. Nilai utama yang harus dijaga agar permainan berhasil dan menyenangkan adalah ...",
+    "options": [
+      "Kerja sama tim yang kompak dan sikap jujur mengakui jika tersentuh penjaga",
+      "Mendorong teman lawan sampai terjatuh agar bisa lewat",
+      "Berusaha menang sendiri tanpa memedulikan teman satu regu",
+      "Marah dan membubarkan permainan ketika tersentuh lawan"
+    ],
+    "correctAnswer": "Kerja sama tim yang kompak dan sikap jujur mengakui jika tersentuh penjaga",
+    "explanation": "Permainan beregu seperti Gobak Sodor melatih kekompakan kerja sama, kelincahan, serta sikap sportif dan jujur."
+  },
+  {
+    "id": "PJOK3_006",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Aktivitas Kebugaran Jasmani",
+    "subtopic": "Latihan Keseimbangan dan Kelincahan",
+    "difficulty": "mudah",
+    "question": "Gerakan berdiri dengan satu kaki sambil merentangkan kedua tangan ke samping seperti kapal terbang selama beberapa detik bertujuan untuk melatih ...",
+    "options": [
+      "Keseimbangan tubuh",
+      "Kecepatan lari jarak jauh",
+      "Kekuatan melempar bola",
+      "Ketangkasan berenang"
+    ],
+    "correctAnswer": "Keseimbangan tubuh",
+    "explanation": "Sikap kapal terbang dengan bertumpu pada satu kaki merupakan latihan kebugaran jasmani untuk menjaga keseimbangan statis tubuh."
+  },
+  {
+    "id": "PJOK3_007",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Aktivitas Kebugaran Jasmani",
+    "subtopic": "Latihan Kekuatan dan Daya Tahan Sederhana",
+    "difficulty": "sulit",
+    "question": "Pak Guru mengajak siswa melakukan permainan saling mendorong telapak tangan berpasangan dengan teman yang seimbang ukurannya. Latihan sederhana tersebut bermanfaat untuk melatih kekuatan otot ...",
+    "options": [
+      "Lengan dan bahu",
+      "Leher dan kepala",
+      "Jari kaki saja",
+      "Perut bagian bawah"
+    ],
+    "correctAnswer": "Lengan dan bahu",
+    "explanation": "Mendorong telapak tangan secara berpasangan menggunakan tumpuan tenaga tangan sehingga menguatkan otot lengan dan bahu."
+  },
+  {
+    "id": "PJOK3_008",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Aktivitas Senam",
+    "subtopic": "Keselamatan dalam Senam Lantai Dasar",
+    "difficulty": "sulit",
+    "question": "Ketika berlatih gerakan berguling atau bertumpu pada pelajaran senam lantai di sekolah, perlengkapan wajib yang harus dipasang di atas lantai agar tubuh siswa aman dari benturan keras adalah ...",
+    "options": [
+      "Matras senam yang empuk",
+      "Lembaran seng logam",
+      "Tumpukan batu kerikil",
+      "Plastik licin yang basah"
+    ],
+    "correctAnswer": "Matras senam yang empuk",
+    "explanation": "Matras berfungsi sebagai alas pelindung yang empuk dalam senam lantai untuk mencegah cedera saat tubuh menyentuh lantai."
+  },
+  {
+    "id": "PJOK3_009",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Aktivitas Gerak Berirama",
+    "subtopic": "Koordinasi Gerak Tangan dan Kaki Sesuai Irama",
+    "difficulty": "sedang",
+    "question": "Dalam aktivitas gerak berirama (senam irama), siswa melangkahkan kaki ke kiri dan ke kanan sambil mengayunkan kedua lengan mengikuti ketukan lagu. Kunci utama agar gerak berirama terlihat indah dan kompak adalah ...",
+    "options": [
+      "Kesesuaian (keselarasan) antara gerakan tangan, langkah kaki, dan ketukan irama musik",
+      "Bergerak secepat mungkin mendahului ketukan musik dan teman lainnya",
+      "Melakukan gerakan sendiri-sendiri tanpa mendengarkan hitungan",
+      "Berdiri diam kaku tanpa menggerakkan tangan maupun kaki"
+    ],
+    "correctAnswer": "Kesesuaian (keselarasan) antara gerakan tangan, langkah kaki, dan ketukan irama musik",
+    "explanation": "Gerak berirama mengutamakan koordinasi gerak tangan dan kaki yang selaras dengan ketukan hitungan atau irama lagu."
+  },
+  {
+    "id": "PJOK3_010",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Kesehatan dan Kebersihan",
+    "subtopic": "Pentingnya Pemanasan dan Pendinginan Saat Berolahraga",
+    "difficulty": "mudah",
+    "question": "Sebelum memulai olahraga inti di lapangan, guru selalu memimpin gerakan pemanasan (warming up). Mengapa kita wajib melakukan pemanasan sebelum berolahraga?",
+    "options": [
+      "Agar otot dan sendi tubuh siap bergerak sehingga terhindar dari risiko kram atau cedera",
+      "Supaya tenaga kita langsung habis sebelum permainan olahraga dimulai",
+      "Agar pakaian olahraga cepat kotor terkena keringat",
+      "Sebagai pengganti tidur malam yang kurang"
+    ],
+    "correctAnswer": "Agar otot dan sendi tubuh siap bergerak sehingga terhindar dari risiko kram atau cedera",
+    "explanation": "Pemanasan meningkatkan suhu tubuh secara bertahap dan melenturkan otot serta persendian agar tidak mengalami cedera saat berolahraga."
+  },
+  {
+    "id": "PJOK3_011",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Kesehatan dan Kebersihan",
+    "subtopic": "Makanan Bergizi dan Minum Air Putih",
+    "difficulty": "sulit",
+    "question": "Setelah selesai berolahraga dan mengeluarkan banyak keringat, tubuh kita kehilangan cairan. Minuman yang paling sehat dan tepat untuk segera menggantikan cairan tubuh yang hilang adalah ...",
+    "options": [
+      "Air putih bersih yang matang",
+      "Minuman bersoda yang sangat manis",
+      "Kopi kental yang pahit",
+      "Sirup dengan banyak pewarna buatan"
+    ],
+    "correctAnswer": "Air putih bersih yang matang",
+    "explanation": "Air putih bersih sangat penting untuk menggantikan cairan tubuh yang keluar bersama keringat dan menjaga organ tubuh tetap sehat."
+  },
+  {
+    "id": "PJOK3_012",
+    "grade": 3,
+    "subject": "PJOK",
+    "topic": "Kesehatan dan Kebersihan",
+    "subtopic": "Istirahat Cukup dan Kebersihan Tubuh",
+    "difficulty": "sulit",
+    "question": "Sepulang dari bermain bola di lapangan pada sore hari, tubuh Beni berkeringat dan kakinya terkena debu tanah. Kebiasaan hidup bersih dan sehat yang harus dilakukan Beni sesampainya di rumah adalah ...",
+    "options": [
+      "Istirahat sejenak hingga keringat mereda, lalu mandi menggunakan sabun dan air bersih serta berganti pakaian bersih",
+      "Langsung naik ke tempat tidur dengan pakaian yang masih basah oleh keringat dan tanah",
+      "Langsung makan makanan menggunakan tangan yang belum dicuci",
+      "Tidur larut malam sambil menonton televisi tanpa mandi sore"
+    ],
+    "correctAnswer": "Istirahat sejenak hingga keringat mereda, lalu mandi menggunakan sabun dan air bersih serta berganti pakaian bersih",
+    "explanation": "Mandi dengan sabun setelah beraktivitas membersihkan keringat, debu, serta kuman penyakit dari kulit sehingga tubuh kembali segar dan sehat."
+  }
+]
