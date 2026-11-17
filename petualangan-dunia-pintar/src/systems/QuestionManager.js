@@ -9,6 +9,7 @@ import pancasilaGrade3Data from "../data/pancasilaGrade3.json";
 import senirupaGrade3Data from "../data/senirupaGrade3.json";
 import paiGrade3Data from "../data/paiGrade3.json";
 import maduraGrade3Data from "../data/maduraGrade3.json";
+import pjokGrade3Data from "../data/pjokGrade3.json";
 
 import mathGrade4Data from "../data/mathGrade4.json";
 import ipasGrade4Data from "../data/ipasGrade4.json";
@@ -29,6 +30,7 @@ const ALL_SUBJECT_KEYS = [
   "seni_rupa",
   "pai",
   "bahasa_madura",
+  "pjok",
 ];
 
 const SUPPORTED_GRADES = [1, 2, 3, 4];
@@ -141,6 +143,11 @@ export class QuestionManager {
           grade: 3,
           sourceType: "question_bank",
         })),
+        pjok: pjokGrade3Data.map((q) => ({
+          ...q,
+          grade: 3,
+          sourceType: "question_bank",
+        })),
       },
       4: {
         matematika: mathGrade4Data.map((q) => ({
@@ -239,6 +246,13 @@ export class QuestionManager {
     ) {
       return "bahasa_madura";
     }
+    if (
+      raw === "pjok" ||
+      raw.includes("pendidikan jasmani") ||
+      raw.includes("olahraga")
+    ) {
+      return "pjok";
+    }
     return "matematika";
   }
 
@@ -251,6 +265,7 @@ export class QuestionManager {
     if (k === "seni_rupa") return "Seni Rupa";
     if (k === "pai") return "Pendidikan Agama Islam";
     if (k === "bahasa_madura") return "Bahasa Madura";
+    if (k === "pjok") return "PJOK";
     return "Matematika";
   }
 
