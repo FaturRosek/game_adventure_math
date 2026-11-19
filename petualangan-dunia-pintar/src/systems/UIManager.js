@@ -2,6 +2,17 @@ import { GAME_CONFIG } from "../config/gameConfig.js";
 import { db } from "../storage/db.js";
 import { questionManager } from "./QuestionManager.js";
 import { hybridEngine } from "./HybridQuestionEngine.js";
+import {
+  BATTLE_CHARACTERS,
+  BATTLE_COSTUMES,
+  BATTLE_ACCESSORIES,
+  BATTLE_ATTACK_EFFECTS,
+  BATTLE_VICTORY_EFFECTS,
+  BATTLE_ACHIEVEMENTS,
+  calculateBattleLevel,
+} from "../data/battleArenaCatalog.js";
+import { battleAudio } from "./BattleAudioManager.js";
+import { BattleFighterRig } from "../systems/BattleFighterRig.js";
 
 export class UIManager {
   constructor() {
@@ -22,6 +33,7 @@ export class UIManager {
     this.selectedAdventureLevelKey = "easy";
     this.audioCtx = null;
     this.duelSession = null;
+    this.battleSession = null;
     this.tutorUnlocked = false;
   }
 
@@ -29,6 +41,10 @@ export class UIManager {
     this.phaserGame = phaserGame;
     await db.init();
     this.settings = await db.getSettings();
+    battleAudio.configure({
+      muted: Boolean(this.settings.battleMuted),
+      volume: this.settings.battleVolume ?? 0.6,
+    });
     await questionManager.loadCustomQuestionsFromDB();
     this.activeProfile = await db.getActiveProfile();
     this.showMainMenu();
@@ -167,6 +183,7 @@ export class UIManager {
       "CarRacingScene",
       "MazeAdventureScene",
       "DuelScene",
+      "BattleArenaScene",
     ].forEach((scKey) => {
       if (this.phaserGame.scene.isActive(scKey)) {
         this.phaserGame.scene.stop(scKey);
@@ -204,7 +221,8 @@ export class UIManager {
           ${this.renderProfileBanner()}
 
           <div class="btn-group-vertical">
-            <button id="btn-start-game" class="btn-cartoon btn-green">🚀 Mulai Bermain</button>
+            <button id="btn-start-game" class="btn-cartoon btn-green">🚀 Mulai Bermain Adventure</button>
+            <button id="btn-battle-arena" class="btn-cartoon btn-red">⚔️ Quiz Battle Arena</button>
             <button id="btn-profile" class="btn-cartoon btn-blue">👦 Profil Pemain</button>
             <button id="btn-tutor-panel" class="btn-cartoon btn-purple">👨‍🏫 Panel Tutor</button>
             <button id="btn-settings" class="btn-cartoon">⚙️ Pengaturan</button>
@@ -222,6 +240,13 @@ export class UIManager {
         this.showGradeSelection();
       }
     });
+
+    document
+      .getElementById("btn-battle-arena")
+      .addEventListener("click", () => {
+        battleAudio.play("click");
+        this.showBattleArenaHub("setup");
+      });
 
     document.getElementById("btn-profile").addEventListener("click", () => {
       this.playTone("click");
@@ -2500,10 +2525,10 @@ export class UIManager {
               targetProfile,
               s.id,
               `${s.icon} Progres Adventure ${s.name} (Kelas ${targetProfile.grade || 3}):`,
-              targetProfile.grade || 3
-            )
+              targetProfile.grade || 3,
+            ),
           )
-          .join('');
+          .join("");
 
         const topicEntries = Object.values(
           targetProfile.topicPerformance || {},
@@ -3017,6 +3042,935 @@ export class UIManager {
           }
         });
     }
+  }
+
+  showBattleArenaSetup() {
+    this.showBattleArenaHub("setup");
+  }
+
+  async showBattleArenaHub(activeTab = "setup") {
+    this.stopAllGameplayScenes();
+    if (this.activeProfile) {
+      this.activeProfile = await db.getProfileById(this.activeProfile.id);
+    }
+
+    const bp =
+      this.activeProfile?.battleArenaProgress || db.ensureBattleArenaProgress();
+    const lvlInfo = calculateBattleLevel(bp.xp);
+
+    if (activeTab === "setup") {
+      this.renderBattleArenaSetupTab(bp, lvlInfo);
+    } else if (activeTab === "collection") {
+      this.renderBattleCollectionTab(bp, lvlInfo);
+    } else if (activeTab === "achievements") {
+      this.renderBattleAchievementsTab(bp, lvlInfo);
+    } else if (activeTab === "history") {
+      this.renderBattleHistoryTab(bp, lvlInfo);
+    }
+  }
+
+  renderBattleHubHeader(activeTab, bp, lvlInfo) {
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span class="game-logo-badge" style="margin:0; background:#e74c3c; color:#fff;">⚔️ QUIZ BATTLE ARENA</span>
+          <span class="badge-tag" style="background:#fff9db;">🪙 ${bp.coins} Koin</span>
+          <span class="badge-tag" style="background:#d6eaf8;">⭐ Lv.${lvlInfo.level} (${lvlInfo.currentLevelXp}/${lvlInfo.nextLevelXp} XP)</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="btn-ba-mute" class="btn-cartoon btn-small ${this.settings.battleMuted ? "btn-red" : "btn-green"}" style="padding:5px 10px; font-size:0.85rem;">
+            ${this.settings.battleMuted ? "🔇 Mute" : "🔊 Audio"}
+          </button>
+          <input id="inp-ba-vol" type="range" min="0" max="1" step="0.1" value="${this.settings.battleVolume ?? 0.6}" style="width:75px; cursor:pointer;" />
+          <button id="btn-ba-home-top" class="btn-cartoon btn-gray btn-small" style="padding:5px 12px; font-size:0.85rem;">🏠 Menu</button>
+        </div>
+      </div>
+
+      <div class="tutor-tabs-nav" style="margin-bottom:12px;">
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "setup" ? "active" : ""}" data-tab="setup">⚔️ Pertarungan</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "collection" ? "active" : ""}" data-tab="collection">🎨 Koleksi & Kostum</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "achievements" ? "active" : ""}" data-tab="achievements">🏆 Level & Achievement</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "history" ? "active" : ""}" data-tab="history">📜 Riwayat</button>
+      </div>
+    `;
+  }
+
+  bindBattleHubHeaderEvents(currentTab) {
+    document.getElementById("btn-ba-home-top").addEventListener("click", () => {
+      battleAudio.play("click");
+      this.showMainMenu();
+    });
+
+    document
+      .getElementById("btn-ba-mute")
+      .addEventListener("click", async () => {
+        this.settings.battleMuted = !this.settings.battleMuted;
+        battleAudio.configure({
+          muted: this.settings.battleMuted,
+          volume: this.settings.battleVolume ?? 0.6,
+        });
+        await db.saveSettings(this.settings);
+        this.showBattleArenaHub(currentTab);
+      });
+
+    document
+      .getElementById("inp-ba-vol")
+      .addEventListener("input", async (e) => {
+        this.settings.battleVolume = Number(e.target.value);
+        this.settings.battleMuted = this.settings.battleVolume === 0;
+        battleAudio.configure({
+          muted: this.settings.battleMuted,
+          volume: this.settings.battleVolume,
+        });
+        await db.saveSettings(this.settings);
+      });
+
+    this.container.querySelectorAll(".ba-hub-tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        battleAudio.play("click");
+        this.showBattleArenaHub(btn.dataset.tab);
+      });
+    });
+  }
+
+  renderBattleArenaSetupTab(bp, lvlInfo) {
+    let tutorName = "Tutor";
+    let studentName = this.activeProfile?.name || "Murid";
+    let tutorChar = bp.selectedTutorChar || "prof_panda";
+    let studentChar = bp.selectedStudentChar || "kiko";
+    let chosenGrade = this.selectedGrade || this.activeProfile?.grade || 3;
+    let availableSubjects = this.getSubjectsForGrade(chosenGrade);
+    let chosenSubject = availableSubjects[0]?.id || "matematika";
+    let chosenDifficulty = "adaptif";
+    let chosenLives = 5;
+
+    const renderView = () => {
+      availableSubjects = this.getSubjectsForGrade(chosenGrade);
+      if (!availableSubjects.some((s) => s.id === chosenSubject)) {
+        chosenSubject = availableSubjects[0]?.id || "matematika";
+      }
+
+      const classOpts = GAME_CONFIG.classes
+        .filter((c) => c.active)
+        .map(
+          (c) =>
+            `<option value="${c.grade}" ${chosenGrade === c.grade ? "selected" : ""}>${c.name}</option>`,
+        )
+        .join("");
+
+      const subjOpts = availableSubjects
+        .map(
+          (s) =>
+            `<option value="${s.id}" ${chosenSubject === s.id ? "selected" : ""}>${s.icon} ${this.escapeHtml(s.name)}</option>`,
+        )
+        .join("");
+
+      const renderCharCards = (role, selectedId) =>
+        BATTLE_CHARACTERS.map((ch) => {
+          const unlocked = bp.unlockedCharacters.includes(ch.id);
+          const previewUrl = BattleFighterRig.renderPreviewDataURL(
+            ch.id,
+            role,
+            role === "student" ? bp.equipped : {},
+          );
+          return `
+            <div class="choice-card ${role === "tutor" ? "ba-tutor-char" : "ba-student-char"} ${selectedId === ch.id ? "selected" : ""} ${!unlocked ? "card-disabled" : ""}" data-char="${ch.id}" data-unlocked="${unlocked}" style="padding:6px;">
+              <img src="${previewUrl}" alt="${this.escapeHtml(ch.name)}" style="width:54px; height:58px; object-fit:contain;" />
+              <div style="font-weight:900; font-size:0.78rem;">${this.escapeHtml(ch.name)}</div>
+              <span style="font-size:0.7rem; font-weight:800; color:${unlocked ? "#27ae60" : "#c0392b"};">
+                ${unlocked ? (selectedId === ch.id ? "✅ Dipilih" : "Gratis/Milik") : `🔒 ${ch.price} Koin`}
+              </span>
+            </div>
+          `;
+        }).join("");
+
+      this.container.innerHTML = `
+        <div class="screen-overlay">
+          <div class="cartoon-panel" style="max-width: 960px;">
+            ${this.renderBattleHubHeader("setup", bp, lvlInfo)}
+
+            <div class="form-box" style="margin-top:0;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:8px;">
+                <div class="form-group" style="margin:0;">
+                  <label>👨🏫 Nama Tutor:</label>
+                  <input id="ba-tutor-name" type="text" class="input-cartoon" value="${this.escapeHtml(tutorName)}" maxlength="20" />
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label>🧒 Nama Murid:</label>
+                  <input id="ba-student-name" type="text" class="input-cartoon" value="${this.escapeHtml(studentName)}" maxlength="20" />
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap:8px; margin-bottom:10px;">
+                <select id="ba-sel-grade" class="input-cartoon">${classOpts}</select>
+                <select id="ba-sel-subject" class="input-cartoon">${subjOpts}</select>
+                <select id="ba-sel-diff" class="input-cartoon">
+                  <option value="adaptif" ${chosenDifficulty === "adaptif" ? "selected" : ""}>🤖 Adaptif Setara</option>
+                  <option value="mudah" ${chosenDifficulty === "mudah" ? "selected" : ""}>🌱 Mudah</option>
+                  <option value="sedang" ${chosenDifficulty === "sedang" ? "selected" : ""}>⚡ Sedang</option>
+                  <option value="sulit" ${chosenDifficulty === "sulit" ? "selected" : ""}>🔥 Sulit</option>
+                </select>
+                <select id="ba-sel-lives" class="input-cartoon">
+                  <option value="5" ${chosenLives === 5 ? "selected" : ""}>❤️ Normal (5 Nyawa)</option>
+                  <option value="7" ${chosenLives === 7 ? "selected" : ""}>❤️❤️ Panjang (7 Nyawa)</option>
+                  <option value="10" ${chosenLives === 10 ? "selected" : ""}>❤️❤️❤️ Epik (10 Nyawa)</option>
+                </select>
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                  <div style="font-weight:900; font-size:0.9rem; margin-bottom:4px;">Pilih Karakter Tutor:</div>
+                  <div class="selection-grid-3" style="margin:0; gap:6px;">${renderCharCards("tutor", tutorChar)}</div>
+                </div>
+                <div>
+                  <div style="font-weight:900; font-size:0.9rem; margin-bottom:4px;">Pilih Karakter Murid:</div>
+                  <div class="selection-grid-3" style="margin:0; gap:6px;">${renderCharCards("student", studentChar)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-group-horizontal">
+              <button id="btn-ba-start" class="btn-cartoon btn-red">⚔️ MULAI PERTARUNGAN!</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      this.bindBattleHubHeaderEvents("setup");
+
+      document
+        .getElementById("ba-tutor-name")
+        .addEventListener("input", (e) => {
+          tutorName = e.target.value;
+        });
+      document
+        .getElementById("ba-student-name")
+        .addEventListener("input", (e) => {
+          studentName = e.target.value;
+        });
+      document
+        .getElementById("ba-sel-grade")
+        .addEventListener("change", (e) => {
+          chosenGrade = Number(e.target.value);
+          renderView();
+        });
+      document
+        .getElementById("ba-sel-subject")
+        .addEventListener("change", (e) => {
+          chosenSubject = e.target.value;
+        });
+      document.getElementById("ba-sel-diff").addEventListener("change", (e) => {
+        chosenDifficulty = e.target.value;
+      });
+      document
+        .getElementById("ba-sel-lives")
+        .addEventListener("change", (e) => {
+          chosenLives = Number(e.target.value);
+        });
+
+      this.container.querySelectorAll(".ba-tutor-char").forEach((card) => {
+        card.addEventListener("click", () => {
+          if (card.dataset.unlocked !== "true") {
+            battleAudio.play("wrong");
+            return;
+          }
+          battleAudio.play("click");
+          tutorChar = card.dataset.char;
+          renderView();
+        });
+      });
+
+      this.container.querySelectorAll(".ba-student-char").forEach((card) => {
+        card.addEventListener("click", () => {
+          if (card.dataset.unlocked !== "true") {
+            battleAudio.play("wrong");
+            return;
+          }
+          battleAudio.play("click");
+          studentChar = card.dataset.char;
+          renderView();
+        });
+      });
+
+      document
+        .getElementById("btn-ba-start")
+        .addEventListener("click", async () => {
+          battleAudio.play("special");
+          if (this.activeProfile) {
+            this.activeProfile = await db.updateBattleArenaSelection(
+              this.activeProfile.id,
+              {
+                tutorChar,
+                studentChar,
+              },
+            );
+          }
+          this.startBattleArenaMatch({
+            tutorName: tutorName.trim() || "Tutor",
+            studentName: studentName.trim() || "Murid",
+            tutorCharacter: tutorChar,
+            studentCharacter: studentChar,
+            studentCosmetic: bp.equipped,
+            grade: chosenGrade,
+            subject: chosenSubject,
+            difficulty: chosenDifficulty,
+            maxLives: chosenLives,
+            rounds: chosenLives,
+          });
+        });
+    };
+
+    renderView();
+  }
+
+  renderBattleCollectionTab(bp, lvlInfo) {
+    const renderShopGroup = (title, category, items, ownedList, equippedId) => {
+      const cards = items
+        .map((it) => {
+          const owned = ownedList.includes(it.id);
+          const equipped = equippedId === it.id;
+          return `
+          <div class="choice-card" style="padding:10px; ${equipped ? "background:#fff6d6; border-color:#f39c12;" : ""}">
+            <div style="font-weight:900; font-size:0.9rem;">${this.escapeHtml(it.name)}</div>
+            <div style="font-size:0.8rem; font-weight:700; color:#576574;">${owned ? "Dimiliki" : `🪙 ${it.price} Koin`}</div>
+            ${
+              owned
+                ? category === "character"
+                  ? `<span class="status-badge badge-active">✅ Terbuka</span>`
+                  : `<button class="btn-cartoon btn-small ${equipped ? "btn-green" : "btn-blue"} btn-equip-item" data-cat="${category}" data-id="${it.id}" style="padding:4px 10px; font-size:0.8rem;">${equipped ? "Dipakai" : "Pakai"}</button>`
+                : `<button class="btn-cartoon btn-small btn-purple btn-buy-item" data-cat="${category}" data-id="${it.id}" data-price="${it.price}" style="padding:4px 10px; font-size:0.8rem;">Beli 🪙${it.price}</button>`
+            }
+          </div>
+        `;
+        })
+        .join("");
+
+      return `
+        <div style="margin-bottom:12px;">
+          <div style="font-weight:900; text-align:left; margin-bottom:4px;">${title}</div>
+          <div class="selection-grid-4" style="margin:0;">${cards}</div>
+        </div>
+      `;
+    };
+
+    const previewUrl = BattleFighterRig.renderPreviewDataURL(
+      bp.selectedStudentChar,
+      "student",
+      bp.equipped,
+    );
+
+    this.container.innerHTML = `
+      <div class="screen-overlay">
+        <div class="cartoon-panel" style="max-width: 960px;">
+          ${this.renderBattleHubHeader("collection", bp, lvlInfo)}
+
+          <div style="display:flex; align-items:center; justify-content:center; gap:18px; background:#eef9ff; border:3px solid #3498db; border-radius:16px; padding:10px; margin-bottom:10px;">
+            <img src="${previewUrl}" alt="Preview" style="width:74px; height:80px; object-fit:contain;" />
+            <div style="text-align:left; font-size:0.9rem; font-weight:800;">
+              <div>✨ Preview Karakter Murid (Kosmetik Saja — Adil Tanpa Bonus Damage)</div>
+              <div style="color:#2980b9;">Kostum: ${bp.equipped.costume} | Aksesori: ${bp.equipped.accessory} | Efek: ${bp.equipped.attackEffect}</div>
+            </div>
+          </div>
+
+          <div id="shop-msg" style="display:none; font-weight:900; margin-bottom:8px;"></div>
+
+          <div class="tutor-scroll-area" style="max-height:310px;">
+            ${renderShopGroup(
+              "🦁 Karakter Terkunci",
+              "character",
+              BATTLE_CHARACTERS.filter((c) => !c.free),
+              bp.unlockedCharacters,
+              null,
+            )}
+            ${renderShopGroup("👕 Kostum Petarung", "costume", BATTLE_COSTUMES, bp.unlockedCostumes, bp.equipped.costume)}
+            ${renderShopGroup("👑 Aksesori", "accessory", BATTLE_ACCESSORIES, bp.unlockedAccessories, bp.equipped.accessory)}
+            ${renderShopGroup("⚡ Efek Serangan", "attackEffect", BATTLE_ATTACK_EFFECTS, bp.unlockedAttackEffects, bp.equipped.attackEffect)}
+            ${renderShopGroup("🎉 Efek Kemenangan", "victoryEffect", BATTLE_VICTORY_EFFECTS, bp.unlockedVictoryEffects, bp.equipped.victoryEffect)}
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.bindBattleHubHeaderEvents("collection");
+
+    const msgBox = document.getElementById("shop-msg");
+
+    this.container.querySelectorAll(".btn-buy-item").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!this.activeProfile) return;
+        const res = await db.purchaseBattleArenaItem(
+          this.activeProfile.id,
+          btn.dataset.cat,
+          btn.dataset.id,
+          Number(btn.dataset.price),
+        );
+        if (res.success) {
+          battleAudio.play("reward");
+          this.activeProfile = res.profile;
+          this.showBattleArenaHub("collection");
+        } else {
+          battleAudio.play("wrong");
+          msgBox.textContent = `⚠️ ${res.message}`;
+          msgBox.style.color = "#c0392b";
+          msgBox.style.display = "block";
+        }
+      });
+    });
+
+    this.container.querySelectorAll(".btn-equip-item").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!this.activeProfile) return;
+        battleAudio.play("click");
+        this.activeProfile = await db.equipBattleArenaItem(
+          this.activeProfile.id,
+          btn.dataset.cat,
+          btn.dataset.id,
+        );
+        this.showBattleArenaHub("collection");
+      });
+    });
+  }
+
+  renderBattleAchievementsTab(bp, lvlInfo) {
+    const st = bp.stats;
+    const acc =
+      st.totalQuestions > 0
+        ? Math.round((st.totalCorrect / st.totalQuestions) * 100)
+        : 0;
+
+    const achCards = BATTLE_ACHIEVEMENTS.map((a) => {
+      const unlocked = bp.achievements.includes(a.id);
+      return `
+        <div class="choice-card ${unlocked ? "selected" : "card-disabled"}" style="padding:10px;">
+          <div style="font-size:2rem;">${unlocked ? a.icon : "🔒"}</div>
+          <div style="font-weight:900; font-size:0.95rem;">${this.escapeHtml(a.name)}</div>
+          <div style="font-size:0.8rem; font-weight:700; color:#576574;">${this.escapeHtml(a.desc)}</div>
+          <span class="status-badge ${unlocked ? "badge-active" : "badge-soon"}">${unlocked ? "Terbuka" : "Terkunci"}</span>
+        </div>
+      `;
+    }).join("");
+
+    this.container.innerHTML = `
+      <div class="screen-overlay">
+        <div class="cartoon-panel" style="max-width: 960px;">
+          ${this.renderBattleHubHeader("achievements", bp, lvlInfo)}
+
+          <div class="tutor-kpi-grid" style="margin-bottom:10px;">
+            <div class="tutor-kpi-card"><div class="tutor-kpi-val">Lv.${lvlInfo.level}</div><div class="tutor-kpi-label">XP: ${bp.xp} (${lvlInfo.progressPct}%)</div></div>
+            <div class="tutor-kpi-card"><div class="tutor-kpi-val">${st.wins}W / ${st.losses}L</div><div class="tutor-kpi-label">Menang / Kalah (${st.draws} Seri)</div></div>
+            <div class="tutor-kpi-card"><div class="tutor-kpi-val">${acc}%</div><div class="tutor-kpi-label">Akurasi (${st.totalCorrect}/${st.totalQuestions})</div></div>
+            <div class="tutor-kpi-card"><div class="tutor-kpi-val">🔥 ${st.highestCombo}x</div><div class="tutor-kpi-label">Combo Tertinggi</div></div>
+          </div>
+
+          <div class="tutor-scroll-area" style="max-height:290px;">
+            <div class="selection-grid-3" style="margin:0;">${achCards}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.bindBattleHubHeaderEvents("achievements");
+  }
+
+  renderBattleHistoryTab(bp, lvlInfo) {
+    const history = [
+      ...(this.activeProfile?.battleArenaHistory || []),
+    ].reverse();
+    const rows =
+      history.length === 0
+        ? `<tr><td colspan="6" style="text-align:center; font-weight:700;">Belum ada riwayat pertandingan Quiz Battle Arena.</td></tr>`
+        : history
+            .map(
+              (h) => `
+          <tr>
+            <td>${this.formatDate(h.playedAt)}</td>
+            <td>${this.escapeHtml(h.tutorName)} vs ${this.escapeHtml(h.studentName)}</td>
+            <td>Kls ${h.grade} — ${this.escapeHtml(h.subject)}</td>
+            <td>${this.escapeHtml(h.difficulty)}</td>
+            <td>HP: ${h.tutorHpLeft} vs ${h.studentHpLeft} | Akurasi: ${h.studentStats?.accuracy || 0}%</td>
+            <td><strong>${h.winner === "student" ? "🏆 Murid" : h.winner === "tutor" ? "👨🏫 Tutor" : "🤝 Seri"}</strong></td>
+          </tr>
+        `,
+            )
+            .join("");
+
+    this.container.innerHTML = `
+      <div class="screen-overlay">
+        <div class="cartoon-panel" style="max-width: 960px;">
+          ${this.renderBattleHubHeader("history", bp, lvlInfo)}
+          <div class="tutor-scroll-area" style="max-height:360px;">
+            <table class="tutor-table">
+              <thead>
+                <tr><th>Tanggal</th><th>Pemain</th><th>Kelas & Mapel</th><th>Kesulitan</th><th>Ringkasan Skor</th><th>Hasil</th></tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.bindBattleHubHeaderEvents("history");
+  }
+
+  clearBattleTimers() {
+    if (this.battleTimerInterval) {
+      clearInterval(this.battleTimerInterval);
+      this.battleTimerInterval = null;
+    }
+    if (this.battleTutorNextTimeout) {
+      clearTimeout(this.battleTutorNextTimeout);
+      this.battleTutorNextTimeout = null;
+    }
+    if (this.battleStudentNextTimeout) {
+      clearTimeout(this.battleStudentNextTimeout);
+      this.battleStudentNextTimeout = null;
+    }
+    if (this.battleEndTimeout) {
+      clearTimeout(this.battleEndTimeout);
+      this.battleEndTimeout = null;
+    }
+    if (this.battleKeyHandler) {
+      window.removeEventListener('keydown', this.battleKeyHandler);
+      this.battleKeyHandler = null;
+    }
+  }
+
+  startBattleArenaMatch(config) {
+    this.clearBattleTimers();
+    this.stopAllGameplayScenes();
+    questionManager.resetSession();
+
+    const maxLives = Number(config.maxLives) || 5;
+
+    this.battleSession = {
+      matchId: 'ba_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      tutorName: config.tutorName,
+      studentName: config.studentName,
+      tutorCharacter: config.tutorCharacter,
+      studentCharacter: config.studentCharacter,
+      studentCosmetic: config.studentCosmetic || {},
+      grade: config.grade,
+      subject: config.subject,
+      difficulty: config.difficulty,
+      effectiveDifficulty: config.difficulty === 'adaptif' ? null : config.difficulty,
+      maxLives,
+      matchEnded: false,
+      pendingEndCheck: false,
+      tutor: {
+        lives: maxLives,
+        answered: 0,
+        correct: 0,
+        wrong: 0,
+        attacks: 0,
+        combo: 0,
+        maxCombo: 0,
+        qNum: 0,
+        currentQuestion: null,
+        inputLocked: false
+      },
+      student: {
+        lives: maxLives,
+        answered: 0,
+        correct: 0,
+        wrong: 0,
+        attacks: 0,
+        combo: 0,
+        maxCombo: 0,
+        qNum: 0,
+        currentQuestion: null,
+        inputLocked: false
+      }
+    };
+
+    this.phaserGame.scene.start('BattleArenaScene', {
+      tutorName: config.tutorName,
+      studentName: config.studentName,
+      tutorCharacter: config.tutorCharacter,
+      studentCharacter: config.studentCharacter,
+      studentCosmetic: config.studentCosmetic,
+      maxLives
+    });
+
+    this.renderDualRaceArenaOverlay();
+    this.loadNextQuestionForPlayer('tutor');
+    this.loadNextQuestionForPlayer('student');
+  }
+
+  renderDualRaceArenaOverlay() {
+    this.clearBattleTimers();
+    const s = this.battleSession;
+    const subInfo = this.getSubjectInfo(s.subject);
+
+    this.container.innerHTML = `
+      <div class="hud-overlay" style="padding:8px 14px;">
+        <div class="hud-top-bar">
+          <div class="hud-stats-group">
+            <div class="hud-pill" style="background:#fff9db;">
+              <span>⚔️ <strong>DUAL BATTLE RACE</strong></span>
+            </div>
+            <div class="hud-pill" style="background:#eef9ff;">
+              <span>${subInfo.icon} ${this.escapeHtml(subInfo.name)} Kelas ${s.grade}</span>
+            </div>
+          </div>
+          <button id="btn-ba-quit" class="btn-cartoon btn-red btn-small" style="pointer-events:auto; padding:5px 12px; font-size:0.85rem;">✖ Keluar</button>
+        </div>
+
+        <div class="duel-modal-backdrop" style="background:transparent; padding:0;">
+          <div class="quiz-panel" style="max-width:1080px; padding:10px 12px; border-radius:18px; margin-bottom:2px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div id="ba-panel-tutor" style="background:#f0f8ff; border:3px solid #3498db; border-radius:14px; padding:9px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-weight:900; font-size:0.84rem; color:#2980b9;">
+                  <span>👨‍🏫 ${this.escapeHtml(s.tutorName)} [A / S / D / F]</span>
+                  <span id="ba-qnum-tutor">Soal #1</span>
+                </div>
+                <div id="ba-qtext-tutor" style="background:#ffffff; border:2px solid #aed6f1; border-radius:10px; padding:8px 10px; font-weight:800; font-size:0.9rem; color:#2c3e50; min-height:58px; margin-bottom:7px; text-align:left; line-height:1.32;"></div>
+                <div id="ba-opts-tutor" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;"></div>
+                <div id="ba-fb-tutor" style="margin-top:6px; min-height:24px; font-weight:900; font-size:0.82rem; border-radius:8px; padding:3px 8px; text-align:center;"></div>
+              </div>
+
+              <div id="ba-panel-student" style="background:#fffaf0; border:3px solid #e67e22; border-radius:14px; padding:9px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-weight:900; font-size:0.84rem; color:#d35400;">
+                  <span>🧒 ${this.escapeHtml(s.studentName)} [H / J / K / L]</span>
+                  <span id="ba-qnum-student">Soal #1</span>
+                </div>
+                <div id="ba-qtext-student" style="background:#ffffff; border:2px solid #fad7a0; border-radius:10px; padding:8px 10px; font-weight:800; font-size:0.9rem; color:#2c3e50; min-height:58px; margin-bottom:7px; text-align:left; line-height:1.32;"></div>
+                <div id="ba-opts-student" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;"></div>
+                <div id="ba-fb-student" style="margin-top:6px; min-height:24px; font-weight:900; font-size:0.82rem; border-radius:8px; padding:3px 8px; text-align:center;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-ba-quit').addEventListener('click', () => {
+      this.clearBattleTimers();
+      battleAudio.play('click');
+      this.showBattleArenaHub('setup');
+    });
+
+    const tutorKeyMap = { A: 0, S: 1, D: 2, F: 3 };
+    const studentKeyMap = { H: 0, J: 1, K: 2, L: 3 };
+
+    this.battleKeyHandler = (e) => {
+      if (!this.battleSession || this.battleSession.matchEnded) return;
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const tag = e.target && e.target.tagName ? e.target.tagName.toUpperCase() : '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+      const key = String(e.key || '').toUpperCase();
+      if (Object.prototype.hasOwnProperty.call(tutorKeyMap, key)) {
+        e.preventDefault();
+        this.handleDualRaceAnswer('tutor', tutorKeyMap[key]);
+      } else if (Object.prototype.hasOwnProperty.call(studentKeyMap, key)) {
+        e.preventDefault();
+        this.handleDualRaceAnswer('student', studentKeyMap[key]);
+      }
+    };
+
+    window.addEventListener('keydown', this.battleKeyHandler);
+  }
+
+  fetchUniqueQuestionForPlayer(role) {
+    const s = this.battleSession;
+    const opponentRole = role === 'tutor' ? 'student' : 'tutor';
+    const oppQ = s[opponentRole]?.currentQuestion;
+
+    let qData = questionManager.getNextQuestion(s.subject, null, {
+      grade: s.grade,
+      profile: this.activeProfile,
+      settings: this.settings,
+      forceDifficulty: s.effectiveDifficulty || null
+    });
+
+    if (!qData || qData.error || (oppQ && qData.question === oppQ.question)) {
+      questionManager.resetSession();
+      if (oppQ) {
+        questionManager.usedQuestionIds.add(oppQ.id);
+        questionManager.usedQuestionSignatures.add(oppQ.question);
+      }
+      qData = questionManager.getNextQuestion(s.subject, null, {
+        grade: s.grade,
+        profile: this.activeProfile,
+        settings: this.settings,
+        forceDifficulty: s.effectiveDifficulty || null
+      });
+    }
+
+    if (!s.effectiveDifficulty && qData && !qData.error && qData.difficulty) {
+      s.effectiveDifficulty = qData.difficulty;
+    }
+
+    return qData;
+  }
+
+  loadNextQuestionForPlayer(role) {
+    const s = this.battleSession;
+    if (!s || s.matchEnded) return;
+
+    const pState = s[role];
+    const qData = this.fetchUniqueQuestionForPlayer(role);
+    if (!qData || qData.error) return;
+
+    pState.qNum += 1;
+    pState.currentQuestion = qData;
+    pState.inputLocked = false;
+
+    const qNumEl = document.getElementById(`ba-qnum-${role}`);
+    const qTextEl = document.getElementById(`ba-qtext-${role}`);
+    const optsEl = document.getElementById(`ba-opts-${role}`);
+    const fbEl = document.getElementById(`ba-fb-${role}`);
+
+    if (!qTextEl || !optsEl) return;
+
+    const letters = ['A', 'B', 'C', 'D'];
+    const keyHints = role === 'tutor' ? ['A', 'S', 'D', 'F'] : ['H', 'J', 'K', 'L'];
+
+    if (qNumEl) qNumEl.textContent = `Soal #${pState.qNum} (${qData.difficulty.toUpperCase()})`;
+    qTextEl.textContent = qData.question;
+
+    optsEl.innerHTML = qData.options.map((opt, idx) => `
+      <button class="btn-option ba-race-btn-${role}" data-idx="${idx}" style="padding:6px 8px; font-size:0.84rem; min-height:38px;">
+        <span class="option-letter" style="width:22px; height:22px; font-size:0.76rem;">${letters[idx]}</span>
+        <span style="flex:1; text-align:left; line-height:1.2;">${this.escapeHtml(opt)}</span>
+        <span style="font-size:0.7rem; opacity:0.65; font-weight:900;">[${keyHints[idx]}]</span>
+      </button>
+    `).join('');
+
+    if (fbEl) {
+      fbEl.textContent = '';
+      fbEl.style.background = 'transparent';
+    }
+
+    optsEl.querySelectorAll(`.ba-race-btn-${role}`).forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.handleDualRaceAnswer(role, Number(btn.dataset.idx));
+      });
+    });
+  }
+
+  handleDualRaceAnswer(role, optionIdx) {
+    const s = this.battleSession;
+    if (!s || s.matchEnded) return;
+
+    const pState = s[role];
+    if (!pState || pState.inputLocked || !pState.currentQuestion) return;
+
+    const qData = pState.currentQuestion;
+    if (optionIdx < 0 || optionIdx >= qData.options.length) return;
+
+    pState.inputLocked = true;
+    const chosenAnswer = qData.options[optionIdx];
+    const isCorrect = chosenAnswer === qData.correctAnswer;
+
+    pState.answered += 1;
+
+    const optsEl = document.getElementById(`ba-opts-${role}`);
+    const fbEl = document.getElementById(`ba-fb-${role}`);
+
+    if (optsEl) {
+      optsEl.querySelectorAll('button').forEach((btn, idx) => {
+        btn.disabled = true;
+        if (qData.options[idx] === qData.correctAnswer) {
+          btn.classList.add('correct');
+        } else if (idx === optionIdx && !isCorrect) {
+          btn.classList.add('wrong');
+        }
+      });
+    }
+
+    if (isCorrect) {
+      pState.correct += 1;
+      pState.attacks += 1;
+      pState.combo += 1;
+      pState.maxCombo = Math.max(pState.maxCombo, pState.combo);
+
+      if (fbEl) {
+        fbEl.textContent = '⚔️ BENAR! Menyerang lawan (-1 ❤️)';
+        fbEl.style.background = '#d4efdf';
+        fbEl.style.color = '#145a32';
+      }
+
+      battleAudio.play('attack');
+
+      const battleScene = this.phaserGame.scene.getScene('BattleArenaScene');
+      if (battleScene) {
+        battleScene.triggerIndependentAttack(role, (attackerRole) => {
+          if (!this.battleSession || this.battleSession.matchEnded) return;
+          battleAudio.play('hit');
+          if (attackerRole === 'tutor') {
+            this.battleSession.student.lives = Math.max(0, this.battleSession.student.lives - 1);
+          } else {
+            this.battleSession.tutor.lives = Math.max(0, this.battleSession.tutor.lives - 1);
+          }
+          battleScene.updateLives(this.battleSession.tutor.lives, this.battleSession.student.lives);
+          this.checkDualRaceMatchEnd();
+        });
+      } else {
+        if (role === 'tutor') s.student.lives = Math.max(0, s.student.lives - 1);
+        else s.tutor.lives = Math.max(0, s.tutor.lives - 1);
+        this.checkDualRaceMatchEnd();
+      }
+    } else {
+      pState.wrong += 1;
+      pState.combo = 0;
+
+      if (fbEl) {
+        fbEl.textContent = `❌ Salah! Jawaban: ${qData.correctAnswer}`;
+        fbEl.style.background = '#fadbd8';
+        fbEl.style.color = '#78281f';
+      }
+
+      battleAudio.play('wrong');
+    }
+
+    const delayMs = isCorrect ? 720 : 900;
+    const timeoutId = setTimeout(() => {
+      this.loadNextQuestionForPlayer(role);
+    }, delayMs);
+
+    if (role === 'tutor') {
+      if (this.battleTutorNextTimeout) clearTimeout(this.battleTutorNextTimeout);
+      this.battleTutorNextTimeout = timeoutId;
+    } else {
+      if (this.battleStudentNextTimeout) clearTimeout(this.battleStudentNextTimeout);
+      this.battleStudentNextTimeout = timeoutId;
+    }
+  }
+
+  checkDualRaceMatchEnd() {
+    const s = this.battleSession;
+    if (!s || s.matchEnded) return;
+
+    if (s.tutor.lives <= 0 || s.student.lives <= 0) {
+      if (s.pendingEndCheck) return;
+      s.pendingEndCheck = true;
+
+      this.battleEndTimeout = setTimeout(() => {
+        if (!this.battleSession || this.battleSession.matchEnded) return;
+        this.battleSession.matchEnded = true;
+        this.battleSession.tutor.inputLocked = true;
+        this.battleSession.student.inputLocked = true;
+        this.showBattleResult();
+      }, 260);
+    }
+  }
+
+  async showBattleResult() {
+    this.clearBattleTimers();
+    const s = this.battleSession;
+
+    let winner = 'draw';
+    let titleText = '🤝 PERTARUNGAN SERI!';
+    let subText = 'Kedua petarung kehabisan nyawa pada saat bersamaan!';
+
+    if (s.student.lives > s.tutor.lives) {
+      winner = 'student';
+      titleText = `🏆 PEMENANG: ${s.studentName.toUpperCase()}!`;
+      subText = `Hebat sekali ${s.studentName}! Kamu menang dengan sisa ${s.student.lives} nyawa!`;
+      battleAudio.play('victory');
+    } else if (s.tutor.lives > s.student.lives) {
+      winner = 'tutor';
+      titleText = `🏆 PEMENANG: ${s.tutorName.toUpperCase()}!`;
+      subText = `Balapan yang seru! Ayo ${s.studentName}, coba tanding lagi!`;
+      battleAudio.play('defeat');
+    } else {
+      battleAudio.play('reward');
+    }
+
+    const battleScene = this.phaserGame.scene.getScene('BattleArenaScene');
+    if (battleScene) {
+      battleScene.playEndMatchAnimation(winner);
+    }
+
+    let rewardHtml = '';
+    if (this.activeProfile) {
+      const saveRes = await db.recordBattleArenaResult(this.activeProfile.id, {
+        matchId: s.matchId,
+        grade: s.grade,
+        subject: s.subject,
+        difficulty: s.difficulty,
+        maxLives: s.maxLives,
+        totalQuestionsPlayed: s.tutor.answered + s.student.answered,
+        winner,
+        tutorName: s.tutorName,
+        studentName: s.studentName,
+        tutorCharacter: s.tutorCharacter,
+        studentCharacter: s.studentCharacter,
+        tutorLivesLeft: s.tutor.lives,
+        studentLivesLeft: s.student.lives,
+        tutorStats: s.tutor,
+        studentStats: s.student
+      });
+
+      if (saveRes?.profile) {
+        this.activeProfile = saveRes.profile;
+      }
+
+      if (saveRes?.rewardBreakdown) {
+        const rb = saveRes.rewardBreakdown;
+        battleAudio.play('reward');
+        rewardHtml = `
+          <div style="background:#fff9db; border:3px solid #f39c12; border-radius:14px; padding:10px; margin-bottom:10px; font-weight:800; font-size:0.9rem;">
+            🎁 <strong>REWARD DIDAPAT:</strong> +🪙 ${rb.totalCoinsEarned} Koin Battle | +⭐ ${rb.totalXpEarned} XP
+            ${rb.leveledUp ? ` | 🎉 <strong>NAIK KE LEVEL ${rb.newLevel}!</strong>` : ''}
+            ${rb.newAchievements.length > 0 ? ` | 🏆 Achievement Baru: ${rb.newAchievements.join(', ')}` : ''}
+          </div>
+        `;
+      }
+    }
+
+    const tAcc = s.tutor.answered > 0 ? Math.round((s.tutor.correct / s.tutor.answered) * 100) : 0;
+    const sAcc = s.student.answered > 0 ? Math.round((s.student.correct / s.student.answered) * 100) : 0;
+
+    this.container.innerHTML = `
+      <div class="screen-overlay" style="background: rgba(20, 30, 48, 0.84);">
+        <div class="cartoon-panel" style="max-width: 820px;">
+          <div class="game-logo-badge" style="background:#f1c40f; color:#2c3e50;">⚔️ HASIL DUAL QUESTION BATTLE RACE ⚔️</div>
+          <h2 class="panel-header-title" style="margin-bottom:4px;">${this.escapeHtml(titleText)}</h2>
+          <p class="game-subtitle" style="color:#27ae60; margin-bottom:10px;">${this.escapeHtml(subText)}</p>
+
+          ${rewardHtml}
+
+          <div class="duel-comparison-grid">
+            <div class="duel-player-card" style="background:#f4f9fd; border-color:#3498db;">
+              <div style="font-size:1.1rem; font-weight:900; color:#2980b9; margin-bottom:6px;">👨‍🏫 ${this.escapeHtml(s.tutorName)}</div>
+              <div class="result-stat-row"><span>❤️ Sisa Nyawa:</span><span>${s.tutor.lives}/${s.maxLives}</span></div>
+              <div class="result-stat-row"><span>📝 Total Soal:</span><span>${s.tutor.answered} Soal</span></div>
+              <div class="result-stat-row"><span>⚔️ Serangan Berhasil:</span><span>${s.tutor.attacks}</span></div>
+              <div class="result-stat-row"><span>✅ Benar / ❌ Salah:</span><span>${s.tutor.correct} / ${s.tutor.wrong}</span></div>
+              <div class="result-stat-row" style="border:none;"><span>🎯 Akurasi:</span><span>${tAcc}%</span></div>
+            </div>
+
+            <div class="duel-player-card" style="background:#fffdf2; border-color:#f39c12;">
+              <div style="font-size:1.1rem; font-weight:900; color:#d35400; margin-bottom:6px;">🧒 ${this.escapeHtml(s.studentName)}</div>
+              <div class="result-stat-row"><span>❤️ Sisa Nyawa:</span><span>${s.student.lives}/${s.maxLives}</span></div>
+              <div class="result-stat-row"><span>📝 Total Soal:</span><span>${s.student.answered} Soal</span></div>
+              <div class="result-stat-row"><span>⚔️ Serangan Berhasil:</span><span>${s.student.attacks}</span></div>
+              <div class="result-stat-row"><span>✅ Benar / ❌ Salah:</span><span>${s.student.correct} / ${s.student.wrong}</span></div>
+              <div class="result-stat-row" style="border:none;"><span>🎯 Akurasi:</span><span>${sAcc}%</span></div>
+            </div>
+          </div>
+
+          <div class="btn-group-horizontal">
+            <button id="btn-ba-rematch" class="btn-cartoon btn-red btn-small">🔄 Tanding Lagi</button>
+            <button id="btn-ba-hub" class="btn-cartoon btn-blue btn-small">⚔️ Hub Battle Arena</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-ba-rematch').addEventListener('click', () => {
+      battleAudio.play('click');
+      this.showBattleArenaHub('setup');
+    });
+
+    document.getElementById('btn-ba-hub').addEventListener('click', () => {
+      battleAudio.play('click');
+      this.showBattleArenaHub('collection');
+    });
   }
 }
 
