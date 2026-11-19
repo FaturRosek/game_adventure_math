@@ -13,6 +13,7 @@ import {
 } from "../data/battleArenaCatalog.js";
 import { battleAudio } from "./BattleAudioManager.js";
 import { BattleFighterRig } from "../systems/BattleFighterRig.js";
+import { earlyChildhoodManager } from "./EarlyChildhoodAdventureManager.js";
 
 export class UIManager {
   constructor() {
@@ -135,6 +136,13 @@ export class UIManager {
     return "📚 Bank Soal";
   }
 
+  formatGradeLabel(grade) {
+    const raw = String(grade ?? 3).toLowerCase();
+    if (raw === 'paud') return 'PAUD';
+    if (raw === 'tk') return 'TK';
+    return `Kelas ${raw} SD`;
+  }
+
   renderProfileBanner() {
     if (!this.activeProfile) {
       return `
@@ -146,7 +154,7 @@ export class UIManager {
     const char = this.getCharacterInfo(this.activeProfile.character);
     return `
       <div class="active-profile-pill">
-        <span>${char.emoji} <strong>${this.escapeHtml(this.activeProfile.name)}</strong> (Kelas ${this.activeProfile.grade})</span>
+        <span>${char.emoji} <strong>${this.escapeHtml(this.activeProfile.name)}</strong> (${this.formatGradeLabel(this.activeProfile.grade)})</span>
         <span>| 🪙 ${this.activeProfile.coins || 0}</span>
         <span>| ⭐ ${this.activeProfile.stars || 0}</span>
       </div>
@@ -291,7 +299,7 @@ export class UIManager {
                 <div>
                   <div style="font-weight: 900; font-size: 1.05rem;">${this.escapeHtml(p.name)} ${isCurrent ? "✅" : ""}</div>
                   <div style="font-size: 0.84rem; font-weight: 700; color: #576574;">
-                    Kelas ${p.grade} SD | 🪙 ${p.coins || 0} | ⭐ ${p.stars || 0} | 📝 ${p.totalQuestionsAnswered || 0} Soal Dijawab
+                    ${this.formatGradeLabel(p.grade)} | 🪙 ${p.coins || 0} | ⭐ ${p.stars || 0} | 📝 ${p.totalQuestionsAnswered || 0} Soal Dijawab
                   </div>
                 </div>
               </div>
@@ -337,6 +345,8 @@ export class UIManager {
               <div class="form-group">
                 <label for="inp-student-grade">Kelas:</label>
                 <select id="inp-student-grade" class="input-cartoon">
+                  <option value="paud">PAUD (Aktif)</option>
+                  <option value="tk">TK (Aktif)</option>
                   <option value="1">Kelas 1 SD (Aktif)</option>
                   <option value="2">Kelas 2 SD (Aktif)</option>
                   <option value="3" selected>Kelas 3 SD (Aktif)</option>
@@ -410,9 +420,11 @@ export class UIManager {
         }
 
         this.playTone("correct");
+        const gradeVal = gradeInput.value;
+        const finalGrade = (gradeVal === 'paud' || gradeVal === 'tk') ? gradeVal : (Number(gradeVal) || 3);
         this.activeProfile = await db.createProfile({
           name: cleanName,
-          grade: Number(gradeInput.value) || 3,
+          grade: finalGrade,
           character: selectedChar,
         });
 
@@ -470,14 +482,20 @@ export class UIManager {
       </div>
     `;
 
-    this.container.querySelectorAll(".choice-card").forEach((card) => {
-      card.addEventListener("click", () => {
-        if (card.dataset.active !== "true") {
-          this.playTone("wrong");
+    this.container.querySelectorAll('.choice-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        if (card.dataset.active !== 'true') {
+          this.playTone('wrong');
           return;
         }
-        this.playTone("click");
-        this.selectedGrade = Number(card.dataset.grade);
+        this.playTone('click');
+        const rawGrade = card.dataset.grade;
+        if (rawGrade === 'paud' || rawGrade === 'tk') {
+          this.selectedGrade = rawGrade;
+          earlyChildhoodManager.showActivityHub(this, rawGrade);
+          return;
+        }
+        this.selectedGrade = Number(rawGrade);
         this.showSubjectSelection();
       });
     });
