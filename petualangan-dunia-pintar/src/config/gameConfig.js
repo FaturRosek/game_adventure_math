@@ -41,12 +41,14 @@ export const GAME_CONFIG = {
   ],
 
   classes: [
-    { grade: 1, name: "Kelas 1 SD", active: true, statusText: "Aktif" },
-    { grade: 2, name: "Kelas 2 SD", active: true, statusText: "Aktif" },
-    { grade: 3, name: "Kelas 3 SD", active: true, statusText: "Aktif" },
-    { grade: 4, name: "Kelas 4 SD", active: true, statusText: "Aktif" },
-    { grade: 5, name: "Kelas 5 SD", active: false, statusText: "Coming Soon" },
-    { grade: 6, name: "Kelas 6 SD", active: false, statusText: "Coming Soon" },
+    { grade: 'paud', name: 'PAUD', active: true, statusText: 'Aktif', stage: 'early_childhood' },
+    { grade: 'tk', name: 'TK', active: true, statusText: 'Aktif', stage: 'early_childhood' },
+    { grade: 1, name: 'Kelas 1 SD', active: true, statusText: 'Aktif', stage: 'sd' },
+    { grade: 2, name: 'Kelas 2 SD', active: true, statusText: 'Aktif', stage: 'sd' },
+    { grade: 3, name: 'Kelas 3 SD', active: true, statusText: 'Aktif', stage: 'sd' },
+    { grade: 4, name: 'Kelas 4 SD', active: true, statusText: 'Aktif', stage: 'sd' },
+    { grade: 5, name: 'Kelas 5 SD', active: false, statusText: 'Coming Soon', stage: 'sd' },
+    { grade: 6, name: 'Kelas 6 SD', active: false, statusText: 'Coming Soon', stage: 'sd' }
   ],
 
   subjects: [

@@ -77,6 +77,13 @@ class LocalDatabase {
     });
   }
 
+  normalizeProfileGrade(grade = 3) {
+    const raw = String(grade ?? 3).trim().toLowerCase();
+    if (raw === 'paud' || raw === 'tk') return raw;
+    const num = Number(grade);
+    return Number.isFinite(num) && num >= 1 && num <= 6 ? num : 3;
+  }
+
   getScopedSubjectKey(subjectId = "matematika", grade = 3) {
     const cleanSubj = String(subjectId || "matematika")
       .toLowerCase()
@@ -140,7 +147,7 @@ class LocalDatabase {
 
   ensureProfileAnalyticsStructure(profile) {
     if (!profile) return null;
-    profile.grade = Number(profile.grade) || 3;
+    profile.grade = this.normalizeProfileGrade(profile.grade);
     profile.coins = profile.coins || 0;
     profile.stars = profile.stars || 0;
     profile.totalScore = profile.totalScore || 0;
@@ -154,6 +161,17 @@ class LocalDatabase {
       profile.battleArenaProgress,
       profile.character,
     );
+    profile.earlyChildhoodProgress = profile.earlyChildhoodProgress || {};
+    ['paud', 'tk'].forEach((ecKey) => {
+      if (!profile.earlyChildhoodProgress[ecKey]) {
+        profile.earlyChildhoodProgress[ecKey] = {
+          grade: ecKey,
+          totalStars: 0,
+          completedActivities: {},
+          history: []
+        };
+      }
+    });
 
     profile.totalQuestionsAnswered = profile.totalQuestionsAnswered || 0;
     profile.totalCorrect = profile.totalCorrect || 0;
@@ -166,7 +184,7 @@ class LocalDatabase {
     profile.adventureProgress = profile.adventureProgress || {};
 
     const activeGrades = GAME_CONFIG.classes
-      .filter((c) => c.active)
+      .filter((c) => c.active && typeof c.grade === 'number')
       .map((c) => c.grade);
     activeGrades.forEach((g) => {
       GAME_CONFIG.subjects.forEach((sub) => {
@@ -234,6 +252,83 @@ class LocalDatabase {
     return profile.adventureProgress[scopedKey];
   }
 
+  getEarlyChildhoodProgress(profile, gradeKey = 'paud') {
+    if (!profile) return null;
+    this.ensureProfileAnalyticsStructure(profile);
+    const key = String(gradeKey).toLowerCase() === 'tk' ? 'tk' : 'paud';
+    return profile.earlyChildhoodProgress[key];
+  }
+
+  async recordEarlyChildhoodActivity(profileId, gradeKey, activityId, result = {}) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return null;
+
+    const key = String(gradeKey).toLowerCase() === 'tk' ? 'tk' : 'paud';
+    const ecProg = this.getEarlyChildhoodProgress(profile, key);
+    const earnedStars = Math.max(0, Math.min(3, Number(result.stars) || 0));
+    const prev = ecProg.completedActivities[activityId] || { completed: false, stars: 0, playCount: 0 };
+
+    ecProg.completedActivities[activityId] = {
+      activityId,
+      completed: Boolean(result.completed || prev.completed),
+      stars: Math.max(prev.stars || 0, earnedStars),
+      playCount: (prev.playCount || 0) + 1,
+      lastPlayedAt: Date.now()
+    };
+
+    ecProg.totalStars = Object.values(ecProg.completedActivities).reduce(
+      (sum, item) => sum + (item.stars || 0),
+      0
+    );
+
+    ecProg.history.push({
+      id: 'ec_' + Date.now(),
+      activityId,
+      stars: earnedStars,
+      score: Number(result.score) || 0,
+      playedAt: Date.now()
+    });
+    if (ecProg.history.length > 60) {
+      ecProg.history = ecProg.history.slice(-60);
+    }
+
+    await this.saveProfile(profile);
+    return profile;
+  }
+
+  async recordEarlyChildhoodLevelResult(profileId, gradeKey, categoryId, levelNum, { stars = 3, coins = 30 } = {}) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return null;
+
+    const key = String(gradeKey).toLowerCase() === 'tk' ? 'tk' : 'paud';
+    const ecProg = this.getEarlyChildhoodProgress(profile, key);
+    ecProg.categories = ecProg.categories || {};
+    ecProg.coins = (ecProg.coins || 0) + coins;
+
+    if (!ecProg.categories[categoryId]) {
+      ecProg.categories[categoryId] = { unlockedLevel: 1, levelStars: {} };
+    }
+
+    const catProg = ecProg.categories[categoryId];
+    const prevStars = catProg.levelStars[levelNum] || 0;
+    catProg.levelStars[levelNum] = Math.max(prevStars, stars);
+
+    if (levelNum < 6 && (catProg.unlockedLevel || 1) <= levelNum) {
+      catProg.unlockedLevel = levelNum + 1;
+    }
+
+    let sumStars = 0;
+    Object.values(ecProg.categories).forEach((c) => {
+      Object.values(c.levelStars || {}).forEach((st) => {
+        sumStars += st;
+      });
+    });
+    ecProg.totalStars = sumStars;
+
+    await this.saveProfile(profile);
+    return profile;
+  }
+
   async getAllProfiles() {
     await this.init();
     if (this.useFallback) {
@@ -293,7 +388,7 @@ class LocalDatabase {
     const newProfile = this.ensureProfileAnalyticsStructure({
       id: newId,
       name: name.trim(),
-      grade: Number(grade),
+      grade: this.normalizeProfileGrade(grade),
       character,
       coins: 0,
       stars: 0,
