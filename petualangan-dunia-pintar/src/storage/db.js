@@ -1,4 +1,5 @@
 import { GAME_CONFIG } from "../config/gameConfig.js";
+import { calculateBattleLevel } from "../data/battleArenaCatalog.js";
 
 const DB_NAME = "PetualanganDuniaPintarDB";
 const DB_VERSION = 2;
@@ -148,6 +149,11 @@ class LocalDatabase {
     profile.completedLevels = profile.completedLevels || [];
     profile.adventureHistory = profile.adventureHistory || [];
     profile.duelHistory = profile.duelHistory || [];
+    profile.battleArenaHistory = profile.battleArenaHistory || [];
+    profile.battleArenaProgress = this.ensureBattleArenaProgress(
+      profile.battleArenaProgress,
+      profile.character,
+    );
 
     profile.totalQuestionsAnswered = profile.totalQuestionsAnswered || 0;
     profile.totalCorrect = profile.totalCorrect || 0;
@@ -669,6 +675,277 @@ class LocalDatabase {
     return profile;
   }
 
+  ensureBattleArenaProgress(existing = null, defaultChar = "kiko") {
+    const base = {
+      coins: 0,
+      xp: 0,
+      level: 1,
+      selectedTutorChar: "prof_panda",
+      selectedStudentChar: defaultChar || "kiko",
+      unlockedCharacters: ["kiko", "bobi", "cici", "prof_panda"],
+      unlockedCostumes: ["default"],
+      unlockedAccessories: ["none"],
+      unlockedAttackEffects: ["default"],
+      unlockedVictoryEffects: ["confetti"],
+      equipped: {
+        costume: "default",
+        accessory: "none",
+        attackEffect: "default",
+        victoryEffect: "confetti",
+      },
+      stats: {
+        matches: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        totalQuestions: 0,
+        totalCorrect: 0,
+        highestCombo: 0,
+      },
+      achievements: [],
+      claimedMatchIds: [],
+    };
+
+    if (!existing || typeof existing !== "object") return base;
+
+    const merged = {
+      ...base,
+      ...existing,
+      equipped: { ...base.equipped, ...(existing.equipped || {}) },
+      stats: { ...base.stats, ...(existing.stats || {}) },
+      unlockedCharacters: Array.from(
+        new Set([
+          ...base.unlockedCharacters,
+          ...(existing.unlockedCharacters || []),
+        ]),
+      ),
+      unlockedCostumes: Array.from(
+        new Set([
+          ...base.unlockedCostumes,
+          ...(existing.unlockedCostumes || []),
+        ]),
+      ),
+      unlockedAccessories: Array.from(
+        new Set([
+          ...base.unlockedAccessories,
+          ...(existing.unlockedAccessories || []),
+        ]),
+      ),
+      unlockedAttackEffects: Array.from(
+        new Set([
+          ...base.unlockedAttackEffects,
+          ...(existing.unlockedAttackEffects || []),
+        ]),
+      ),
+      unlockedVictoryEffects: Array.from(
+        new Set([
+          ...base.unlockedVictoryEffects,
+          ...(existing.unlockedVictoryEffects || []),
+        ]),
+      ),
+      achievements: Array.from(new Set(existing.achievements || [])),
+      claimedMatchIds: Array.from(new Set(existing.claimedMatchIds || [])),
+    };
+
+    merged.level = calculateBattleLevel(merged.xp).level;
+    return merged;
+  }
+
+  async updateBattleArenaSelection(profileId, { tutorChar, studentChar }) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return null;
+    if (tutorChar) profile.battleArenaProgress.selectedTutorChar = tutorChar;
+    if (studentChar)
+      profile.battleArenaProgress.selectedStudentChar = studentChar;
+    await this.saveProfile(profile);
+    return profile;
+  }
+
+  async purchaseBattleArenaItem(profileId, category, itemId, price) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return { success: false, message: "Profil tidak ditemukan." };
+
+    const bp = profile.battleArenaProgress;
+    const listMap = {
+      character: "unlockedCharacters",
+      costume: "unlockedCostumes",
+      accessory: "unlockedAccessories",
+      attackEffect: "unlockedAttackEffects",
+      victoryEffect: "unlockedVictoryEffects",
+    };
+
+    const listKey = listMap[category];
+    if (!listKey) return { success: false, message: "Kategori tidak valid." };
+    if (bp[listKey].includes(itemId))
+      return { success: true, alreadyOwned: true, profile };
+    if (bp.coins < price)
+      return { success: false, message: "Koin Battle Arena belum mencukupi." };
+
+    bp.coins -= price;
+    bp[listKey].push(itemId);
+    await this.saveProfile(profile);
+    return { success: true, profile };
+  }
+
+  async equipBattleArenaItem(profileId, category, itemId) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile) return null;
+    const bp = profile.battleArenaProgress;
+
+    if (category === "costume" && bp.unlockedCostumes.includes(itemId)) {
+      bp.equipped.costume = itemId;
+    } else if (
+      category === "accessory" &&
+      bp.unlockedAccessories.includes(itemId)
+    ) {
+      bp.equipped.accessory = itemId;
+    } else if (
+      category === "attackEffect" &&
+      bp.unlockedAttackEffects.includes(itemId)
+    ) {
+      bp.equipped.attackEffect = itemId;
+    } else if (
+      category === "victoryEffect" &&
+      bp.unlockedVictoryEffects.includes(itemId)
+    ) {
+      bp.equipped.victoryEffect = itemId;
+    }
+
+    await this.saveProfile(profile);
+    return profile;
+  }
+
+  async recordBattleArenaResult(profileId, battleSummary) {
+    const profile = await this.getProfileById(profileId);
+    if (!profile)
+      return { profile: null, rewardBreakdown: null, alreadyClaimed: false };
+
+    const bp = profile.battleArenaProgress;
+    const matchId = battleSummary.matchId || "battle_" + Date.now();
+
+    if (bp.claimedMatchIds.includes(matchId)) {
+      return { profile, rewardBreakdown: null, alreadyClaimed: true };
+    }
+
+    const sStats = battleSummary.studentStats || {
+      answered: 0,
+      correct: 0,
+      wrong: 0,
+      attacks: 0,
+      maxCombo: 0,
+    };
+    const tStats = battleSummary.tutorStats || {
+      answered: 0,
+      correct: 0,
+      wrong: 0,
+      attacks: 0,
+    };
+    const totalQ =
+      Number(sStats.answered) || (sStats.correct || 0) + (sStats.wrong || 0);
+    const accuracy =
+      totalQ > 0 ? Math.round(((sStats.correct || 0) / totalQ) * 100) : 0;
+    const tTotalQ =
+      Number(tStats.answered) || (tStats.correct || 0) + (tStats.wrong || 0);
+    const tAccuracy =
+      tTotalQ > 0 ? Math.round(((tStats.correct || 0) / tTotalQ) * 100) : 0;
+
+    const isWin = battleSummary.winner === "student";
+    const isDraw = battleSummary.winner === "draw";
+
+    const baseCoins = 20;
+    const victoryCoinBonus = isWin ? 35 : isDraw ? 15 : 5;
+    const comboCoinBonus =
+      (sStats.maxCombo || 0) >= 3 ? 20 : (sStats.maxCombo || 0) >= 2 ? 10 : 0;
+    const accuracyCoinBonus = accuracy >= 90 ? 25 : accuracy >= 75 ? 10 : 0;
+    const totalCoinsEarned =
+      baseCoins + victoryCoinBonus + comboCoinBonus + accuracyCoinBonus;
+
+    const baseXp = 30;
+    const victoryXpBonus = isWin ? 40 : isDraw ? 20 : 15;
+    const accuracyXpBonus = Math.round(accuracy * 0.3);
+    const totalXpEarned = baseXp + victoryXpBonus + accuracyXpBonus;
+
+    const oldLevel = calculateBattleLevel(bp.xp).level;
+    bp.coins += totalCoinsEarned;
+    bp.xp += totalXpEarned;
+    const newLevelInfo = calculateBattleLevel(bp.xp);
+    bp.level = newLevelInfo.level;
+
+    bp.stats.matches += 1;
+    if (isWin) bp.stats.wins += 1;
+    else if (isDraw) bp.stats.draws += 1;
+    else bp.stats.losses += 1;
+
+    bp.stats.totalQuestions += totalQ;
+    bp.stats.totalCorrect += sStats.correct || 0;
+    bp.stats.highestCombo = Math.max(
+      bp.stats.highestCombo || 0,
+      sStats.maxCombo || 0,
+    );
+
+    const newAchievements = [];
+    const unlockAch = (achId) => {
+      if (!bp.achievements.includes(achId)) {
+        bp.achievements.push(achId);
+        newAchievements.push(achId);
+      }
+    };
+
+    if (isWin) unlockAch("first_victory");
+    if (totalQ > 0 && (sStats.wrong || 0) === 0) unlockAch("perfect_fighter");
+    if ((sStats.maxCombo || 0) >= 3) unlockAch("combo_master");
+    if (isWin && Number(battleSummary.studentLivesLeft) === 1)
+      unlockAch("comeback_hero");
+    if (totalQ > 0 && accuracy >= 90) unlockAch("knowledge_champion");
+    if (bp.stats.matches >= 5) unlockAch("battle_veteran");
+
+    bp.claimedMatchIds.push(matchId);
+    if (bp.claimedMatchIds.length > 100) {
+      bp.claimedMatchIds = bp.claimedMatchIds.slice(-100);
+    }
+
+    profile.battleArenaHistory = profile.battleArenaHistory || [];
+    profile.battleArenaHistory.push({
+      matchId,
+      grade: battleSummary.grade,
+      subject: battleSummary.subject,
+      difficulty: battleSummary.difficulty,
+      maxLives: battleSummary.maxLives || 5,
+      totalQuestionsPlayed: battleSummary.totalQuestionsPlayed || totalQ,
+      winner: battleSummary.winner,
+      tutorName: battleSummary.tutorName,
+      studentName: battleSummary.studentName,
+      tutorCharacter: battleSummary.tutorCharacter,
+      studentCharacter: battleSummary.studentCharacter,
+      tutorLivesLeft: battleSummary.tutorLivesLeft,
+      studentLivesLeft: battleSummary.studentLivesLeft,
+      tutorStats: { ...tStats, accuracy: tAccuracy },
+      studentStats: { ...sStats, accuracy },
+      coinsEarned: totalCoinsEarned,
+      xpEarned: totalXpEarned,
+      playedAt: Date.now(),
+    });
+
+    await this.saveProfile(profile);
+
+    return {
+      profile,
+      alreadyClaimed: false,
+      rewardBreakdown: {
+        baseCoins,
+        victoryCoinBonus,
+        comboCoinBonus,
+        accuracyCoinBonus,
+        totalCoinsEarned,
+        totalXpEarned,
+        leveledUp: newLevelInfo.level > oldLevel,
+        newLevel: newLevelInfo.level,
+        levelInfo: newLevelInfo,
+        newAchievements,
+      },
+    };
+  }
+
   async deleteProfile(profileId) {
     await this.init();
     if (this.getActiveProfileId() === profileId) {
@@ -705,6 +982,7 @@ class LocalDatabase {
     profile.completedLevels = [];
     profile.adventureHistory = [];
     profile.duelHistory = [];
+    profile.battleArenaHistory = [];
     profile.totalQuestionsAnswered = 0;
     profile.totalCorrect = 0;
     profile.totalWrong = 0;
@@ -764,6 +1042,8 @@ class LocalDatabase {
       manualDifficulty: "sedang",
       adaptiveBounds: "mudah-sulit",
       initialAdaptiveDifficulty: "mudah",
+      battleMuted: false,
+      battleVolume: 0.6,
     };
 
     if (this.useFallback) {
