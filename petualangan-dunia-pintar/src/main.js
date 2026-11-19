@@ -6,6 +6,7 @@ import { CarRacingScene } from "./scenes/CarRacingScene.js";
 import { MazeAdventureScene } from "./scenes/MazeAdventureScene.js";
 import { DuelScene } from "./scenes/DuelScene.js";
 import { uiManager } from "./systems/UIManager.js";
+import { BattleArenaScene } from "./scenes/BattleArenaScene.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   const phaserConfig = {
@@ -31,6 +32,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       CarRacingScene,
       MazeAdventureScene,
       DuelScene,
+      BattleArenaScene,
     ],
   };
 
