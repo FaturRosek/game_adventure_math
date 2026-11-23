@@ -1,171 +1,846 @@
 [
   {
-    "id": "BINDO3_001",
+    "id": "BINDO3_B1_01",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Membaca dan Memahami Teks Pendek",
-    "subtopic": "Informasi Dalam Bacaan",
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Mengelompokkan gambar benda",
     "difficulty": "mudah",
-    "question": "Bacalah teks berikut! 'Setiap hari Minggu pagi, Rina membantu ibu menyiram bunga mawar di halaman rumah.' Kapan Rina membantu ibu menyiram bunga?",
-    "options": ["Hari Minggu pagi", "Hari Minggu sore", "Hari Sabtu pagi", "Setiap pulang sekolah"],
-    "correctAnswer": "Hari Minggu pagi",
-    "explanation": "Dalam kalimat pertama tertulis jelas bahwa Rina membantu ibu setiap hari Minggu pagi."
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Di papan pengamatan terdapat kartu gambar: (1) pensil, (2) penggaris, (3) penghapus, (4) sendok makan, dan (5) buku tulis. Gambar manakah yang TIDAK termasuk kelompok alat tulis sekolah?",
+    "options": ["Sendok makan", "Penggaris", "Penghapus", "Buku tulis"],
+    "correctAnswer": "Sendok makan",
+    "explanation": "Pensil, penggaris, penghapus, dan buku tulis adalah alat tulis sekolah, sedangkan sendok makan termasuk peralatan makan."
   },
   {
-    "id": "BINDO3_002",
+    "id": "BINDO3_B1_02",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Menentukan Ide Pokok",
-    "subtopic": "Kalimat Utama Paragraf",
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Mengelompokkan gambar benda",
     "difficulty": "sedang",
-    "question": "Bacalah paragraf berikut! 'Menjaga kebersihan kelas adalah tanggung jawab bersama. Setiap siswa bertugas sesuai jadwal piket. Kelas yang bersih membuat belajar menjadi nyaman.' Ide pokok paragraf tersebut adalah ...",
+    "challengeStyle": "analisis",
+    "question": "Siti mengelompokkan kartu gambar menjadi dua kelompok. Kelompok A berisi gambar kelereng, bola sepak, dan jam dinding bundar. Kelompok B berisi gambar buku, papan tulis, dan amplop. Dasar pengelompokan yang digunakan Siti adalah ...",
     "options": [
-      "Menjaga kebersihan kelas adalah tanggung jawab bersama",
-      "Jadwal piket dibuat oleh ketua kelas",
-      "Belajar di rumah lebih menyenangkan",
-      "Siswa membawa sapu dari rumah"
+      "Bentuk benda (bulat/lingkaran dan segiempat)",
+      "Warna benda (merah dan biru)",
+      "Harga benda dari termurah ke termahal",
+      "Tempat membeli benda di pasar"
     ],
-    "correctAnswer": "Menjaga kebersihan kelas adalah tanggung jawab bersama",
-    "explanation": "Ide pokok terletak pada kalimat utama di awal paragraf, yaitu menjaga kebersihan kelas adalah tanggung jawab bersama."
+    "correctAnswer": "Bentuk benda (bulat/lingkaran dan segiempat)",
+    "explanation": "Kelereng, bola, dan jam dinding bundar berbentuk bulat/lingkaran, sedangkan buku, papan tulis, dan amplop berbentuk segiempat."
   },
   {
-    "id": "BINDO3_003",
+    "id": "BINDO3_B1_03",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Menjawab Pertanyaan Berdasarkan Bacaan",
-    "subtopic": "Mengapa dan Bagaimana",
-    "difficulty": "sedang",
-    "question": "Bacalah teks berikut! 'Budi selalu mencuci tangan dengan sabun sebelum makan agar kuman tidak masuk ke perut.' Mengapa Budi mencuci tangan sebelum makan?",
-    "options": [
-      "Agar kuman tidak masuk ke perut",
-      "Agar tangannya terasa dingin",
-      "Karena disuruh oleh temannya",
-      "Supaya makanannya cepat habis"
-    ],
-    "correctAnswer": "Agar kuman tidak masuk ke perut",
-    "explanation": "Tujuan Budi mencuci tangan dengan sabun adalah agar kuman penyakit tidak ikut masuk ke perut."
-  },
-  {
-    "id": "BINDO3_004",
-    "grade": 3,
-    "subject": "Bahasa Indonesia",
-    "topic": "Sinonim dan Antonim",
-    "subtopic": "Persamaan dan Lawan Kata",
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Huruf kapital dan tanda baca",
     "difficulty": "mudah",
-    "question": "Persamaan kata (sinonim) dari kata 'Pintar' adalah ...",
-    "options": ["Pandai", "Malas", "Lambat", "Pendek"],
-    "correctAnswer": "Pandai",
-    "explanation": "Sinonim adalah persamaan makna kata. Kata 'pintar' memiliki arti yang sama dengan kata 'pandai' atau 'cerdas'."
+    "challengeStyle": "konsep",
+    "question": "Manakah penulisan kalimat berikut yang menggunakan huruf kapital dan tanda baca titik dengan BENAR?",
+    "options": [
+      "Pada hari Minggu, Budi dan Rina bermain di Taman Kota.",
+      "pada hari minggu, budi dan rina bermain di taman kota.",
+      "Pada Hari Minggu, Budi dan rina bermain di Taman Kota",
+      "Pada hari minggu, Budi Dan Rina bermain di taman kota?"
+    ],
+    "correctAnswer": "Pada hari Minggu, Budi dan Rina bermain di Taman Kota.",
+    "explanation": "Huruf kapital dipakai di awal kalimat, nama hari (Minggu), nama orang (Budi, Rina), dan nama tempat (Taman Kota), serta diakhiri tanda titik (.)."
   },
   {
-    "id": "BINDO3_005",
+    "id": "BINDO3_B1_04",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Sinonim dan Antonim",
-    "subtopic": "Lawan Kata (Antonim)",
-    "difficulty": "mudah",
-    "question": "Lawan kata (antonim) dari kata 'Bersih' adalah ...",
-    "options": ["Kotor", "Rapi", "Harum", "Indah"],
-    "correctAnswer": "Kotor",
-    "explanation": "Antonim adalah lawan kata. Lawan kata dari 'bersih' adalah 'kotor'."
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Huruf kapital dan tanda baca",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Perhatikan kalimat berikut: 'Ibu membeli bayam wortel dan tomat di Pasar Baru' Tanda baca yang tepat untuk melengkapi kalimat tersebut agar sesuai kaidah penulisan adalah ...",
+    "options": [
+      "Tanda koma setelah 'bayam' dan 'wortel', serta tanda titik di akhir kalimat",
+      "Tanda seru setelah 'Ibu' dan tanda tanya di akhir kalimat",
+      "Tanda titik di antara setiap kata tanpa tanda koma",
+      "Tanda tanya setelah 'wortel' dan tanda koma di akhir kalimat"
+    ],
+    "correctAnswer": "Tanda koma setelah 'bayam' dan 'wortel', serta tanda titik di akhir kalimat",
+    "explanation": "Perincian lebih dari dua benda dipisahkan tanda koma sebelum kata 'dan' (bayam, wortel, dan tomat) serta diakhiri tanda titik karena merupakan kalimat berita."
   },
   {
-    "id": "BINDO3_006",
+    "id": "BINDO3_B1_05",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Kosakata dan Makna Kata",
-    "subtopic": "Kosakata Cuaca dan Lingkungan",
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Mengungkapkan ide",
     "difficulty": "sedang",
-    "question": "Air yang turun dari langit dalam bentuk titik-titik air karena awan mendung disebut ...",
-    "options": ["Hujan", "Pelangi", "Angin", "Kabut"],
-    "correctAnswer": "Hujan",
-    "explanation": "Titik-titik air yang jatuh dari awan mendung di langit disebut hujan."
-  },
-  {
-    "id": "BINDO3_007",
-    "grade": 3,
-    "subject": "Bahasa Indonesia",
-    "topic": "Menyusun Kalimat",
-    "subtopic": "Menyusun Kata Acak (S-P-O-K)",
-    "difficulty": "sedang",
-    "question": "Susunlah kata-kata acak berikut menjadi kalimat yang benar: 'membaca - di perpustakaan - Siti - buku cerita'",
+    "challengeStyle": "penerapan",
+    "question": "Saat diskusi kelompok untuk menghias kelas menyambut Hari Kemerdekaan, Lani memiliki gagasan membuat hiasan dari kertas bekas warna-warni. Cara mengungkapkan ide yang baik dan jelas adalah ...",
     "options": [
-      "Siti membaca buku cerita di perpustakaan",
-      "Buku cerita membaca Siti di perpustakaan",
-      "Di perpustakaan buku cerita membaca Siti",
-      "Membaca Siti di perpustakaan buku cerita"
+      "Mengangkat tangan lalu berkata, 'Teman-teman, bagaimana kalau kita membuat rantai hias dari kertas bekas agar lebih hemat dan rapi?'",
+      "Langsung memotong kertas tanpa memberi tahu teman satu kelompok",
+      "Berteriak keras, 'Ide kalian jelek semua, harus ikuti mauku saja!'",
+      "Diam saja sampai diskusi selesai lalu mengeluh setelah kegiatan berakhir"
     ],
-    "correctAnswer": "Siti membaca buku cerita di perpustakaan",
-    "explanation": "Susunan kalimat yang baik mengikuti pola Subjek (Siti) - Predikat (membaca) - Objek (buku cerita) - Keterangan (di perpustakaan)."
+    "correctAnswer": "Mengangkat tangan lalu berkata, 'Teman-teman, bagaimana kalau kita membuat rantai hias dari kertas bekas agar lebih hemat dan rapi?'",
+    "explanation": "Mengungkapkan ide yang baik dilakukan dengan sopan, jelas, dan disertai alasan agar mudah dipahami teman."
   },
   {
-    "id": "BINDO3_008",
+    "id": "BINDO3_B1_06",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Huruf Kapital dan Tanda Baca",
-    "subtopic": "Penggunaan Huruf Kapital dan Tanda Tanya",
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Mengungkapkan ide",
     "difficulty": "sulit",
-    "question": "Manakah penulisan huruf kapital dan tanda baca yang paling tepat di bawah ini?",
+    "challengeStyle": "kasus",
+    "question": "Di pojok baca kelas, buku cerita sering tercecer karena rak buku sudah penuh. Ide solusi yang paling tepat dan masuk akal untuk diusulkan kepada guru adalah ...",
     "options": [
-      "Kapan Edo berangkat ke Surabaya?",
-      "kapan edo berangkat ke surabaya.",
-      "Kapan edo berangkat ke Surabaya!",
-      "kapan Edo berangkat ke surabaya?"
+      "Menyusun buku berdasarkan ukuran dan menambah kotak penyimpanan berlabel di samping rak",
+      "Membuang setengah buku cerita agar rak terlihat lebih kosong",
+      "Melarang semua siswa meminjam buku di pojok baca kelas",
+      "Menumpuk seluruh buku di depan pintu masuk ruang kelas"
     ],
-    "correctAnswer": "Kapan Edo berangkat ke Surabaya?",
-    "explanation": "Huruf kapital digunakan pada awal kalimat (Kapan), nama orang (Edo), dan nama kota (Surabaya). Kalimat tanya diakhiri tanda tanya (?)."
+    "correctAnswer": "Menyusun buku berdasarkan ukuran dan menambah kotak penyimpanan berlabel di samping rak",
+    "explanation": "Ide solusi yang baik harus menyelesaikan masalah secara nyata, rapi, dan tetap memberi manfaat bagi seluruh siswa."
   },
   {
-    "id": "BINDO3_009",
+    "id": "BINDO3_B1_07",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Melengkapi Kalimat",
-    "subtopic": "Kata Hubung dan Kosakata Tepat",
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Mengenali dan mengikuti instruksi",
     "difficulty": "mudah",
-    "question": "Lengkapilah kalimat berikut: 'Doni memakai jas hujan ... pakaiannya tidak basah saat kehujanan.'",
-    "options": ["agar", "tetapi", "sedangkan", "atau"],
-    "correctAnswer": "agar",
-    "explanation": "Kata hubung 'agar' atau 'supaya' digunakan untuk menyatakan tujuan."
-  },
-  {
-    "id": "BINDO3_010",
-    "grade": 3,
-    "subject": "Bahasa Indonesia",
-    "topic": "Memahami Cerita Sederhana",
-    "subtopic": "Pesan Moral dan Tokoh Cerita",
-    "difficulty": "sulit",
-    "question": "Bacalah cerita berikut! 'Semut melihat Merpati hampir tenggelam di sungai. Semut menggigit kaki pemburu yang hendak menangkap Merpati. Sebelumnya, Merpati pernah menolong Semut dengan menjatuhkan daun.' Pesan baik dari cerita tersebut adalah ...",
+    "challengeStyle": "penerapan",
+    "question": "Bacalah instruksi guru berikut: '1. Lipat kertas menjadi dua bagian sama besar. 2. Gunting bagian tengah mengikuti garis putus-putus. 3. Tempelkan hasil guntingan di buku gambar.' Langkah kedua yang harus dilakukan siswa adalah ...",
     "options": [
-      "Kita harus saling menolong sesama teman yang kesulitan",
-      "Kita tidak boleh bermain di dekat sungai",
-      "Semut suka menggigit kaki orang di hutan",
-      "Burung merpati pandai berenang di sungai"
+      "Menggunting bagian tengah kertas mengikuti garis putus-putus",
+      "Melipat kertas menjadi empat bagian kecil",
+      "Langsung menempelkan kertas sebelum digunting",
+      "Mewarnai buku gambar sebelum melipat kertas"
     ],
-    "correctAnswer": "Kita harus saling menolong sesama teman yang kesulitan",
-    "explanation": "Cerita Semut dan Merpati mengajarkan kita untuk saling menolong dan membalas kebaikan dengan kebaikan."
+    "correctAnswer": "Menggunting bagian tengah kertas mengikuti garis putus-putus",
+    "explanation": "Mengikuti instruksi dilakukan secara berurutan; langkah nomor 2 adalah menggunting bagian tengah mengikuti garis putus-putus."
   },
   {
-    "id": "BINDO3_011",
+    "id": "BINDO3_B1_08",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Huruf Kapital dan Tanda Baca",
-    "subtopic": "Tanda Titik dan Huruf Kapital",
-    "difficulty": "sulit",
-    "question": "Tanda baca yang tepat untuk mengakhiri kalimat berita seperti 'Ibu membeli sayur di pasar' adalah ...",
-    "options": ["Tanda titik (.)", "Tanda tanya (?)", "Tanda seru (!)", "Tanda koma (,)"],
-    "correctAnswer": "Tanda titik (.)",
-    "explanation": "Kalimat berita atau pernyataan selalu diakhiri dengan tanda titik (.)."
+    "chapter": "Bab 1",
+    "topic": "Bab 1",
+    "subtopic": "Mengenali dan mengikuti instruksi",
+    "difficulty": "sedang",
+    "challengeStyle": "kasus",
+    "question": "Pada papan petunjuk permainan 'Lompat Tali' tertulis: 'Pemain melompat masuk saat tali berputar ke bawah, bukan saat tali berhenti.' Jika Edo masuk saat tali sedang berhenti, apakah Edo sudah mengikuti instruksi?",
+    "options": [
+      "Belum, karena instruksi meminta pemain melompat masuk ketika tali sedang berputar ke bawah",
+      "Sudah, karena semua permainan boleh dimainkan tanpa melihat petunjuk",
+      "Sudah, karena Edo adalah pemain yang paling tinggi di kelas",
+      "Belum, karena seharusnya Edo tidak perlu melompat sama sekali"
+    ],
+    "correctAnswer": "Belum, karena instruksi meminta pemain melompat masuk ketika tali sedang berputar ke bawah",
+    "explanation": "Mengenali dan mengikuti instruksi berarti memahami syarat dan larangan yang tertera pada petunjuk secara teliti."
   },
   {
-    "id": "BINDO3_012",
+    "id": "BINDO3_B2_01",
     "grade": 3,
     "subject": "Bahasa Indonesia",
-    "topic": "Memahami Cerita Sederhana",
-    "subtopic": "Sifat Tokoh dalam Cerita",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Memahami bentuk gambar",
+    "difficulty": "mudah",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Di depan perpustakaan sekolah terpasang poster bergambar seorang anak meletakkan jari telunjuk di depan bibir dengan tulisan kecil 'Area Baca'. Makna gambar tersebut adalah ...",
+    "options": [
+      "Pengunjung diminta menjaga ketenangan dan tidak berisik di area perpustakaan",
+      "Pengunjung diminta bernyanyi dengan suara keras bersama-sama",
+      "Pengunjung dilarang membawa buku tulis ke dalam perpustakaan",
+      "Perpustakaan sedang tutup sepanjang minggu"
+    ],
+    "correctAnswer": "Pengunjung diminta menjaga ketenangan dan tidak berisik di area perpustakaan",
+    "explanation": "Isyarat jari telunjuk di depan bibir pada gambar poster adalah simbol visual untuk menjaga ketenangan."
+  },
+  {
+    "id": "BINDO3_B2_02",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Memahami bentuk gambar",
+    "difficulty": "sedang",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Pada gambar seri terdiri atas 3 panel: Panel 1 tampak awan hitam pekat dan angin bertiup kencang. Panel 2 tampak seorang anak membuka payung di tengah rintik air. Panel 3 tampak pelangi melengkung di langit cerah. Urutan peristiwa yang diceritakan gambar tersebut adalah ...",
+    "options": [
+      "Langit mendung, lalu turun hujan sehingga anak memakai payung, kemudian hujan reda dan muncul pelangi",
+      "Muncul pelangi terlebih dahulu, lalu turun salju tebal sepanjang hari",
+      "Anak lupa membawa payung sehingga tidak mau pulang ke rumah",
+      "Hari sangat panas terik dari pagi sampai malam hari"
+    ],
+    "correctAnswer": "Langit mendung, lalu turun hujan sehingga anak memakai payung, kemudian hujan reda dan muncul pelangi",
+    "explanation": "Memahami bentuk gambar seri dilakukan dengan mengamati detail visual (awan gelap, payung, pelangi) secara berurutan dari panel pertama sampai terakhir."
+  },
+  {
+    "id": "BINDO3_B2_03",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Kalimat sederhana",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Manakah di bawah ini yang merupakan contoh kalimat sederhana yang lengkap dan bermakna jelas?",
+    "options": [
+      "Ayah membaca koran di teras.",
+      "Di teras pagi hari.",
+      "Membaca sangat cepat sekali.",
+      "Koran dan cangkir teh hangat."
+    ],
+    "correctAnswer": "Ayah membaca koran di teras.",
+    "explanation": "Kalimat sederhana yang lengkap sekurang-kurangnya memiliki Subjek (Ayah) dan Predikat (membaca) sehingga menyampaikan pesan utuh."
+  },
+  {
+    "id": "BINDO3_B2_04",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Kalimat sederhana",
+    "difficulty": "sedang",
+    "challengeStyle": "penerapan",
+    "question": "Susunlah kata-kata acak berikut menjadi sebuah kalimat sederhana yang benar: 'bunga — menyiram — di halaman — Dayu'",
+    "options": [
+      "Dayu menyiram bunga di halaman.",
+      "Bunga menyiram Dayu di halaman.",
+      "Di halaman bunga Dayu menyiram.",
+      "Menyiram di halaman Dayu bunga."
+    ],
+    "correctAnswer": "Dayu menyiram bunga di halaman.",
+    "explanation": "Pola kalimat sederhana yang tepat adalah Subjek (Dayu) + Predikat (menyiram) + Objek (bunga) + Keterangan tempat (di halaman)."
+  },
+  {
+    "id": "BINDO3_B2_05",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Ciri dan unsur kalimat sederhana",
+    "difficulty": "sedang",
+    "challengeStyle": "analisis",
+    "question": "Perhatikan kalimat berikut: 'Raka menendang bola di lapangan.' Unsur Subjek (S), Predikat (P), Objek (O), dan Keterangan (K) secara berurutan pada kalimat tersebut adalah ...",
+    "options": [
+      "S: Raka, P: menendang, O: bola, K: di lapangan",
+      "S: bola, P: di lapangan, O: Raka, K: menendang",
+      "S: menendang, P: Raka, O: di lapangan, K: bola",
+      "S: Raka, P: bola, O: menendang, K: di lapangan"
+    ],
+    "correctAnswer": "S: Raka, P: menendang, O: bola, K: di lapangan",
+    "explanation": "Raka adalah pelaku (Subjek), menendang adalah tindakan (Predikat), bola adalah sasaran (Objek), dan di lapangan adalah Keterangan tempat."
+  },
+  {
+    "id": "BINDO3_B2_06",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Ciri dan unsur kalimat sederhana",
     "difficulty": "sulit",
-    "question": "Bacalah kutipan cerita! 'Meskipun uang jajannya tidak banyak, Lani selalu menyisihkan sebagian uangnya ke dalam celengan setiap hari.' Sifat Lani dalam cerita tersebut adalah ...",
-    "options": ["Hemat dan rajin menabung", "Boros dan suka jajan", "Pelit kepada teman", "Mudah menyerah"],
-    "correctAnswer": "Hemat dan rajin menabung",
-    "explanation": "Menyisihkan uang jajan untuk ditabung menunjukkan sifat hemat dan rajin menabung."
+    "challengeStyle": "analisis",
+    "question": "Perhatikan dua kalimat berikut: (1) 'Adik tidur.' dan (2) 'Ibu memasak sayur bayam.' Mengapa kalimat (1) tetap disebut kalimat sederhana yang sah meskipun tidak memiliki Objek?",
+    "options": [
+      "Karena syarat utama kalimat sederhana adalah memiliki Subjek dan Predikat yang sudah membentuk makna utuh",
+      "Karena setiap kalimat sederhana dilarang menggunakan kata benda",
+      "Karena kata 'tidur' tidak memerlukan pelaku sama sekali",
+      "Karena kalimat sederhana hanya boleh terdiri atas dua kata saja"
+    ],
+    "correctAnswer": "Karena syarat utama kalimat sederhana adalah memiliki Subjek dan Predikat yang sudah membentuk makna utuh",
+    "explanation": "Ciri kalimat sederhana adalah memiliki satu pola inti minimal Subjek (Adik) + Predikat (tidur); kata kerja intransitif seperti 'tidur' tidak memerlukan Objek."
+  },
+  {
+    "id": "BINDO3_B2_07",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Fakta dan fiksi",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Manakah pernyataan di bawah ini yang merupakan FAKTA (kejadian nyata yang dapat dibuktikan kebenarannya)?",
+    "options": [
+      "Matahari terbit di sebelah timur dan terbenam di sebelah barat.",
+      "Seekor kelinci berbicara bahasa manusia dan mengendarai awan terbang.",
+      "Pohon mangga di belakang rumah berubah menjadi kastil emas tiap tengah malam.",
+      "Kucing milik Roni bisa terbang ke bulan menggunakan sayap pelangi."
+    ],
+    "correctAnswer": "Matahari terbit di sebelah timur dan terbenam di sebelah barat.",
+    "explanation": "Fakta adalah hal atau peristiwa yang benar-benar terjadi dan dapat dibuktikan, sedangkan cerita khayalan termasuk fiksi."
+  },
+  {
+    "id": "BINDO3_B2_08",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Fakta dan fiksi",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Bacalah dua cuplikan teks berikut! Teks A: 'Kancil melompat di punggung buaya sambil menghitung dengan suara lantang agar bisa menyeberangi sungai.' Teks B: 'Buaya adalah hewan reptil yang hidup di perairan tawar maupun payau dan bertelur di tepi sungai.' Kesimpulan yang tepat tentang kedua teks tersebut adalah ...",
+    "options": [
+      "Teks A adalah fiksi (dongeng imajinasi), sedangkan Teks B adalah fakta (informasi nyata)",
+      "Teks A dan Teks B sama-sama merupakan berita nyata dari koran",
+      "Teks A adalah fakta ilmiah, sedangkan Teks B adalah cerita fiksi",
+      "Kedua teks tersebut tidak mengandung informasi apa pun tentang buaya"
+    ],
+    "correctAnswer": "Teks A adalah fiksi (dongeng imajinasi), sedangkan Teks B adalah fakta (informasi nyata)",
+    "explanation": "Teks A merupakan fabel/cerita rekaan (hewan berbicara), sedangkan Teks B menyampaikan ciri ilmiah buaya yang benar-benar nyata."
+  },
+  {
+    "id": "BINDO3_B2_09",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Menulis cerita bagian awal, tengah, dan akhir",
+    "difficulty": "sedang",
+    "challengeStyle": "penerapan",
+    "question": "Saat menulis cerita pendek tentang pengalaman menanam bunga, isi yang paling tepat dituliskan pada BAGIAN AWAL cerita adalah ...",
+    "options": [
+      "Memperkenalkan tokoh, waktu, tempat, serta awal mula rencana menanam bunga di halaman rumah",
+      "Menuliskan pesan penutup dan perasaan gembira setelah bunga mekar sempurna",
+      "Langsung menceritakan bunga layu tanpa menjelaskan siapa yang menanamnya",
+      "Menulis daftar harga semua pot bunga di seluruh Indonesia"
+    ],
+    "correctAnswer": "Memperkenalkan tokoh, waktu, tempat, serta awal mula rencana menanam bunga di halaman rumah",
+    "explanation": "Bagian awal cerita berfungsi memperkenalkan tokoh, latar (waktu dan tempat), serta pembuka peristiwa."
+  },
+  {
+    "id": "BINDO3_B2_10",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 2",
+    "topic": "Bab 2",
+    "subtopic": "Menulis cerita bagian awal, tengah, dan akhir",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Perhatikan tiga potongan cerita berikut: (1) Akhirnya sepeda Edo kembali lancar dan mereka pulang dengan gembira. (2) Pagi itu Edo dan Beni bersepeda bersama menuju taman desa. (3) Di tengah jalan, rantai sepeda Edo terlepas sehingga Beni membantu memasangnya kembali. Urutan bagian awal, tengah, dan akhir yang tepat adalah ...",
+    "options": [
+      "(2) — (3) — (1)",
+      "(1) — (2) — (3)",
+      "(3) — (2) — (1)",
+      "(2) — (1) — (3)"
+    ],
+    "correctAnswer": "(2) — (3) — (1)",
+    "explanation": "Bagian awal memperkenalkan latar dan tokoh (2), bagian tengah memuat peristiwa/masalah rantai terlepas (3), dan bagian akhir memuat penyelesaian (1)."
+  },
+  {
+    "id": "BINDO3_B3_01",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Ide pokok",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Dalam sebuah paragraf bacaan, gagasan utama yang menjadi inti pembahasan seluruh kalimat dalam paragraf tersebut disebut ...",
+    "options": ["Ide pokok", "Tanda baca", "Judul buku", "Kata ganti"],
+    "correctAnswer": "Ide pokok",
+    "explanation": "Ide pokok (gagasan utama) adalah inti atau pokok bahasan yang dijelaskan oleh kalimat-kalimat pendukung dalam satu paragraf."
+  },
+  {
+    "id": "BINDO3_B3_02",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Ide pokok",
+    "difficulty": "sedang",
+    "challengeStyle": "konsep",
+    "question": "Mengapa ide pokok biasanya didukung oleh beberapa kalimat penjelas di dalam sebuah paragraf?",
+    "options": [
+      "Untuk memberikan rincian, contoh, atau keterangan tambahan agar ide pokok makin mudah dipahami pembaca",
+      "Untuk mengganti topik bacaan menjadi cerita yang sama sekali berbeda",
+      "Agar paragraf menjadi sangat panjang tanpa perlu ada inti bahasan",
+      "Karena ide pokok tidak boleh ditulis dalam bentuk kalimat"
+    ],
+    "correctAnswer": "Untuk memberikan rincian, contoh, atau keterangan tambahan agar ide pokok makin mudah dipahami pembaca",
+    "explanation": "Kalimat penjelas berfungsi menguraikan, mencontohkan, dan memperjelas ide pokok dalam paragraf."
+  },
+  {
+    "id": "BINDO3_B3_03",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Mengenali ide pokok",
+    "difficulty": "sedang",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Bacalah paragraf berikut! 'Olahraga rutin memberikan banyak manfaat bagi tubuh anak. Berlari dan bersepeda membuat otot kaki menjadi kuat. Selain itu, olahraga juga membuat tubuh terasa segar dan tidak mudah sakit.' Ide pokok paragraf tersebut adalah ...",
+    "options": [
+      "Olahraga rutin memberikan banyak manfaat bagi tubuh anak",
+      "Sepeda harus dicuci setiap hari Minggu pagi",
+      "Anak-anak hanya boleh berolahraga dengan cara berlari",
+      "Tubuh yang sakit tidak memerlukan istirahat"
+    ],
+    "correctAnswer": "Olahraga rutin memberikan banyak manfaat bagi tubuh anak",
+    "explanation": "Kalimat pertama merupakan kalimat utama yang memuat ide pokok, sedangkan kalimat kedua dan ketiga merinci manfaat olahraga."
+  },
+  {
+    "id": "BINDO3_B3_04",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Mengenali ide pokok",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Bacalah paragraf berikut! 'Di pasar tradisional, pembeli bisa memilih sayuran yang masih segar langsung dari petani. Harganya juga sering lebih terjangkau dan bisa ditawar dengan ramah. Oleh karena itu, banyak keluarga tetap gemar berbelanja di pasar tradisional.' Di manakah letak ide pokok paragraf tersebut?",
+    "options": [
+      "Di akhir paragraf, yaitu banyak keluarga tetap gemar berbelanja di pasar tradisional",
+      "Hanya pada kata 'sayuran segar' di tengah kalimat pertama",
+      "Paragraf tersebut tidak memiliki ide pokok sama sekali",
+      "Pada kalimat yang membahas harga sepeda di toko"
+    ],
+    "correctAnswer": "Di akhir paragraf, yaitu banyak keluarga tetap gemar berbelanja di pasar tradisional",
+    "explanation": "Kalimat terakhir diawali penanda simpulan 'Oleh karena itu' yang merangkum seluruh alasan pada kalimat sebelumnya sebagai ide pokok."
+  },
+  {
+    "id": "BINDO3_B3_05",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Tokoh cerita",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Pelaku atau individu (bisa manusia maupun hewan dalam fabel) yang mengalami berbagai peristiwa di dalam sebuah cerita disebut ...",
+    "options": ["Tokoh cerita", "Daftar isi", "Latar waktu", "Kamus kata"],
+    "correctAnswer": "Tokoh cerita",
+    "explanation": "Tokoh cerita adalah pelaku yang menjalankan peran dan mengalami rangkaian kejadian dalam cerita."
+  },
+  {
+    "id": "BINDO3_B3_06",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Tokoh cerita",
+    "difficulty": "sedang",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Bacalah penggalan cerita! 'Sepanjang cerita, Rani terus berusaha melatih suaranya agar berani tampil membaca puisi di panggung sekolah. Ibu guru dan Dito sesekali memberi semangat kepada Rani.' Siapakah tokoh utama dalam cerita tersebut?",
+    "options": ["Rani", "Ibu guru", "Dito", "Penonton panggung"],
+    "correctAnswer": "Rani",
+    "explanation": "Rani adalah tokoh utama karena dialah yang paling banyak diceritakan dan menjadi pusat peristiwa dari awal hingga akhir."
+  },
+  {
+    "id": "BINDO3_B3_07",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Masalah tokoh",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Kesulitan, rintangan, atau pertentangan yang dialami tokoh di dalam cerita sehingga membuat alur cerita menjadi menarik disebut ...",
+    "options": ["Masalah tokoh (konflik)", "Nama pengarang", "Halaman sampul", "Peta lokasi"],
+    "correctAnswer": "Masalah tokoh (konflik)",
+    "explanation": "Masalah tokoh adalah hambatan atau persoalan yang muncul dan harus diselesaikan oleh tokoh dalam cerita."
+  },
+  {
+    "id": "BINDO3_B3_08",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Masalah yang dihadapi tokoh",
+    "difficulty": "sedang",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Bacalah cerita singkat! 'Beni sudah berjanji meminjamkan buku komik kesayangannya kepada Adi. Namun, saat hendak berangkat, Beni lupa di mana ia meletakkan buku itu sehingga ia kebingungan mencari ke seluruh kamar.' Apa masalah yang dihadapi Beni?",
+    "options": [
+      "Beni lupa tempat meletakkan buku komik yang sudah dijanjikan kepada Adi",
+      "Adi tidak suka membaca buku komik milik Beni",
+      "Kamar Beni terlalu luas untuk dibersihkan sendiri",
+      "Beni tidak ingin berangkat ke sekolah hari itu"
+    ],
+    "correctAnswer": "Beni lupa tempat meletakkan buku komik yang sudah dijanjikan kepada Adi",
+    "explanation": "Kesulitan utama yang dialami Beni pada penggalan cerita tersebut adalah lupa tempat menyimpan buku komiknya."
+  },
+  {
+    "id": "BINDO3_B3_09",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Masalah yang dihadapi tokoh",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Bacalah penggalan cerita! 'Kiki sangat ingin mengikuti lomba menggambar, tetapi krayon miliknya banyak yang patah. Alih-alih menyerah, Kiki membersihkan potongan krayon tersebut dan memanfaatkannya dengan rapi hingga karyanya selesai tepat waktu.' Bagaimana cara Kiki mengatasi masalah yang dihadapinya?",
+    "options": [
+      "Tetap berusaha kreatif memanfaatkan potongan krayon yang ada tanpa menyerah",
+      "Membatalkan keikutsertaan lomba dan menyalahkan teman sebangku",
+      "Meminta panitia mengubah aturan lomba menjadi lomba menyanyi",
+      "Menangis sepanjang lomba sampai waktu habis"
+    ],
+    "correctAnswer": "Tetap berusaha kreatif memanfaatkan potongan krayon yang ada tanpa menyerah",
+    "explanation": "Kiki menunjukkan sikap pantang menyerah dan kreatif menyelesaikan masalah krayon patah agar tetap bisa menyelesaikan karyanya."
+  },
+  {
+    "id": "BINDO3_B3_10",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Mengembangkan penokohan",
+    "difficulty": "sedang",
+    "challengeStyle": "penerapan",
+    "question": "Jika penulis ingin mengembangkan penokohan tokoh 'Tono' sebagai anak yang dermawan dan suka menolong, tindakan tokoh yang paling tepat digambarkan dalam cerita adalah ...",
+    "options": [
+      "Tono membagi bekal rotinya dengan teman yang lupa membawa uang saku dan membantu memungut buku yang jatuh",
+      "Tono menyembunyikan bekal makanannya di bawah meja agar tidak terlihat teman",
+      "Tono menertawakan teman yang tersandung di halaman sekolah",
+      "Tono hanya mau berteman dengan anak yang memiliki mainan mahal"
+    ],
+    "correctAnswer": "Tono membagi bekal rotinya dengan teman yang lupa membawa uang saku dan membantu memungut buku yang jatuh",
+    "explanation": "Penokohan dapat dikembangkan melalui tindakan nyata tokoh yang mencerminkan wataknya (dermawan dan penolong)."
+  },
+  {
+    "id": "BINDO3_B3_11",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Mengembangkan penokohan",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Bacalah kalimat cerita berikut: '\"Jangan khawatir, mari kubantu mengangkat kotak buku itu bersama-sama,\" kata Sari sambil tersenyum hangat.' Cara penulis menggambarkan watak Sari pada kalimat tersebut adalah melalui ...",
+    "options": [
+      "Ucapan dialog dan ekspresi/sikap tokoh secara langsung",
+      "Daftar nilai ulangan matematika Sari di akhir cerita",
+      "Warna sampul buku cerita yang dibaca Sari",
+      "Penjelasan tentang cuaca hujan di luar sekolah"
+    ],
+    "correctAnswer": "Ucapan dialog dan ekspresi/sikap tokoh secara langsung",
+    "explanation": "Penulis mengembangkan penokohan Sari (ramah dan peduli) melalui ucapan santun dalam dialog serta ekspresi tersenyum hangat."
+  },
+  {
+    "id": "BINDO3_B3_12",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Fungsi tokoh dan penokohan",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Apa fungsi utama kehadiran tokoh dan penggambaran watak (penokohan) yang jelas di dalam sebuah cerita anak?",
+    "options": [
+      "Menghidupkan alur cerita sehingga pembaca mudah merasakan peristiwa dan mengambil teladan sikap yang baik",
+      "Membuat pembaca bingung membedakan siapa yang sedang berbicara",
+      "Menggantikan perlunya judul dan tanda baca di seluruh halaman",
+      "Agar cerita hanya berisi daftar nama orang tanpa ada kejadian apa pun"
+    ],
+    "correctAnswer": "Menghidupkan alur cerita sehingga pembaca mudah merasakan peristiwa dan mengambil teladan sikap yang baik",
+    "explanation": "Tokoh dan penokohan menggerakkan alur cerita, membangun emosi pembaca, serta menyampaikan pesan moral melalui tindakan tokoh."
+  },
+  {
+    "id": "BINDO3_B3_13",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Berbicara santun",
+    "difficulty": "mudah",
+    "challengeStyle": "penerapan",
+    "question": "Ketika hendak meminjam penggaris milik teman sebangku, kalimat yang menunjukkan cara berbicara santun adalah ...",
+    "options": [
+      "'Boleh aku pinjam penggarismu sebentar, Din? Terima kasih.'",
+      "'Hei, cepat berikan penggarismu sekarang juga!'",
+      "'Aku ambil penggarismu, jangan marah ya!'",
+      "'Penggarismu jelek, tapi aku pakai dulu ya.'"
+    ],
+    "correctAnswer": "'Boleh aku pinjam penggarismu sebentar, Din? Terima kasih.'",
+    "explanation": "Berbicara santun menggunakan nada ramah, kata izin ('boleh'), panggilan nama yang baik, dan ucapan terima kasih."
+  },
+  {
+    "id": "BINDO3_B3_14",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Berbicara santun",
+    "difficulty": "sedang",
+    "challengeStyle": "kasus",
+    "question": "Pak Guru sedang berbicara dengan seorang tamu di depan kelas, tetapi Lani perlu menyampaikan bahwa kapur tulis di kelas sudah habis. Sikap berbicara santun yang harus dilakukan Lani adalah ...",
+    "options": [
+      "Menunggu sejenak dengan sopan, lalu berkata, 'Permisi, Pak Guru, mohon maaf mengganggu, kapur tulis di kelas sudah habis.'",
+      "Langsung menerobos di antara Pak Guru dan tamu sambil berteriak",
+      "Menarik lengan baju Pak Guru kuat-kuat tanpa mengucapkan permisi",
+      "Berjalan pergi tanpa memberi tahu guru sehingga pelajaran terhenti"
+    ],
+    "correctAnswer": "Menunggu sejenak dengan sopan, lalu berkata, 'Permisi, Pak Guru, mohon maaf mengganggu, kapur tulis di kelas sudah habis.'",
+    "explanation": "Saat perlu berbicara dengan orang yang sedang bercakap, kita menunggu jeda dan mengawali dengan 'permisi' serta 'mohon maaf'."
+  },
+  {
+    "id": "BINDO3_B3_15",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Informasi dari internet",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Internet dapat membantu siswa kelas 3 SD mencari pengetahuan tambahan tentang hewan atau tumbuhan. Hal penting yang wajib diperhatikan anak saat mengakses informasi dari internet adalah ...",
+    "options": [
+      "Selalu didampingi orang tua atau guru serta memilih sumber informasi yang tepercaya",
+      "Langsung mempercayai semua tulisan yang muncul tanpa diperiksa",
+      "Membagikan alamat rumah dan kata sandi kepada orang tak dikenal",
+      "Membuka situs apa saja secara diam-diam pada tengah malam"
+    ],
+    "correctAnswer": "Selalu didampingi orang tua atau guru serta memilih sumber informasi yang tepercaya",
+    "explanation": "Pendampingan orang tua/guru menjaga keamanan anak di internet dan memastikan informasi yang dibaca benar serta sesuai usia."
+  },
+  {
+    "id": "BINDO3_B3_16",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Informasi dari internet",
+    "difficulty": "sedang",
+    "challengeStyle": "kasus",
+    "question": "Di sebuah halaman internet tertulis kabar aneh bahwa 'kucing bisa hidup tanpa minum air seumur hidupnya'. Agar tidak tertipu informasi yang salah (hoaks), apa yang sebaiknya dilakukan Budi?",
+    "options": [
+      "Bertanya kepada guru atau orang tua dan membandingkannya dengan buku pelajaran IPA/sumber resmi",
+      "Langsung menyebarkan kabar itu ke semua teman di sekolah",
+      "Berhenti memberi minum kucing peliharaannya di rumah",
+      "Menyalin tulisan itu sebagai fakta ilmiah tanpa memeriksa kebenarannya"
+    ],
+    "correctAnswer": "Bertanya kepada guru atau orang tua dan membandingkannya dengan buku pelajaran IPA/sumber resmi",
+    "explanation": "Informasi dari internet harus selalu diverifikasi melalui sumber resmi, buku pelajaran, atau bertanya kepada guru/orang tua."
+  },
+  {
+    "id": "BINDO3_B3_17",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Menemukan informasi di internet",
+    "difficulty": "sedang",
+    "challengeStyle": "penerapan",
+    "question": "Siti mendapat tugas mencari informasi tentang 'cara merawat tanaman tomat di pot' menggunakan mesin pencari di internet bersama ibunya. Kata kunci pencarian yang paling tepat dan efektif adalah ...",
+    "options": [
+      "cara merawat tanaman tomat di pot",
+      "buah warna merah bulat yang enak",
+      "tugas sekolah hari senin pagi",
+      "siti ingin menanam di halaman rumah"
+    ],
+    "correctAnswer": "cara merawat tanaman tomat di pot",
+    "explanation": "Kata kunci yang singkat, jelas, dan langsung memuat inti topik ('cara merawat tanaman tomat di pot') memudahkan menemukan informasi yang tepat."
+  },
+  {
+    "id": "BINDO3_B3_18",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Menemukan informasi di internet",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Saat mengetik kata kunci 'daur hidup kupu-kupu untuk anak SD' di mesin pencari, muncul beberapa tautan hasil pencarian. Tautan manakah yang paling tepat dipilih untuk mendapatkan informasi yang akurat?",
+    "options": [
+      "Artikel edukasi dari situs pendidikan resmi atau ensiklopedia anak yang mencantumkan penjelasan ilmiah jelas",
+      "Halaman iklan penjualan mainan plastik yang tidak membahas kupu-kupu",
+      "Komentar singkat pengguna anonim yang berisi candaan",
+      "Tautan yang meminta data pribadi dan nomor telepon orang tua sebelum dibaca"
+    ],
+    "correctAnswer": "Artikel edukasi dari situs pendidikan resmi atau ensiklopedia anak yang mencantumkan penjelasan ilmiah jelas",
+    "explanation": "Menemukan informasi yang baik di internet berarti memilih sumber relevan, resmi/edukatif, dan aman bagi anak."
+  },
+  {
+    "id": "BINDO3_B3_19",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Majas hiperbola",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Perhatikan kalimat berikut: 'Suara sorak penonton di lapangan menggelegar membelah langit!' Gaya bahasa yang melebih-lebihkan suatu keadaan seperti kalimat tersebut disebut ...",
+    "options": ["Majas hiperbola", "Kalimat tanya", "Kata baku", "Kalimat pasif"],
+    "correctAnswer": "Majas hiperbola",
+    "explanation": "Majas hiperbola adalah gaya bahasa yang menyatakan sesuatu secara berlebih-lebihan untuk memberi kesan kuat atau dramatis."
+  },
+  {
+    "id": "BINDO3_B3_20",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 3",
+    "topic": "Bab 3",
+    "subtopic": "Majas hiperbola",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Bacalah kalimat bermajas hiperbola berikut: 'Tas sekolah Edo terasa seberat gunung karena berisi banyak buku ensiklopedia.' Apa makna sebenarnya dari ungkapan 'seberat gunung' pada kalimat tersebut?",
+    "options": [
+      "Tas sekolah Edo terasa sangat berat saat diangkat",
+      "Di dalam tas sekolah Edo benar-benar terdapat sebuah gunung berapi",
+      "Tas sekolah Edo sangat ringan seperti kapas",
+      "Edo membawa batu gunung untuk pelajaran olahraga"
+    ],
+    "correctAnswer": "Tas sekolah Edo terasa sangat berat saat diangkat",
+    "explanation": "Ungkapan hiperbola 'seberat gunung' tidak bermakna harfiah, melainkan menggambarkan bahwa tas tersebut terasa sangat berat."
+  },
+  {
+    "id": "BINDO3_B4_01",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Mengungkapkan dan menanggapi pendapat",
+    "difficulty": "sedang",
+    "challengeStyle": "penerapan",
+    "question": "Dalam diskusi kelas, Adi berpendapat bahwa lomba kebersihan kelas sebaiknya diadakan setiap hari Jumat. Rina memiliki pendapat berbeda. Cara menanggapi pendapat Adi secara santun adalah ...",
+    "options": [
+      "'Pendapat Adi bagus, tetapi menurutku lebih baik dua minggu sekali agar persiapan tiap kelas lebih maksimal.'",
+      "'Pendapat Adi salah total dan tidak perlu didengarkan!'",
+      "'Aku tidak mau setuju karena aku tidak suka hari Jumat!'",
+      "'Jangan bicara lagi, Din, pendapatmu membosankan.'"
+    ],
+    "correctAnswer": "'Pendapat Adi bagus, tetapi menurutku lebih baik dua minggu sekali agar persiapan tiap kelas lebih maksimal.'",
+    "explanation": "Menanggapi pendapat yang berbeda dilakukan dengan tetap menghargai pendapat teman lalu menyampaikan alasan sendiri secara sopan."
+  },
+  {
+    "id": "BINDO3_B4_02",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Mengungkapkan dan menanggapi pendapat",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Manakah kalimat berikut yang merupakan ungkapan pendapat yang KUAT karena disertai alasan yang jelas?",
+    "options": [
+      "Menurut saya, membawa botol minum sendiri ke sekolah sangat baik karena dapat mengurangi sampah plastik sekali pakai.",
+      "Pokoknya semua orang harus membawa botol minum warna biru!",
+      "Saya tidak tahu alasannya, tapi saya ingin begitu saja.",
+      "Botol minum adalah benda yang terbuat dari plastik atau logam."
+    ],
+    "correctAnswer": "Menurut saya, membawa botol minum sendiri ke sekolah sangat baik karena dapat mengurangi sampah plastik sekali pakai.",
+    "explanation": "Pendapat yang baik diawali penanda pendapat ('Menurut saya') dan didukung alasan logis ('karena dapat mengurangi sampah plastik')."
+  },
+  {
+    "id": "BINDO3_B4_03",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Membaca puisi",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Saat membaca puisi di depan kelas agar pendengar dapat merasakan keindahan dan makna puisi, hal yang perlu diperhatikan oleh pembaca puisi adalah ...",
+    "options": [
+      "Lafal (pengucapan jelas), intonasi (naik-turun suara), jeda, dan ekspresi wajah yang sesuai isi puisi",
+      "Membaca secepat mungkin tanpa berhenti agar cepat selesai",
+      "Menutup wajah sepenuhnya dengan kertas puisi sambil berbisik",
+      "Membaca dengan suara datar dan mata terpejam sepanjang puisi"
+    ],
+    "correctAnswer": "Lafal (pengucapan jelas), intonasi (naik-turun suara), jeda, dan ekspresi wajah yang sesuai isi puisi",
+    "explanation": "Pembacaan puisi yang baik memadukan lafal yang jelas, intonasi tepat, jeda yang sesuai, serta penghayatan ekspresi."
+  },
+  {
+    "id": "BINDO3_B4_04",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Membaca puisi",
+    "difficulty": "sedang",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Bacalah penggalan puisi berikut!\n'Mentari pagi tersenyum hangat,\nBurung-burung bernyanyi riang di dahan,\nKusambut hari dengan penuh semangat.'\nEkspresi dan nada suara yang paling tepat saat membacakan bait puisi tersebut adalah ...",
+    "options": [
+      "Wajah ceria dengan nada suara bersemangat dan hangat",
+      "Wajah murung dengan nada suara pelan seperti menangis",
+      "Wajah marah sambil berteriak ketakutan",
+      "Wajah mengantuk tanpa menunjukkan ekspresi"
+    ],
+    "correctAnswer": "Wajah ceria dengan nada suara bersemangat dan hangat",
+    "explanation": "Kata 'tersenyum hangat', 'bernyanyi riang', dan 'penuh semangat' menggambarkan suasana gembira sehingga dibaca dengan ekspresi ceria."
+  },
+  {
+    "id": "BINDO3_B4_05",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Mengevaluasi ilustrasi",
+    "difficulty": "sedang",
+    "challengeStyle": "ilustrasi_teks",
+    "question": "Sebuah buku cerita anak memuat kalimat: 'Di tengah hujan deras malam itu, kakek menyalakan lentera kecil di teras rumah.' Namun, gambar ilustrasi di sampingnya justru menampilkan pantai cerah dengan matahari terik di siang hari. Evaluasi yang tepat terhadap ilustrasi tersebut adalah ...",
+    "options": [
+      "Ilustrasi belum sesuai dengan isi teks karena latar waktu dan cuacanya bertolak belakang dengan cerita",
+      "Ilustrasi sudah sangat sesuai karena sama-sama memiliki warna yang cerah",
+      "Teks cerita harus dihapus seluruhnya agar mengikuti gambar pantai",
+      "Ilustrasi dalam buku cerita memang tidak perlu berhubungan dengan teks"
+    ],
+    "correctAnswer": "Ilustrasi belum sesuai dengan isi teks karena latar waktu dan cuacanya bertolak belakang dengan cerita",
+    "explanation": "Ilustrasi yang baik harus selaras dengan isi cerita (latar malam, hujan deras, dan lentera) agar membantu pembaca membayangkan peristiwa."
+  },
+  {
+    "id": "BINDO3_B4_06",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Mengevaluasi ilustrasi",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Selain kesesuaian dengan isi teks, hal apa lagi yang membuat sebuah ilustrasi pada poster atau buku cerita anak dinilai bagus dan efektif?",
+    "options": [
+      "Gambarnya jelas, warna harmonis, ekspresi tokoh terbaca, dan tidak menumpuk hingga menutupi tulisan",
+      "Seluruh halaman dipenuhi coretan acak sampai teks cerita tidak bisa dibaca",
+      "Ukuran gambar dibuat sekecil titik di sudut halaman agar tidak terlihat",
+      "Hanya memakai satu warna hitam pekat di seluruh halaman tanpa bentuk"
+    ],
+    "correctAnswer": "Gambarnya jelas, warna harmonis, ekspresi tokoh terbaca, dan tidak menumpuk hingga menutupi tulisan",
+    "explanation": "Mengevaluasi ilustrasi mencakup kesesuaian dengan teks, kejelasan bentuk/ekspresi, keharmonisan warna, serta keterbacaan tata letak."
+  },
+  {
+    "id": "BINDO3_B4_07",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Kalimat aktif dan pasif",
+    "difficulty": "mudah",
+    "challengeStyle": "konsep",
+    "question": "Perhatikan kalimat berikut: 'Ibu menyiram tanaman anggrek.' Kalimat tersebut merupakan kalimat AKTIF karena subjeknya (Ibu) melakukan pekerjaan. Jika diubah menjadi kalimat PASIF, bentuk yang benar adalah ...",
+    "options": [
+      "Tanaman anggrek disiram oleh Ibu.",
+      "Ibu disiram oleh tanaman anggrek.",
+      "Tanaman anggrek menyiram Ibu.",
+      "Menyiram Ibu tanaman anggrek."
+    ],
+    "correctAnswer": "Tanaman anggrek disiram oleh Ibu.",
+    "explanation": "Pada kalimat pasif, objek (tanaman anggrek) berpindah menjadi subjek dan kata kerja berimbuhan me- (menyiram) berubah menjadi di- (disiram)."
+  },
+  {
+    "id": "BINDO3_B4_08",
+    "grade": 3,
+    "subject": "Bahasa Indonesia",
+    "chapter": "Bab 4",
+    "topic": "Bab 4",
+    "subtopic": "Kalimat aktif dan pasif",
+    "difficulty": "sulit",
+    "challengeStyle": "analisis",
+    "question": "Manakah di antara keempat kalimat di bawah ini yang merupakan KALIMAT PASIF?",
+    "options": [
+      "Buku cerita itu dibaca oleh Lani di perpustakaan.",
+      "Lani membaca buku cerita itu di perpustakaan.",
+      "Edo menulis surat untuk neneknya di desa.",
+      "Kucing belang itu mengejar kupu-kupu di taman."
+    ],
+    "correctAnswer": "Buku cerita itu dibaca oleh Lani di perpustakaan.",
+    "explanation": "Kalimat 'Buku cerita itu dibaca oleh Lani di perpustakaan' adalah kalimat pasif karena subjeknya (Buku cerita itu) dikenai pekerjaan dengan predikat berawalan di- (dibaca)."
   }
 ]
