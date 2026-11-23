@@ -1,3 +1,9 @@
+import { uiIcons } from "./UIIcons.js";
+import {
+  renderMainMenuBackdrop,
+  renderFantasyWorldBackdrop,
+  renderFallbackTitleCrest,
+} from "./ThemeVisualAssets.js";
 import { GAME_CONFIG } from "../config/gameConfig.js";
 import { db } from "../storage/db.js";
 import { questionManager } from "./QuestionManager.js";
@@ -138,8 +144,8 @@ export class UIManager {
 
   formatGradeLabel(grade) {
     const raw = String(grade ?? 3).toLowerCase();
-    if (raw === 'paud') return 'PAUD';
-    if (raw === 'tk') return 'TK';
+    if (raw === "paud") return "PAUD";
+    if (raw === "tk") return "TK";
     return `Kelas ${raw} SD`;
   }
 
@@ -147,16 +153,18 @@ export class UIManager {
     if (!this.activeProfile) {
       return `
         <div class="active-profile-pill">
-          <span>👤 Belum ada profil aktif</span>
+          ${uiIcons.get("user", 18)}
+          <span>Belum ada profil aktif</span>
         </div>
       `;
     }
-    const char = this.getCharacterInfo(this.activeProfile.character);
+    const gradeLabel = this.formatGradeLabel(this.activeProfile.grade);
     return `
       <div class="active-profile-pill">
-        <span>${char.emoji} <strong>${this.escapeHtml(this.activeProfile.name)}</strong> (${this.formatGradeLabel(this.activeProfile.grade)})</span>
-        <span>| 🪙 ${this.activeProfile.coins || 0}</span>
-        <span>| ⭐ ${this.activeProfile.stars || 0}</span>
+        ${uiIcons.get("user", 18)}
+        <span><strong>${this.escapeHtml(this.activeProfile.name)}</strong> · ${this.escapeHtml(gradeLabel)}</span>
+        <span class="pdp-profile-metric">${uiIcons.get("coin", 16)} ${this.activeProfile.coins || 0}</span>
+        <span class="pdp-profile-metric">${uiIcons.get("star", 16)} ${this.activeProfile.stars || 0}</span>
       </div>
     `;
   }
@@ -213,28 +221,90 @@ export class UIManager {
     return null;
   }
 
+  renderFantasyBackdrop() {
+    return renderFantasyWorldBackdrop();
+  }
+
   showMainMenu() {
     this.stopAllGameplayScenes();
 
+    const activeName = this.activeProfile
+      ? this.activeProfile.name
+      : "Petualang Baru";
+    const activeGradeText = this.activeProfile
+      ? `Untuk ${this.formatGradeLabel(this.activeProfile.grade)}`
+      : "Untuk Kelas 3 SD";
+    const activeStars = this.activeProfile?.stars || 0;
+    const activeLevel = Math.max(
+      1,
+      Math.floor((this.activeProfile?.totalScore || 0) / 500) + 1,
+    );
+    const avatarInitial = activeName.charAt(0).toUpperCase();
+
     this.container.innerHTML = `
       <div class="screen-overlay">
-        <div class="cloud-bg cloud-1"></div>
-        <div class="cloud-bg cloud-2"></div>
-        <div class="cloud-bg cloud-3"></div>
+        ${renderMainMenuBackdrop()}
+        <div class="pdp-menu-screen">
+          <div class="pdp-menu-topbar">
+            <div class="pdp-top-right-group">
+              <div id="btn-top-profile" class="pdp-top-profile-pill" title="Kelola Profil">
+                <div class="pdp-top-avatar">${this.escapeHtml(avatarInitial)}</div>
+                <div style="text-align:left;line-height:1.25;">
+                  <div style="font-weight:900;font-size:0.98rem;color:#ffffff;">${this.escapeHtml(activeName)}</div>
+                  <div style="font-size:0.8rem;color:#fde68a;font-weight:800;display:flex;align-items:center;gap:5px;">
+                    <span>Level ${activeLevel}</span>
+                    ${uiIcons.get('star', 14)}
+                    <span>${activeStars}</span>
+                  </div>
+                </div>
+              </div>
+              <button id="btn-top-settings" class="pdp-top-gear-btn" aria-label="Pengaturan">
+                ${uiIcons.get('settings', 24)}
+              </button>
+            </div>
+          </div>
 
-        <div class="cartoon-panel">
-          <div class="game-logo-badge">🌟 GAME EDUKASI ANAK INDONESIA 🌟</div>
-          <h1 class="game-title">PETUALANGAN<br/>DUNIA PINTAR</h1>
-          
-          ${this.renderProfileBanner()}
+          <div class="pdp-menu-stage-grid">
+            <div class="pdp-menu-left-col">
+              ${renderFallbackTitleCrest()}
+              <div class="pdp-motto-sign">
+                ${uiIcons.get("star", 24)}
+                <span>Jadilah Petualang Cerdas,<br/>Raih Bintang Pengetahuan!</span>
+              </div>
+            </div>
 
-          <div class="btn-group-vertical">
-            <button id="btn-start-game" class="btn-cartoon btn-green">🚀 Mulai Bermain Adventure</button>
-            <button id="btn-battle-arena" class="btn-cartoon btn-red">⚔️ Quiz Battle Arena</button>
-            <button id="btn-profile" class="btn-cartoon btn-blue">👦 Profil Pemain</button>
-            <button id="btn-tutor-panel" class="btn-cartoon btn-purple">👨‍🏫 Panel Tutor</button>
-            <button id="btn-settings" class="btn-cartoon">⚙️ Pengaturan</button>
-            <button id="btn-about" class="btn-cartoon btn-gray">📖 Tentang Game</button>
+            <div class="pdp-wood-signpost">
+              <svg class="pdp-wood-leaves" viewBox="0 0 90 46" aria-hidden="true">
+                <path d="M46 42 Q40 16 14 14 Q28 36 46 42 Z" fill="#22c55e" stroke="#14532d" stroke-width="2.5"/>
+                <path d="M48 42 Q56 10 82 14 Q68 38 48 42 Z" fill="#4ade80" stroke="#14532d" stroke-width="2.5"/>
+                <path d="M47 40 Q47 10 50 4 Q58 22 47 40 Z" fill="#84cc16" stroke="#14532d" stroke-width="2"/>
+              </svg>
+
+              <button id="btn-start-game" class="btn-cartoon pdp-btn-gold">
+                ${uiIcons.get("play", 24)}
+                <span>Mulai Petualangan</span>
+              </button>
+              <button id="btn-battle-arena" class="btn-cartoon btn-red">
+                ${uiIcons.get("swords", 22)}
+                <span>Quiz Battle Arena</span>
+              </button>
+              <button id="btn-profile" class="btn-cartoon btn-blue">
+                ${uiIcons.get("users", 22)}
+                <span>Profil &amp; Karakter</span>
+              </button>
+              <button id="btn-tutor-panel" class="btn-cartoon btn-purple">
+                ${uiIcons.get("trophy", 22)}
+                <span>Panel Tutor</span>
+              </button>
+              <button id="btn-settings" class="btn-cartoon btn-green">
+                ${uiIcons.get("settings", 22)}
+                <span>Pengaturan</span>
+              </button>
+              <button id="btn-about" class="btn-cartoon pdp-btn-wood">
+                ${uiIcons.get("gamepad", 22)}
+                <span>Tentang Game</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -243,7 +313,7 @@ export class UIManager {
     document.getElementById("btn-start-game").addEventListener("click", () => {
       this.playTone("click");
       if (!this.activeProfile) {
-        this.showProfileMenu(true);
+        this.showProfileMenu();
       } else {
         this.showGradeSelection();
       }
@@ -252,24 +322,36 @@ export class UIManager {
     document
       .getElementById("btn-battle-arena")
       .addEventListener("click", () => {
-        battleAudio.play("click");
+        this.playTone("click");
         this.showBattleArenaHub("setup");
       });
 
-    document.getElementById("btn-profile").addEventListener("click", () => {
+    const openProfile = () => {
       this.playTone("click");
-      this.showProfileMenu(false);
-    });
+      this.showProfileMenu();
+    };
+    document
+      .getElementById("btn-profile")
+      .addEventListener("click", openProfile);
+    document
+      .getElementById("btn-top-profile")
+      .addEventListener("click", openProfile);
 
     document.getElementById("btn-tutor-panel").addEventListener("click", () => {
       this.playTone("click");
-      this.showTutorPinGate();
+      this.showTutorLoginModal();
     });
 
-    document.getElementById("btn-settings").addEventListener("click", () => {
+    const openSettings = () => {
       this.playTone("click");
       this.showSettingsMenu();
-    });
+    };
+    document
+      .getElementById("btn-settings")
+      .addEventListener("click", openSettings);
+    document
+      .getElementById("btn-top-settings")
+      .addEventListener("click", openSettings);
 
     document.getElementById("btn-about").addEventListener("click", () => {
       this.playTone("click");
@@ -421,7 +503,10 @@ export class UIManager {
 
         this.playTone("correct");
         const gradeVal = gradeInput.value;
-        const finalGrade = (gradeVal === 'paud' || gradeVal === 'tk') ? gradeVal : (Number(gradeVal) || 3);
+        const finalGrade =
+          gradeVal === "paud" || gradeVal === "tk"
+            ? gradeVal
+            : Number(gradeVal) || 3;
         this.activeProfile = await db.createProfile({
           name: cleanName,
           grade: finalGrade,
@@ -450,14 +535,17 @@ export class UIManager {
   }
 
   showGradeSelection() {
-    const gradeCardsHtml = GAME_CONFIG.classes
+    this.stopAllGameplayScenes();
+    const cardsHtml = GAME_CONFIG.classes
       .map(
         (cls) => `
-      <div class="choice-card ${cls.active ? "selected" : "card-disabled"}" data-grade="${cls.grade}" data-active="${cls.active}">
-        <div class="card-icon">${cls.active ? "🏫" : "🔒"}</div>
-        <div class="card-title">${cls.name}</div>
+      <div class="choice-card ${cls.active ? "" : "card-disabled"} ${String(this.selectedGrade) === String(cls.grade) ? "selected" : ""}" data-grade="${cls.grade}" data-active="${cls.active}">
+        <div class="pdp-card-icon-wrap" style="${cls.active ? "" : "background:#f1f5f9;color:#94a3b8;"}">
+          ${uiIcons.get(cls.active ? "graduation" : "lock", 26)}
+        </div>
+        <div class="card-title">${this.escapeHtml(cls.name)}</div>
         <span class="status-badge ${cls.active ? "badge-active" : "badge-soon"}">
-          ${cls.statusText}
+          ${this.escapeHtml(cls.statusText)}
         </span>
       </div>
     `,
@@ -466,31 +554,32 @@ export class UIManager {
 
     this.container.innerHTML = `
       <div class="screen-overlay">
+        ${this.renderFantasyBackdrop()}
         <div class="cartoon-panel">
           ${this.renderProfileBanner()}
-         <h2 class="panel-header-title">🎒 Pilih Kelas Kamu</h2>
-          <p class="game-subtitle">Pilih jenjang Kelas 1, 2, 3, atau 4 SD untuk memulai petualangan!</p>
-
-          <div class="selection-grid-3">
-            ${gradeCardsHtml}
+          <div>
+            <h2 class="panel-header-title">${uiIcons.get("graduation", 26)} Pilih Jenjang Kelas</h2>
+            <p class="game-subtitle">Pilih jenjang PAUD, TK, atau Kelas 1–4 SD untuk memulai petualangan belajarmu.</p>
           </div>
-
+          <div class="selection-grid-4">${cardsHtml}</div>
           <div class="btn-group-horizontal">
-            <button id="btn-back-main" class="btn-cartoon btn-gray btn-small">⬅️ Menu Utama</button>
+            <button id="btn-back-main" class="btn-cartoon btn-gray btn-small">
+              ${uiIcons.get("back", 16)} <span>Kembali ke Menu</span>
+            </button>
           </div>
         </div>
       </div>
     `;
 
-    this.container.querySelectorAll('.choice-card').forEach((card) => {
-      card.addEventListener('click', () => {
-        if (card.dataset.active !== 'true') {
-          this.playTone('wrong');
+    this.container.querySelectorAll(".choice-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        if (card.dataset.active !== "true") {
+          this.playTone("wrong");
           return;
         }
-        this.playTone('click');
+        this.playTone("click");
         const rawGrade = card.dataset.grade;
-        if (rawGrade === 'paud' || rawGrade === 'tk') {
+        if (rawGrade === "paud" || rawGrade === "tk") {
           this.selectedGrade = rawGrade;
           earlyChildhoodManager.showActivityHub(this, rawGrade);
           return;
@@ -523,7 +612,9 @@ export class UIManager {
       .map(
         (sub) => `
       <div class="choice-card ${sub.active ? "" : "card-disabled"} ${this.selectedSubject === sub.id ? "selected" : ""}" data-id="${sub.id}" data-active="${sub.active}">
-        <div class="card-icon">${sub.icon}</div>
+        <div class="pdp-card-icon-wrap">
+          ${uiIcons.forSubject(sub.id)}
+        </div>
         <div class="card-title">${this.escapeHtml(sub.name)}</div>
         <div class="card-desc">${this.escapeHtml(sub.desc)}</div>
         <span class="status-badge ${sub.active ? "badge-active" : "badge-soon"}">
@@ -536,17 +627,18 @@ export class UIManager {
 
     this.container.innerHTML = `
       <div class="screen-overlay">
+        ${this.renderFantasyBackdrop()}
         <div class="cartoon-panel">
           ${this.renderProfileBanner()}
-          <h2 class="panel-header-title">📚 Pilih Mata Pelajaran (Kelas ${this.selectedGrade} SD)</h2>
-          <p class="game-subtitle">Setiap mata pelajaran memiliki progres petualangan masing-masing!</p>
-
-          <div class="selection-grid">
-            ${subjectCardsHtml}
+          <div>
+            <h2 class="panel-header-title">${uiIcons.get("book", 26)} Pilih Mata Pelajaran — Kelas ${this.selectedGrade} SD</h2>
+            <p class="game-subtitle">Setiap mata pelajaran memiliki progres petualangan dan statistik belajar terpisah.</p>
           </div>
-
+          <div class="selection-grid">${subjectCardsHtml}</div>
           <div class="btn-group-horizontal">
-            <button id="btn-back-grade" class="btn-cartoon btn-gray btn-small">⬅️ Kembali ke Pilihan Kelas</button>
+            <button id="btn-back-grade" class="btn-cartoon btn-gray btn-small">
+              ${uiIcons.get("back", 16)} <span>Kembali ke Pilihan Kelas</span>
+            </button>
           </div>
         </div>
       </div>
@@ -571,58 +663,56 @@ export class UIManager {
   }
 
   showModeSelection() {
-    this.stopAllGameplayScenes();
     const subInfo = this.getSubjectInfo(this.selectedSubject);
-
-    const modeCardsHtml = GAME_CONFIG.modes
-      .map(
-        (m) => `
-      <div class="choice-card ${m.active ? "selected" : "card-disabled"}" data-id="${m.id}" data-active="${m.active}">
-        <div class="card-icon">${m.icon}</div>
-        <div class="card-title">${m.name}</div>
-        <div class="card-desc">${m.desc}</div>
-        <span class="status-badge ${m.active ? "badge-active" : "badge-soon"}">
-          ${m.statusText}
-        </span>
-      </div>
-    `,
-      )
-      .join("");
-
     this.container.innerHTML = `
       <div class="screen-overlay">
-        <div class="cartoon-panel">
+        ${this.renderFantasyBackdrop()}
+        <div class="cartoon-panel" style="max-width:780px;">
           ${this.renderProfileBanner()}
-          <h2 class="panel-header-title">🎮 Pilih Mode Permainan</h2>
-          <p class="game-subtitle">
-            Mata Pelajaran Aktif: <strong>${subInfo.icon} ${subInfo.name} — Kelas ${this.selectedGrade} SD</strong>
-          </p>
+          <div>
+            <h2 class="panel-header-title">${uiIcons.get("compass", 26)} Pilih Mode Permainan</h2>
+            <p class="game-subtitle">${this.escapeHtml(subInfo.name)} · Kelas ${this.selectedGrade} SD</p>
+          </div>
 
-          <div class="selection-grid">
-            ${modeCardsHtml}
+          <div class="selection-grid" style="grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));">
+            <div class="choice-card" id="card-mode-adventure">
+              <div class="pdp-card-icon-wrap" style="background:#d1fae5;color:#059669;">
+                ${uiIcons.get("compass", 28)}
+              </div>
+              <div class="card-title">Adventure Mode</div>
+              <div class="card-desc">Jelajahi dunia platformer, hadapi rintangan dan Boss, serta taklukkan tantangan belajar!</div>
+              <span class="status-badge badge-active">Aktif</span>
+            </div>
+
+            <div class="choice-card" id="card-mode-duel">
+              <div class="pdp-card-icon-wrap" style="background:#fef3c7;color:#d97706;">
+                ${uiIcons.get("trophy", 28)}
+              </div>
+              <div class="card-title">Duel Mode (Hot Seat)</div>
+              <div class="card-desc">Berlomba bersama Tutor di satu perangkat dengan soal setara anti-meniru.</div>
+              <span class="status-badge badge-active">Aktif</span>
+            </div>
           </div>
 
           <div class="btn-group-horizontal">
-            <button id="btn-back-subject" class="btn-cartoon btn-gray btn-small">⬅️ Kembali ke Mata Pelajaran</button>
+            <button id="btn-back-subject" class="btn-cartoon btn-gray btn-small">
+              ${uiIcons.get("back", 16)} <span>Kembali ke Mata Pelajaran</span>
+            </button>
           </div>
         </div>
       </div>
     `;
 
-    this.container.querySelectorAll(".choice-card").forEach((card) => {
-      card.addEventListener("click", () => {
-        if (card.dataset.active !== "true") {
-          this.playTone("wrong");
-          return;
-        }
+    document
+      .getElementById("card-mode-adventure")
+      .addEventListener("click", () => {
         this.playTone("click");
-        const modeId = card.dataset.id;
-        if (modeId === "adventure") {
-          this.showAdventureLevelSelection();
-        } else if (modeId === "duel") {
-          this.showDuelSetupScreen();
-        }
+        this.showAdventureLevelSelection();
       });
+
+    document.getElementById("card-mode-duel").addEventListener("click", () => {
+      this.playTone("click");
+      this.showDuelSetupScreen();
     });
 
     document
@@ -963,8 +1053,8 @@ export class UIManager {
       if (stats.genre === "racing") {
         touchHtml = `
           <div class="hud-touch-controls">
-            <button id="touch-left" class="btn-touch" style="width:110px;" aria-label="Geser Kiri">◀ KIRI</button>
-            <button id="touch-right" class="btn-touch" style="width:110px;" aria-label="Geser Kanan">KANAN ▶</button>
+            <button id="touch-left" class="btn-touch" style="width:108px;font-size:0.95rem;" aria-label="Geser Kiri">◀ KIRI</button>
+            <button id="touch-right" class="btn-touch" style="width:108px;font-size:0.95rem;" aria-label="Geser Kanan">KANAN ▶</button>
           </div>
         `;
       } else if (stats.genre === "maze") {
@@ -987,37 +1077,63 @@ export class UIManager {
               <button id="touch-left" class="btn-touch" aria-label="Kiri">◀</button>
               <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
             </div>
-            <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT ▲</button>
+            <div class="touch-dpad">
+              <button id="touch-attack" class="btn-touch" style="width:auto;padding:0 16px;font-size:0.9rem;font-weight:900;background:linear-gradient(180deg,#38bdf8,#1d4ed8);" aria-label="Serang">SERANG</button>
+              <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT ▲</button>
+            </div>
           </div>
         `;
       }
     }
+
+    const heartsPill = stats.maxHearts
+      ? `<div class="hud-pill" id="hud-hearts-val">${uiIcons.renderHearts(stats.hearts ?? stats.maxHearts, stats.maxHearts)}</div>`
+      : "";
 
     this.container.innerHTML = `
       <div class="hud-overlay" id="adventure-hud">
         <div class="hud-top-bar">
           <div class="hud-stats-group">
             <div class="hud-pill">
-              <span>${stats.characterEmoji} ${this.escapeHtml(stats.playerName)}</span>
+              ${uiIcons.get("user", 16)}
+              <span>${this.escapeHtml(stats.playerName)}</span>
             </div>
-            <div class="hud-pill" style="background: #eef9ff;">
-              <span>📘 ${this.escapeHtml(stats.subjectName)} — ${this.escapeHtml(stats.levelName)}</span>
+            <div class="hud-pill">
+              ${uiIcons.get("book", 16)}
+              <span>${this.escapeHtml(stats.subjectName)} · ${this.escapeHtml(stats.levelName)}</span>
             </div>
-            <div class="hud-pill" style="background: #fff9db;">
-              <span>🪙 Koin: <span id="hud-coin-val">${stats.coins}</span></span>
+            ${heartsPill}
+            <div class="hud-pill">
+              ${uiIcons.get("coin", 16)}
+              <span id="hud-coin-val">${stats.coins}</span>
             </div>
-            <div class="hud-pill" style="background: #e8f8f5;">
-              <span>🧩 Soal: <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span></span>
+            <div class="hud-pill" id="hud-gem-pill" style="display:none;">
+              ${uiIcons.get("gem", 16)}
+              <span id="hud-collectible-val">0</span>
+            </div>
+            <div class="hud-pill">
+              ${uiIcons.get("puzzle", 16)}
+              <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span>
             </div>
           </div>
 
-          <button id="btn-hud-exit" class="btn-cartoon btn-red btn-small" style="pointer-events: auto;">
-            🏠 Keluar Level
-          </button>
+          <div style="display:flex;gap:8px;pointer-events:auto;">
+            <button id="btn-hud-exit" class="btn-cartoon btn-red btn-small">
+              ${uiIcons.get("pause", 15)} <span>Jeda</span>
+            </button>
+          </div>
         </div>
 
-        <div id="hud-hint-banner" style="align-self: center; background: rgba(44,62,80,0.92); color: #fff; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.98rem; display: block;">
-          🎮 ${this.escapeHtml(stats.controlHint || "Gunakan tombol arah untuk bermain!")}
+        <div id="hud-boss-bar" class="pdp-boss-hud">
+          ${uiIcons.get("boss", 22)}
+          <span id="hud-boss-name">Penjaga Gerbang</span>
+          <div class="pdp-boss-hp-track">
+            <div id="hud-boss-hp-fill" class="pdp-boss-hp-fill"></div>
+          </div>
+        </div>
+
+        <div id="hud-hint-banner" class="pdp-hud-hint" style="display:block;">
+          ${this.escapeHtml(stats.controlHint || "Gunakan tombol arah untuk menjelajah!")}
         </div>
 
         ${touchHtml}
@@ -1026,16 +1142,130 @@ export class UIManager {
 
     setTimeout(() => {
       const hintEl = document.getElementById("hud-hint-banner");
-      if (hintEl && hintEl.textContent.startsWith("🎮")) {
+      if (hintEl && hintEl.dataset.sticky !== "true") {
         hintEl.style.display = "none";
       }
     }, 4000);
 
-    document
-      .getElementById("btn-hud-exit")
+    document.getElementById("btn-hud-exit").addEventListener("click", () => {
+      this.playTone("click");
+      this.showPauseConfirmModal();
+    });
+
+    this.bindTouchButtons();
+  }
+
+  updateAdventureHUD({
+    coins,
+    answeredCount,
+    correctCount,
+    totalChallenges,
+    hintText,
+    hearts,
+    maxHearts,
+    collectibles,
+    boss,
+  }) {
+    const coinEl = document.getElementById("hud-coin-val");
+    const questEl = document.getElementById("hud-quest-val");
+    const heartsEl = document.getElementById("hud-hearts-val");
+    const hintEl = document.getElementById("hud-hint-banner");
+    const gemPill = document.getElementById("hud-gem-pill");
+    const gemVal = document.getElementById("hud-collectible-val");
+    const bossBar = document.getElementById("hud-boss-bar");
+    const bossName = document.getElementById("hud-boss-name");
+    const bossFill = document.getElementById("hud-boss-hp-fill");
+
+    if (coinEl && typeof coins === "number") coinEl.textContent = String(coins);
+    if (questEl && typeof totalChallenges === "number") {
+      const shown =
+        typeof answeredCount === "number" ? answeredCount : correctCount || 0;
+      questEl.textContent = `${shown}/${totalChallenges}`;
+    }
+    if (
+      heartsEl &&
+      typeof hearts === "number" &&
+      typeof maxHearts === "number"
+    ) {
+      heartsEl.innerHTML = uiIcons.renderHearts(hearts, maxHearts);
+    }
+    if (gemPill && gemVal && typeof collectibles === "number") {
+      gemPill.style.display = "flex";
+      gemVal.textContent = String(collectibles);
+    }
+    if (bossBar && boss) {
+      if (boss.active) {
+        bossBar.style.display = "flex";
+        if (bossName) bossName.textContent = boss.name || "Boss Arena";
+        if (bossFill) {
+          const pct = Math.max(
+            0,
+            Math.min(
+              100,
+              Math.round((boss.hp / Math.max(1, boss.maxHp)) * 100),
+            ),
+          );
+          bossFill.style.width = `${pct}%`;
+        }
+      } else {
+        bossBar.style.display = "none";
+      }
+    }
+    if (hintEl && typeof hintText === "string") {
+      if (hintText.trim()) {
+        hintEl.textContent = hintText;
+        hintEl.style.display = "block";
+      } else {
+        hintEl.style.display = "none";
+      }
+    }
+  }
+
+  showPauseConfirmModal() {
+    const existing = document.getElementById("pdp-pause-modal");
+    if (existing) return;
+
+    const advScene = this.getActiveAdventureSceneInstance();
+    if (advScene && advScene.physics) {
+      advScene.physics.pause();
+    }
+
+    const modal = document.createElement("div");
+    modal.id = "pdp-pause-modal";
+    modal.className = "modal-backdrop";
+    modal.style.position = "absolute";
+    modal.style.inset = "0";
+
+    modal.innerHTML = `
+      <div class="quiz-panel" style="max-width:460px;">
+        <h3 class="panel-header-title" style="font-size:1.45rem;">${uiIcons.get("pause", 22)} Permainan Dijeda</h3>
+        <p class="game-subtitle" style="margin-bottom:16px;">Apakah kamu ingin melanjutkan petualangan atau kembali ke peta level?</p>
+        <div class="btn-group-horizontal">
+          <button id="btn-pause-resume" class="btn-cartoon btn-green btn-small">
+            ${uiIcons.get("play", 16)} <span>Lanjutkan</span>
+          </button>
+          <button id="btn-pause-leave" class="btn-cartoon btn-red btn-small">
+            ${uiIcons.get("home", 16)} <span>Keluar Level</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(modal);
+
+    modal.querySelector("#btn-pause-resume").addEventListener("click", () => {
+      this.playTone("click");
+      modal.remove();
+      if (advScene && advScene.physics && !advScene.isQuizOpen) {
+        advScene.physics.resume();
+      }
+    });
+
+    modal
+      .querySelector("#btn-pause-leave")
       .addEventListener("click", async () => {
         this.playTone("click");
-        const advScene = this.getActiveAdventureSceneInstance();
+        modal.remove();
         if (advScene && this.activeProfile && !advScene.levelCompleted) {
           this.activeProfile = await db.saveIncompleteAdventureSession(
             this.activeProfile.id,
@@ -1053,27 +1283,38 @@ export class UIManager {
         }
         this.showAdventureLevelSelection();
       });
-
-    this.bindTouchButtons();
   }
 
-  updateAdventureHUD({ coins, answeredCount, totalChallenges, hintText }) {
-    const coinEl = document.getElementById("hud-coin-val");
-    const questEl = document.getElementById("hud-quest-val");
-    const hintEl = document.getElementById("hud-hint-banner");
+  showNpcDialog({ npcName = "Pemandu Petualangan", text = "", onClose }) {
+    const existing = document.getElementById("pdp-npc-modal");
+    if (existing) existing.remove();
 
-    if (coinEl && coins !== undefined) coinEl.textContent = coins;
-    if (questEl && answeredCount !== undefined) {
-      questEl.textContent = `${answeredCount}/${totalChallenges}`;
-    }
-    if (hintEl) {
-      if (hintText) {
-        hintEl.textContent = hintText;
-        hintEl.style.display = "block";
-      } else {
-        hintEl.style.display = "none";
-      }
-    }
+    const modal = document.createElement("div");
+    modal.id = "pdp-npc-modal";
+    modal.className = "duel-modal-backdrop";
+    modal.style.position = "absolute";
+    modal.style.inset = "0";
+
+    modal.innerHTML = `
+      <div class="pdp-npc-dialog">
+        <div class="pdp-npc-name">${uiIcons.get("compass", 16)} ${this.escapeHtml(npcName)}</div>
+        <div style="font-size:1.05rem;font-weight:700;color:#2b1810;line-height:1.5;">
+          ${this.escapeHtml(text)}
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button id="btn-npc-ok" class="btn-cartoon btn-green btn-small">
+            ${uiIcons.get("check", 16)} <span>Mengerti!</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(modal);
+    modal.querySelector("#btn-npc-ok").addEventListener("click", () => {
+      this.playTone("click");
+      modal.remove();
+      if (onClose) onClose();
+    });
   }
 
   bindTouchButtons() {
@@ -1111,18 +1352,22 @@ export class UIManager {
   }
 
   showQuestionModal({ questionData, triggerTitle, onComplete }) {
-    const existingModal = document.getElementById("active-quiz-modal");
-    if (existingModal) existingModal.remove();
+    const existing = document.getElementById("active-quiz-modal");
+    if (existing) existing.remove();
 
     const letters = ["A", "B", "C", "D"];
-    const modalWrapper = document.createElement("div");
-    modalWrapper.className = "modal-backdrop";
-    modalWrapper.id = "active-quiz-modal";
+    const diffLabel = String(questionData.difficulty || "sedang").toUpperCase();
+    const diffStyle =
+      diffLabel === "MUDAH"
+        ? "background:#d1fae5;color:#065f46;"
+        : diffLabel === "SULIT"
+          ? "background:#fee2e2;color:#991b1b;"
+          : "background:#fef3c7;color:#92400e;";
 
     const optionsHtml = questionData.options
       .map(
         (opt, idx) => `
-      <button class="btn-option" data-answer="${this.escapeHtml(opt)}">
+      <button class="btn-option pdp-quiz-opt" data-answer="${this.escapeHtml(opt)}">
         <span class="option-letter">${letters[idx] || idx + 1}</span>
         <span>${this.escapeHtml(opt)}</span>
       </button>
@@ -1130,57 +1375,63 @@ export class UIManager {
       )
       .join("");
 
-    const sourceBadgeText = this.formatSourceBadge(questionData.sourceType);
-    const diffBadgeText = `Level: ${(questionData.difficulty || "mudah").toUpperCase()}`;
+    const modalEl = document.createElement("div");
+    modalEl.id = "active-quiz-modal";
+    modalEl.className = "modal-backdrop";
+    modalEl.style.position = "absolute";
+    modalEl.style.inset = "0";
 
-    modalWrapper.innerHTML = `
+    modalEl.innerHTML = `
       <div class="quiz-panel">
         <div class="quiz-header-badges">
-          <span class="status-badge badge-active" style="font-size: 0.85rem;">
-            ${this.escapeHtml(triggerTitle || "Tantangan Soal")}
+          <span class="status-badge" style="background:#eff6ff;color:#1d4ed8;">
+            ${this.escapeHtml(triggerTitle || "Tantangan Belajar")}
           </span>
-          <span class="status-badge" style="background: #e8f8f5; color: #117a65;">
-            ${this.escapeHtml(sourceBadgeText)}
-          </span>
-          <span class="status-badge" style="background: #fff3cd; color: #856404;">
-            ${this.escapeHtml(questionData.topic)} | ${this.escapeHtml(diffBadgeText)}
-          </span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="status-badge" style="background:#f1f5f9;color:#334155;">
+              ${this.escapeHtml(questionData.topic || "Materi")}
+            </span>
+            <span class="status-badge" style="${diffStyle}">
+              ${this.escapeHtml(diffLabel)}
+            </span>
+          </div>
         </div>
 
         <div class="quiz-question-box">
           ${this.escapeHtml(questionData.question)}
         </div>
 
-        <div class="quiz-options-grid" id="quiz-options-container">
+        <div class="quiz-options-grid">
           ${optionsHtml}
         </div>
 
-        <div id="quiz-feedback-area" style="display: none;"></div>
+        <div id="quiz-feedback" style="display:none;"></div>
 
-        <div class="btn-group-horizontal" id="quiz-action-buttons" style="display: none; margin-top: 12px;">
-          <button id="btn-quiz-continue" class="btn-cartoon btn-green btn-small">Lanjutkan ➡️</button>
+        <div id="quiz-continue-wrap" class="btn-group-horizontal" style="display:none;margin-top:14px;">
+          <button id="btn-quiz-continue" class="btn-cartoon btn-green btn-small">
+            ${uiIcons.get("check", 16)} <span>Lanjutkan Petualangan</span>
+          </button>
         </div>
       </div>
     `;
 
-    this.container.appendChild(modalWrapper);
+    this.container.appendChild(modalEl);
 
     let answered = false;
-    let selectedAnswerText = "";
-    const optionButtons = modalWrapper.querySelectorAll(".btn-option");
-    const feedbackArea = modalWrapper.querySelector("#quiz-feedback-area");
-    const actionArea = modalWrapper.querySelector("#quiz-action-buttons");
-    const btnContinue = modalWrapper.querySelector("#btn-quiz-continue");
+    const optButtons = modalEl.querySelectorAll(".pdp-quiz-opt");
+    const feedbackEl = modalEl.querySelector("#quiz-feedback");
+    const continueWrap = modalEl.querySelector("#quiz-continue-wrap");
+    const continueBtn = modalEl.querySelector("#btn-quiz-continue");
 
-    optionButtons.forEach((btn) => {
+    optButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         if (answered) return;
         answered = true;
 
-        selectedAnswerText = btn.dataset.answer;
-        const isCorrect = selectedAnswerText === questionData.correctAnswer;
+        const chosen = btn.dataset.answer;
+        const isCorrect = chosen === questionData.correctAnswer;
 
-        optionButtons.forEach((b) => {
+        optButtons.forEach((b) => {
           b.disabled = true;
           if (b.dataset.answer === questionData.correctAnswer) {
             b.classList.add("correct");
@@ -1190,29 +1441,32 @@ export class UIManager {
         if (isCorrect) {
           this.playTone("correct");
           btn.classList.add("correct");
-          feedbackArea.className = "quiz-feedback-box feedback-correct";
-          feedbackArea.innerHTML = `
-            <div>🎉 <strong>HEBAT! Jawaban Kamu Benar! (+25 Koin)</strong></div>
-            <div style="margin-top: 4px; font-weight: 600;">💡 Pembahasan: ${this.escapeHtml(questionData.explanation)}</div>
+          feedbackEl.className = "quiz-feedback-box feedback-correct";
+          feedbackEl.innerHTML = `
+            <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px;">
+              ${uiIcons.get("check", 18)} <span>Jawaban Tepat!</span>
+            </div>
+            <div>${this.escapeHtml(questionData.explanation || "")}</div>
           `;
         } else {
           this.playTone("wrong");
           btn.classList.add("wrong");
-          feedbackArea.className = "quiz-feedback-box feedback-wrong";
-          feedbackArea.innerHTML = `
-            <div>💪 <strong>Belum Tepat, Jangan Menyerah Ya!</strong></div>
-            <div style="margin-top: 4px;">Jawaban yang benar adalah: <strong>${this.escapeHtml(questionData.correctAnswer)}</strong></div>
-            <div style="margin-top: 4px; font-weight: 600;">💡 Petunjuk & Pembahasan: ${this.escapeHtml(questionData.explanation)}</div>
+          feedbackEl.className = "quiz-feedback-box feedback-wrong";
+          feedbackEl.innerHTML = `
+            <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px;">
+              ${uiIcons.get("x", 18)} <span>Belum tepat. Jawaban benar: ${this.escapeHtml(questionData.correctAnswer)}</span>
+            </div>
+            <div>${this.escapeHtml(questionData.explanation || "")}</div>
           `;
         }
 
-        feedbackArea.style.display = "block";
-        actionArea.style.display = "flex";
+        feedbackEl.style.display = "block";
+        continueWrap.style.display = "flex";
 
-        btnContinue.onclick = () => {
+        continueBtn.onclick = () => {
           this.playTone("click");
-          modalWrapper.remove();
-          onComplete(isCorrect, selectedAnswerText);
+          modalEl.remove();
+          if (onComplete) onComplete(isCorrect, chosen);
         };
       });
     });
@@ -3549,7 +3803,7 @@ export class UIManager {
       this.battleEndTimeout = null;
     }
     if (this.battleKeyHandler) {
-      window.removeEventListener('keydown', this.battleKeyHandler);
+      window.removeEventListener("keydown", this.battleKeyHandler);
       this.battleKeyHandler = null;
     }
   }
@@ -3562,7 +3816,8 @@ export class UIManager {
     const maxLives = Number(config.maxLives) || 5;
 
     this.battleSession = {
-      matchId: 'ba_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      matchId:
+        "ba_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
       tutorName: config.tutorName,
       studentName: config.studentName,
       tutorCharacter: config.tutorCharacter,
@@ -3571,7 +3826,8 @@ export class UIManager {
       grade: config.grade,
       subject: config.subject,
       difficulty: config.difficulty,
-      effectiveDifficulty: config.difficulty === 'adaptif' ? null : config.difficulty,
+      effectiveDifficulty:
+        config.difficulty === "adaptif" ? null : config.difficulty,
       maxLives,
       matchEnded: false,
       pendingEndCheck: false,
@@ -3585,7 +3841,7 @@ export class UIManager {
         maxCombo: 0,
         qNum: 0,
         currentQuestion: null,
-        inputLocked: false
+        inputLocked: false,
       },
       student: {
         lives: maxLives,
@@ -3597,22 +3853,22 @@ export class UIManager {
         maxCombo: 0,
         qNum: 0,
         currentQuestion: null,
-        inputLocked: false
-      }
+        inputLocked: false,
+      },
     };
 
-    this.phaserGame.scene.start('BattleArenaScene', {
+    this.phaserGame.scene.start("BattleArenaScene", {
       tutorName: config.tutorName,
       studentName: config.studentName,
       tutorCharacter: config.tutorCharacter,
       studentCharacter: config.studentCharacter,
       studentCosmetic: config.studentCosmetic,
-      maxLives
+      maxLives,
     });
 
     this.renderDualRaceArenaOverlay();
-    this.loadNextQuestionForPlayer('tutor');
-    this.loadNextQuestionForPlayer('student');
+    this.loadNextQuestionForPlayer("tutor");
+    this.loadNextQuestionForPlayer("student");
   }
 
   renderDualRaceArenaOverlay() {
@@ -3662,10 +3918,10 @@ export class UIManager {
       </div>
     `;
 
-    document.getElementById('btn-ba-quit').addEventListener('click', () => {
+    document.getElementById("btn-ba-quit").addEventListener("click", () => {
       this.clearBattleTimers();
-      battleAudio.play('click');
-      this.showBattleArenaHub('setup');
+      battleAudio.play("click");
+      this.showBattleArenaHub("setup");
     });
 
     const tutorKeyMap = { A: 0, S: 1, D: 2, F: 3 };
@@ -3675,32 +3931,33 @@ export class UIManager {
       if (!this.battleSession || this.battleSession.matchEnded) return;
       if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
 
-      const tag = e.target && e.target.tagName ? e.target.tagName.toUpperCase() : '';
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const tag =
+        e.target && e.target.tagName ? e.target.tagName.toUpperCase() : "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
-      const key = String(e.key || '').toUpperCase();
+      const key = String(e.key || "").toUpperCase();
       if (Object.prototype.hasOwnProperty.call(tutorKeyMap, key)) {
         e.preventDefault();
-        this.handleDualRaceAnswer('tutor', tutorKeyMap[key]);
+        this.handleDualRaceAnswer("tutor", tutorKeyMap[key]);
       } else if (Object.prototype.hasOwnProperty.call(studentKeyMap, key)) {
         e.preventDefault();
-        this.handleDualRaceAnswer('student', studentKeyMap[key]);
+        this.handleDualRaceAnswer("student", studentKeyMap[key]);
       }
     };
 
-    window.addEventListener('keydown', this.battleKeyHandler);
+    window.addEventListener("keydown", this.battleKeyHandler);
   }
 
   fetchUniqueQuestionForPlayer(role) {
     const s = this.battleSession;
-    const opponentRole = role === 'tutor' ? 'student' : 'tutor';
+    const opponentRole = role === "tutor" ? "student" : "tutor";
     const oppQ = s[opponentRole]?.currentQuestion;
 
     let qData = questionManager.getNextQuestion(s.subject, null, {
       grade: s.grade,
       profile: this.activeProfile,
       settings: this.settings,
-      forceDifficulty: s.effectiveDifficulty || null
+      forceDifficulty: s.effectiveDifficulty || null,
     });
 
     if (!qData || qData.error || (oppQ && qData.question === oppQ.question)) {
@@ -3713,7 +3970,7 @@ export class UIManager {
         grade: s.grade,
         profile: this.activeProfile,
         settings: this.settings,
-        forceDifficulty: s.effectiveDifficulty || null
+        forceDifficulty: s.effectiveDifficulty || null,
       });
     }
 
@@ -3743,27 +4000,33 @@ export class UIManager {
 
     if (!qTextEl || !optsEl) return;
 
-    const letters = ['A', 'B', 'C', 'D'];
-    const keyHints = role === 'tutor' ? ['A', 'S', 'D', 'F'] : ['H', 'J', 'K', 'L'];
+    const letters = ["A", "B", "C", "D"];
+    const keyHints =
+      role === "tutor" ? ["A", "S", "D", "F"] : ["H", "J", "K", "L"];
 
-    if (qNumEl) qNumEl.textContent = `Soal #${pState.qNum} (${qData.difficulty.toUpperCase()})`;
+    if (qNumEl)
+      qNumEl.textContent = `Soal #${pState.qNum} (${qData.difficulty.toUpperCase()})`;
     qTextEl.textContent = qData.question;
 
-    optsEl.innerHTML = qData.options.map((opt, idx) => `
+    optsEl.innerHTML = qData.options
+      .map(
+        (opt, idx) => `
       <button class="btn-option ba-race-btn-${role}" data-idx="${idx}" style="padding:6px 8px; font-size:0.84rem; min-height:38px;">
         <span class="option-letter" style="width:22px; height:22px; font-size:0.76rem;">${letters[idx]}</span>
         <span style="flex:1; text-align:left; line-height:1.2;">${this.escapeHtml(opt)}</span>
         <span style="font-size:0.7rem; opacity:0.65; font-weight:900;">[${keyHints[idx]}]</span>
       </button>
-    `).join('');
+    `,
+      )
+      .join("");
 
     if (fbEl) {
-      fbEl.textContent = '';
-      fbEl.style.background = 'transparent';
+      fbEl.textContent = "";
+      fbEl.style.background = "transparent";
     }
 
     optsEl.querySelectorAll(`.ba-race-btn-${role}`).forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener("click", () => {
         this.handleDualRaceAnswer(role, Number(btn.dataset.idx));
       });
     });
@@ -3789,12 +4052,12 @@ export class UIManager {
     const fbEl = document.getElementById(`ba-fb-${role}`);
 
     if (optsEl) {
-      optsEl.querySelectorAll('button').forEach((btn, idx) => {
+      optsEl.querySelectorAll("button").forEach((btn, idx) => {
         btn.disabled = true;
         if (qData.options[idx] === qData.correctAnswer) {
-          btn.classList.add('correct');
+          btn.classList.add("correct");
         } else if (idx === optionIdx && !isCorrect) {
-          btn.classList.add('wrong');
+          btn.classList.add("wrong");
         }
       });
     }
@@ -3806,28 +4069,38 @@ export class UIManager {
       pState.maxCombo = Math.max(pState.maxCombo, pState.combo);
 
       if (fbEl) {
-        fbEl.textContent = '⚔️ BENAR! Menyerang lawan (-1 ❤️)';
-        fbEl.style.background = '#d4efdf';
-        fbEl.style.color = '#145a32';
+        fbEl.textContent = "⚔️ BENAR! Menyerang lawan (-1 ❤️)";
+        fbEl.style.background = "#d4efdf";
+        fbEl.style.color = "#145a32";
       }
 
-      battleAudio.play('attack');
+      battleAudio.play("attack");
 
-      const battleScene = this.phaserGame.scene.getScene('BattleArenaScene');
+      const battleScene = this.phaserGame.scene.getScene("BattleArenaScene");
       if (battleScene) {
         battleScene.triggerIndependentAttack(role, (attackerRole) => {
           if (!this.battleSession || this.battleSession.matchEnded) return;
-          battleAudio.play('hit');
-          if (attackerRole === 'tutor') {
-            this.battleSession.student.lives = Math.max(0, this.battleSession.student.lives - 1);
+          battleAudio.play("hit");
+          if (attackerRole === "tutor") {
+            this.battleSession.student.lives = Math.max(
+              0,
+              this.battleSession.student.lives - 1,
+            );
           } else {
-            this.battleSession.tutor.lives = Math.max(0, this.battleSession.tutor.lives - 1);
+            this.battleSession.tutor.lives = Math.max(
+              0,
+              this.battleSession.tutor.lives - 1,
+            );
           }
-          battleScene.updateLives(this.battleSession.tutor.lives, this.battleSession.student.lives);
+          battleScene.updateLives(
+            this.battleSession.tutor.lives,
+            this.battleSession.student.lives,
+          );
           this.checkDualRaceMatchEnd();
         });
       } else {
-        if (role === 'tutor') s.student.lives = Math.max(0, s.student.lives - 1);
+        if (role === "tutor")
+          s.student.lives = Math.max(0, s.student.lives - 1);
         else s.tutor.lives = Math.max(0, s.tutor.lives - 1);
         this.checkDualRaceMatchEnd();
       }
@@ -3837,11 +4110,11 @@ export class UIManager {
 
       if (fbEl) {
         fbEl.textContent = `❌ Salah! Jawaban: ${qData.correctAnswer}`;
-        fbEl.style.background = '#fadbd8';
-        fbEl.style.color = '#78281f';
+        fbEl.style.background = "#fadbd8";
+        fbEl.style.color = "#78281f";
       }
 
-      battleAudio.play('wrong');
+      battleAudio.play("wrong");
     }
 
     const delayMs = isCorrect ? 720 : 900;
@@ -3849,11 +4122,13 @@ export class UIManager {
       this.loadNextQuestionForPlayer(role);
     }, delayMs);
 
-    if (role === 'tutor') {
-      if (this.battleTutorNextTimeout) clearTimeout(this.battleTutorNextTimeout);
+    if (role === "tutor") {
+      if (this.battleTutorNextTimeout)
+        clearTimeout(this.battleTutorNextTimeout);
       this.battleTutorNextTimeout = timeoutId;
     } else {
-      if (this.battleStudentNextTimeout) clearTimeout(this.battleStudentNextTimeout);
+      if (this.battleStudentNextTimeout)
+        clearTimeout(this.battleStudentNextTimeout);
       this.battleStudentNextTimeout = timeoutId;
     }
   }
@@ -3880,30 +4155,30 @@ export class UIManager {
     this.clearBattleTimers();
     const s = this.battleSession;
 
-    let winner = 'draw';
-    let titleText = '🤝 PERTARUNGAN SERI!';
-    let subText = 'Kedua petarung kehabisan nyawa pada saat bersamaan!';
+    let winner = "draw";
+    let titleText = "🤝 PERTARUNGAN SERI!";
+    let subText = "Kedua petarung kehabisan nyawa pada saat bersamaan!";
 
     if (s.student.lives > s.tutor.lives) {
-      winner = 'student';
+      winner = "student";
       titleText = `🏆 PEMENANG: ${s.studentName.toUpperCase()}!`;
       subText = `Hebat sekali ${s.studentName}! Kamu menang dengan sisa ${s.student.lives} nyawa!`;
-      battleAudio.play('victory');
+      battleAudio.play("victory");
     } else if (s.tutor.lives > s.student.lives) {
-      winner = 'tutor';
+      winner = "tutor";
       titleText = `🏆 PEMENANG: ${s.tutorName.toUpperCase()}!`;
       subText = `Balapan yang seru! Ayo ${s.studentName}, coba tanding lagi!`;
-      battleAudio.play('defeat');
+      battleAudio.play("defeat");
     } else {
-      battleAudio.play('reward');
+      battleAudio.play("reward");
     }
 
-    const battleScene = this.phaserGame.scene.getScene('BattleArenaScene');
+    const battleScene = this.phaserGame.scene.getScene("BattleArenaScene");
     if (battleScene) {
       battleScene.playEndMatchAnimation(winner);
     }
 
-    let rewardHtml = '';
+    let rewardHtml = "";
     if (this.activeProfile) {
       const saveRes = await db.recordBattleArenaResult(this.activeProfile.id, {
         matchId: s.matchId,
@@ -3920,7 +4195,7 @@ export class UIManager {
         tutorLivesLeft: s.tutor.lives,
         studentLivesLeft: s.student.lives,
         tutorStats: s.tutor,
-        studentStats: s.student
+        studentStats: s.student,
       });
 
       if (saveRes?.profile) {
@@ -3929,19 +4204,25 @@ export class UIManager {
 
       if (saveRes?.rewardBreakdown) {
         const rb = saveRes.rewardBreakdown;
-        battleAudio.play('reward');
+        battleAudio.play("reward");
         rewardHtml = `
           <div style="background:#fff9db; border:3px solid #f39c12; border-radius:14px; padding:10px; margin-bottom:10px; font-weight:800; font-size:0.9rem;">
             🎁 <strong>REWARD DIDAPAT:</strong> +🪙 ${rb.totalCoinsEarned} Koin Battle | +⭐ ${rb.totalXpEarned} XP
-            ${rb.leveledUp ? ` | 🎉 <strong>NAIK KE LEVEL ${rb.newLevel}!</strong>` : ''}
-            ${rb.newAchievements.length > 0 ? ` | 🏆 Achievement Baru: ${rb.newAchievements.join(', ')}` : ''}
+            ${rb.leveledUp ? ` | 🎉 <strong>NAIK KE LEVEL ${rb.newLevel}!</strong>` : ""}
+            ${rb.newAchievements.length > 0 ? ` | 🏆 Achievement Baru: ${rb.newAchievements.join(", ")}` : ""}
           </div>
         `;
       }
     }
 
-    const tAcc = s.tutor.answered > 0 ? Math.round((s.tutor.correct / s.tutor.answered) * 100) : 0;
-    const sAcc = s.student.answered > 0 ? Math.round((s.student.correct / s.student.answered) * 100) : 0;
+    const tAcc =
+      s.tutor.answered > 0
+        ? Math.round((s.tutor.correct / s.tutor.answered) * 100)
+        : 0;
+    const sAcc =
+      s.student.answered > 0
+        ? Math.round((s.student.correct / s.student.answered) * 100)
+        : 0;
 
     this.container.innerHTML = `
       <div class="screen-overlay" style="background: rgba(20, 30, 48, 0.84);">
@@ -3980,14 +4261,14 @@ export class UIManager {
       </div>
     `;
 
-    document.getElementById('btn-ba-rematch').addEventListener('click', () => {
-      battleAudio.play('click');
-      this.showBattleArenaHub('setup');
+    document.getElementById("btn-ba-rematch").addEventListener("click", () => {
+      battleAudio.play("click");
+      this.showBattleArenaHub("setup");
     });
 
-    document.getElementById('btn-ba-hub').addEventListener('click', () => {
-      battleAudio.play('click');
-      this.showBattleArenaHub('collection');
+    document.getElementById("btn-ba-hub").addEventListener("click", () => {
+      battleAudio.play("click");
+      this.showBattleArenaHub("collection");
     });
   }
 }
