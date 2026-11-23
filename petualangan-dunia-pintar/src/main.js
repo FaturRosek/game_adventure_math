@@ -1,3 +1,4 @@
+import './styles/designSystem.css';
 import Phaser from "phaser";
 import { GAME_CONFIG } from "./config/gameConfig.js";
 import { BootScene } from "./scenes/BootScene.js";
