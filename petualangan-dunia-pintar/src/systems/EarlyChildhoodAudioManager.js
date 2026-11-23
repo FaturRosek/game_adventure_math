@@ -89,6 +89,10 @@ export class EarlyChildhoodAudioManager {
     osc.stop(now + duration);
   }
 
+  playNote(freq) {
+    this.playTone(freq, 0, 0.28, 'triangle', 0.34, false);
+  }
+
   play(name) {
     if (this.muted || this.sfxVolume <= 0) return;
 
@@ -118,15 +122,25 @@ export class EarlyChildhoodAudioManager {
     }
   }
 
-  startBgm() {
-    if (this.muted || !this.bgmEnabled || this.bgmTimer) return;
-    const notes = [523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25, 440];
+  startBgm(worldId = 'hub') {
+    this.stopBgm();
+    if (this.muted || !this.bgmEnabled) return;
+    const melodies = {
+      angka: [523.25, 659.25, 783.99, 659.25, 587.33, 659.25, 523.25, 392.0],
+      huruf: [587.33, 659.25, 739.99, 880.0, 739.99, 659.25, 587.33, 440.0],
+      warna_bentuk: [523.25, 587.33, 659.25, 783.99, 880.0, 783.99, 659.25, 523.25],
+      hewan_alam: [392.0, 493.88, 587.33, 783.99, 587.33, 493.88, 440.0, 392.0],
+      tubuh_harian: [440.0, 523.25, 659.25, 587.33, 523.25, 440.0, 392.0, 440.0],
+      logika_kreasi: [523.25, 659.25, 587.33, 783.99, 659.25, 880.0, 783.99, 523.25],
+      hub: [523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25, 440.0]
+    };
+    const notes = melodies[worldId] || melodies.hub;
     this.bgmTimer = setInterval(() => {
       if (this.muted || !this.bgmEnabled || this.bgmVolume <= 0) return;
       const freq = notes[this.bgmStep % notes.length];
       this.bgmStep += 1;
-      this.playTone(freq, 0, 0.24, 'sine', 0.14, true);
-    }, 480);
+      this.playTone(freq, 0, 0.24, 'sine', 0.13, true);
+    }, 460);
   }
 
   stopBgm() {
