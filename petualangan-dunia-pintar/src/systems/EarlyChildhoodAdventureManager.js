@@ -1,45 +1,52 @@
-import {
-  EARLY_CHILDHOOD_CATEGORIES,
-  getEarlyChildhoodLevelActivities,
-} from "../data/earlyChildhoodCatalog.js";
-import { db } from "../storage/db.js";
-import { earlyChildhoodAudio } from "./EarlyChildhoodAudioManager.js";
+import { EARLY_CHILDHOOD_CATEGORIES, getEarlyChildhoodLevelActivities } from '../data/earlyChildhoodCatalog.js';
+import { db } from '../storage/db.js';
+import { earlyChildhoodAudio } from './EarlyChildhoodAudioManager.js';
 import {
   injectEarlyChildhoodStyles,
   getWorldTheme,
   renderWorldBackgroundSVG,
   renderMascotSVG,
-  spawnConfettiBurst,
-} from "./earlyChildhood/EarlyChildhoodVisuals.js";
-import { runMiniGameExploreHunt } from "./earlyChildhood/MiniGameExploreHunt.js";
-import { runMiniGameDragDrop } from "./earlyChildhood/MiniGameDragDrop.js";
-import { runMiniGamePuzzle } from "./earlyChildhood/MiniGamePuzzle.js";
-import { runMiniGameSortGroup } from "./earlyChildhood/MiniGameSortGroup.js";
-import { runMiniGameMemoryGuess } from "./earlyChildhood/MiniGameMemoryGuess.js";
-import { runMiniGameTraceDraw } from "./earlyChildhood/MiniGameTraceDraw.js";
+  spawnConfettiBurst
+} from './earlyChildhood/EarlyChildhoodVisuals.js';
 import {
-  runMiniGameColorPaint,
-  runMiniGameSequenceOrder,
-  runMiniGameLetterHunt,
-  runMiniGameAnimalSound,
-  runMiniGameSimpleMaze,
-} from "./earlyChildhood/MiniGameCategorySpecials.js";
+  runWorldHarvestDeliver,
+  runWorldCatch,
+  runWorldHideSeek,
+  runWorldMaze
+} from './earlyChildhood/WorldActionCanvas.js';
+import {
+  runBrushPaint,
+  runDragMatch,
+  runTracePath,
+  runBuildSequence
+} from './earlyChildhood/WorldCraftEngine.js';
+import {
+  runAnimalSoundQuiz,
+  runMemoryOdd
+} from './earlyChildhood/WorldLogicEngine.js';
+import {
+  runMusicRhythm,
+  runRoleplayMission,
+  runStickerDecorate
+} from './earlyChildhood/WorldMusicRoleplayEngine.js';
 
 export class EarlyChildhoodAdventureManager {
   constructor() {
     this.miniGameRegistry = new Map();
     this.activeCleanup = null;
-    this.registerMiniGame("explore_hunt", runMiniGameExploreHunt);
-    this.registerMiniGame("drag_drop", runMiniGameDragDrop);
-    this.registerMiniGame("puzzle", runMiniGamePuzzle);
-    this.registerMiniGame("sort_group", runMiniGameSortGroup);
-    this.registerMiniGame("memory_guess", runMiniGameMemoryGuess);
-    this.registerMiniGame("trace_draw", runMiniGameTraceDraw);
-    this.registerMiniGame("color_paint", runMiniGameColorPaint);
-    this.registerMiniGame("sequence_order", runMiniGameSequenceOrder);
-    this.registerMiniGame("letter_hunt", runMiniGameLetterHunt);
-    this.registerMiniGame("animal_sound", runMiniGameAnimalSound);
-    this.registerMiniGame("simple_maze", runMiniGameSimpleMaze);
+    this.registerMiniGame('world_harvest_deliver', runWorldHarvestDeliver);
+    this.registerMiniGame('world_catch', runWorldCatch);
+    this.registerMiniGame('world_hide_seek', runWorldHideSeek);
+    this.registerMiniGame('world_maze', runWorldMaze);
+    this.registerMiniGame('brush_paint', runBrushPaint);
+    this.registerMiniGame('drag_match', runDragMatch);
+    this.registerMiniGame('trace_path', runTracePath);
+    this.registerMiniGame('build_sequence', runBuildSequence);
+    this.registerMiniGame('animal_sound_quiz', runAnimalSoundQuiz);
+    this.registerMiniGame('memory_odd', runMemoryOdd);
+    this.registerMiniGame('music_rhythm', runMusicRhythm);
+    this.registerMiniGame('roleplay_mission', runRoleplayMission);
+    this.registerMiniGame('sticker_decorate', runStickerDecorate);
   }
 
   registerMiniGame(activityType, handlerFn) {
@@ -119,7 +126,7 @@ export class EarlyChildhoodAdventureManager {
             </div>
           </div>
 
-          <div style="flex:1; display:grid; grid-template-columns:repeat(3, minmax(220px, 1fr)); gap:16px; max-width:1080px; width:100%; margin:0 auto; align-content:center;">
+          <div style="flex:1; display:grid; grid-template-columns:repeat(4, minmax(190px, 1fr)); gap:12px; max-width:1180px; width:100%; margin:0 auto; align-content:start; overflow-y:auto; padding:4px 4px 14px;">
             ${worldCardsHtml}
           </div>
         </div>
@@ -245,7 +252,7 @@ export class EarlyChildhoodAdventureManager {
     const theme = getWorldTheme(categoryObj.id);
     const charId = ui.activeProfile?.character || "kiko";
     let currentIdx = 0;
-    earlyChildhoodAudio.startBgm();
+    earlyChildhoodAudio.startBgm(categoryObj.id);
 
     const runStep = () => {
       this.stopActiveMiniGame();
@@ -277,6 +284,7 @@ export class EarlyChildhoodAdventureManager {
               </div>
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <button id="btn-ec-repeat-voice" class="ec-btn-3d ec-btn-green" style="padding:8px 14px; font-size:0.88rem;">🔊 Ulangi</button>
+                <button id="btn-ec-help" class="ec-btn-3d ec-btn-orange" style="padding:8px 14px; font-size:0.88rem;">💡 Bantuan</button>
                 <button id="btn-ec-bgm" class="ec-btn-3d ec-btn-blue" style="padding:8px 12px; font-size:0.88rem;">${earlyChildhoodAudio.bgmEnabled ? "🎵 ON" : "🎵 OFF"}</button>
                 <button id="btn-ec-mute" class="ec-btn-3d ec-btn-pink" style="padding:8px 12px; font-size:0.88rem;">${earlyChildhoodAudio.muted ? "🔇" : "🔊"}</button>
                 <button id="btn-ec-exit-lvl" class="ec-btn-3d ec-btn-red" style="padding:8px 14px; font-size:0.88rem;">✖ Keluar</button>
@@ -311,6 +319,13 @@ export class EarlyChildhoodAdventureManager {
           earlyChildhoodAudio.play("click");
           earlyChildhoodAudio.repeatInstruction();
         });
+
+      document.getElementById("btn-ec-help").addEventListener("click", () => {
+        earlyChildhoodAudio.play("click");
+        const hint = act.helpText || act.prompt;
+        if (praiseTextEl) praiseTextEl.textContent = `💡 Petunjuk: ${hint}`;
+        earlyChildhoodAudio.speak(hint, false);
+      });
 
       document.getElementById("btn-ec-bgm").addEventListener("click", (e) => {
         earlyChildhoodAudio.setBgmEnabled(!earlyChildhoodAudio.bgmEnabled);
@@ -348,6 +363,7 @@ export class EarlyChildhoodAdventureManager {
             }, 900);
           }
         },
+        playNote: (freq) => earlyChildhoodAudio.playNote(freq),
         speak: (txt, rem) => earlyChildhoodAudio.speak(txt, rem),
         speakGentleHint: () => earlyChildhoodAudio.speakGentleHint(),
       };

@@ -292,71 +292,21 @@ export function injectEarlyChildhoodStyles() {
   document.head.appendChild(style);
 }
 
-export function getWorldTheme(categoryId = "hub") {
+export function getWorldTheme(categoryId = 'hub') {
   const themes = {
-    hub: {
-      skyTop: "#4facfe",
-      skyBot: "#a1ffce",
-      hillBack: "#7bed9f",
-      hillFront: "#2ed573",
-      cardGrad: "linear-gradient(145deg,#ff9ff3,#f368e0)",
-      bonusIcon: "🦋",
-      bonusLabel: "Kupu-kupu Ajaib",
-    },
-    angka: {
-      skyTop: "#56ccf2",
-      skyBot: "#fef9e7",
-      hillBack: "#a3cb38",
-      hillFront: "#27ae60",
-      cardGrad: "linear-gradient(145deg,#ffbe76,#f0932b)",
-      bonusIcon: "🍓",
-      bonusLabel: "Stroberi Rahasia",
-    },
-    huruf: {
-      skyTop: "#74b9ff",
-      skyBot: "#dfe6e9",
-      hillBack: "#a29bfe",
-      hillFront: "#6c5ce7",
-      cardGrad: "linear-gradient(145deg,#74b9ff,#0984e3)",
-      bonusIcon: "🎈",
-      bonusLabel: "Balon Huruf Emas",
-    },
-    warna_bentuk: {
-      skyTop: "#ff9ff3",
-      skyBot: "#ffeaa7",
-      hillBack: "#55efc4",
-      hillFront: "#00b894",
-      cardGrad: "linear-gradient(145deg,#ff9ff3,#e84393)",
-      bonusIcon: "🌈",
-      bonusLabel: "Permata Pelangi",
-    },
-    hewan_alam: {
-      skyTop: "#48dbfb",
-      skyBot: "#c8f7c5",
-      hillBack: "#58b19f",
-      hillFront: "#1dd1a1",
-      cardGrad: "linear-gradient(145deg,#55efc4,#10ac84)",
-      bonusIcon: "🐝",
-      bonusLabel: "Lebah Madu Lucu",
-    },
-    tubuh_harian: {
-      skyTop: "#81ecec",
-      skyBot: "#fff3cd",
-      hillBack: "#fab1a0",
-      hillFront: "#7bed9f",
-      cardGrad: "linear-gradient(145deg,#ffeaa7,#e17055)",
-      bonusIcon: "🫧",
-      bonusLabel: "Gelembung Sabun",
-    },
-    logika_kreasi: {
-      skyTop: "#a29bfe",
-      skyBot: "#ffeaa7",
-      hillBack: "#81ecec",
-      hillFront: "#00cec9",
-      cardGrad: "linear-gradient(145deg,#a29bfe,#6c5ce7)",
-      bonusIcon: "🌟",
-      bonusLabel: "Bintang Ide",
-    },
+    hub: { skyTop: '#74b9ff', skyBot: '#dff9fb', hillBack: '#81ecec', hillFront: '#55efc4', cardGrad: 'linear-gradient(145deg,#74b9ff,#0984e3)', bonusIcon: '🦋', bonusLabel: 'Kupu-kupu Ajaib' },
+    huruf: { skyTop: '#74b9ff', skyBot: '#eaf6ff', hillBack: '#a29bfe', hillFront: '#74b9ff', cardGrad: 'linear-gradient(145deg,#74b9ff,#487eb0)', bonusIcon: '🎈', bonusLabel: 'Balon Huruf' },
+    angka: { skyTop: '#81ecec', skyBot: '#fff9db', hillBack: '#ffeaa7', hillFront: '#55efc4', cardGrad: 'linear-gradient(145deg,#ffbe76,#f0932b)', bonusIcon: '⭐', bonusLabel: 'Bintang Angka' },
+    warna_bentuk: { skyTop: '#ff9ff3', skyBot: '#fff3cd', hillBack: '#81ecec', hillFront: '#55efc4', cardGrad: 'linear-gradient(145deg,#ff9ff3,#e84393)', bonusIcon: '🌈', bonusLabel: 'Pelangi Ceria' },
+    hewan: { skyTop: '#48dbfb', skyBot: '#d4efdf', hillBack: '#7bed9f', hillFront: '#2ed573', cardGrad: 'linear-gradient(145deg,#55efc4,#10ac84)', bonusIcon: '🐝', bonusLabel: 'Lebah Madu' },
+    buah_sayur: { skyTop: '#a8e6cf', skyBot: '#fff5e6', hillBack: '#a3cb38', hillFront: '#2ecc71', cardGrad: 'linear-gradient(145deg,#ff7675,#e17055)', bonusIcon: '🍓', bonusLabel: 'Stroberi Manis' },
+    kendaraan: { skyTop: '#56ccf2', skyBot: '#eaf6ff', hillBack: '#95afc0', hillFront: '#63cdda', cardGrad: 'linear-gradient(145deg,#48dbfb,#0abde3)', bonusIcon: '🚁', bonusLabel: 'Helikopter Mini' },
+    puzzle_logika: { skyTop: '#a29bfe', skyBot: '#f5f0ff', hillBack: '#74b9ff', hillFront: '#81ecec', cardGrad: 'linear-gradient(145deg,#a29bfe,#6c5ce7)', bonusIcon: '🧩', bonusLabel: 'Keping Emas' },
+    kreativitas: { skyTop: '#fd79a8', skyBot: '#fff9db', hillBack: '#ffeaa7', hillFront: '#ff9ff3', cardGrad: 'linear-gradient(145deg,#fd79a8,#e84393)', bonusIcon: '🖌️', bonusLabel: 'Kuas Ajaib' },
+    bermain_peran: { skyTop: '#ffeaa7', skyBot: '#fffdf7', hillBack: '#fab1a0', hillFront: '#7bed9f', cardGrad: 'linear-gradient(145deg,#feca57,#ff9f43)', bonusIcon: '🧁', bonusLabel: 'Kue Spesial' },
+    petualangan: { skyTop: '#4facfe', skyBot: '#fff3cd', hillBack: '#55efc4', hillFront: '#f6e58d', cardGrad: 'linear-gradient(145deg,#1dd1a1,#009473)', bonusIcon: '💎', bonusLabel: 'Permata Pantai' },
+    musik_suara: { skyTop: '#c56cf0', skyBot: '#fceeff', hillBack: '#ff9ff3', hillFront: '#74b9ff', cardGrad: 'linear-gradient(145deg,#c56cf0,#8e44ad)', bonusIcon: '🎵', bonusLabel: 'Nada Emas' },
+    kehidupan_harian: { skyTop: '#81ecec', skyBot: '#fffdf0', hillBack: '#fab1a0', hillFront: '#55efc4', cardGrad: 'linear-gradient(145deg,#55efc4,#00b894)', bonusIcon: '🫧', bonusLabel: 'Gelembung Sabun' }
   };
   return themes[categoryId] || themes.hub;
 }
