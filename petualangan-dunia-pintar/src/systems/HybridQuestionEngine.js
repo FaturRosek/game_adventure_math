@@ -728,219 +728,392 @@ export class HybridQuestionEngine {
   registerIpasTemplates() {
     return [
       {
-        templateId: "TPL_IPAS3_MAKLUKHIDUP",
+        templateId: "TPL_IPAS3_BAB1_INDRA",
+        grade: 3,
         subject: "IPAS",
-        topic: "Ciri-ciri dan Kebutuhan Makhluk Hidup",
-        subtopic: "Alat Pernapasan Hewan",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const facts = [
-            {
-              hewan: "ikan mas di kolam",
-              alat: "Insang",
-              info: "menyerap oksigen yang terlarut di dalam air",
-            },
-            {
-              hewan: "kucing peliharaan",
-              alat: "Paru-paru",
-              info: "menghirup oksigen dari udara seperti mamalia lainnya",
-            },
-            {
-              hewan: "belalang di halaman rumput",
-              alat: "Trakea",
-              info: "saluran-saluran halus pada tubuh serangga",
-            },
-            {
-              hewan: "cacing tanah di kebun",
-              alat: "Permukaan kulit",
-              info: "kulit yang selalu lembap untuk pertukaran udara",
-            },
-          ];
-          const chosen = this.pickRandom(facts);
-          const allTools = ["Insang", "Paru-paru", "Trakea", "Permukaan kulit"];
-
+        topic: "Bab 1 — Panca Indraku",
+        subtopic: "Bentuk dan fungsi organ indra",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  "Ketika menyentuh permukaan es batu yang dingin dan selimut yang lembut, pancaindra yang membantu kita merasakan perbedaan suhu dan tekstur tersebut adalah ...",
+                correctAnswer: "Kulit (indra peraba)",
+                options: [
+                  "Kulit (indra peraba)",
+                  "Telinga (indra pendengar)",
+                  "Hidung (indra pembau)",
+                  "Mata (indra penglihat)",
+                ],
+                explanation:
+                  "Kulit memiliki ujung saraf peraba yang peka terhadap sentuhan halus, kasar, panas, dan dingin.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Saat cahaya matahari di luar ruangan terlalu silau, bagian hitam di tengah mata (pupil) secara otomatis mengecil. Tujuan pupil mengecil saat cahaya terang adalah ...",
+                correctAnswer:
+                  "Mengatur agar cahaya yang masuk ke dalam mata tidak terlalu banyak sehingga mata terlindungi",
+                options: [
+                  "Mengatur agar cahaya yang masuk ke dalam mata tidak terlalu banyak sehingga mata terlindungi",
+                  "Menghentikan seluruh cahaya agar mata tidak bisa melihat apa pun",
+                  "Mengubah warna benda di sekitar menjadi gelap",
+                  "Membantu telinga mendengar suara lebih nyaring",
+                ],
+                explanation:
+                  "Pupil berfungsi mengatur banyaknya cahaya yang masuk ke mata; ia mengecil saat terang dan melebar saat redup.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Rudi sering mendengarkan musik menggunakan earphone dengan volume sangat keras dalam waktu lama. Risiko kesehatan yang dapat terjadi pada organ pendengarannya adalah ...",
+                correctAnswer:
+                  "Gendang telinga dan saraf pendengaran dapat terganggu sehingga kemampuan mendengar menurun",
+                options: [
+                  "Gendang telinga dan saraf pendengaran dapat terganggu sehingga kemampuan mendengar menurun",
+                  "Daun telinga akan berubah bentuk menjadi kotak",
+                  "Indra pengecap di lidah tidak bisa merasakan manis lagi",
+                  "Telinga menjadi mampu menangkap suara dari luar angkasa",
+                ],
+                explanation:
+                  "Bunyi terlalu keras dalam waktu lama dapat merusak gendang telinga dan sel pendengaran, sehingga volume suara harus dijaga tetap aman.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Saat mengamati ${chosen.hewan}, ${person} ingin mencatat alat pernapasan hewan tersebut. Alat pernapasan ${chosen.hewan} adalah ...`,
-            options: this.shuffleArray(allTools),
-            correctAnswer: chosen.alat,
-            explanation: `Hewan ${chosen.hewan} bernapas menggunakan ${chosen.alat.toLowerCase()} untuk ${chosen.info}.`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 1 — Panca Indraku" },
           };
         },
       },
       {
-        templateId: "TPL_IPAS3_WUJUD",
+        templateId: "TPL_IPAS3_BAB2_DAHULU_KINI",
+        grade: 3,
         subject: "IPAS",
-        topic: "Perubahan Wujud Benda",
-        subtopic: "Perubahan Wujud dalam Kehidupan Sehari-hari",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const scenarios = [
-            {
-              desc: `meletakkan cokelat batang dan mentega di atas wajan hangat hingga berubah menjadi cair`,
-              proses: "Mencair",
-              detail:
-                "perubahan wujud benda padat menjadi benda cair karena menerima panas",
-            },
-            {
-              desc: `memasukkan kantong berisi air sirup ke dalam freezer kulkas hingga menjadi es lilin yang keras`,
-              proses: "Membeku",
-              detail:
-                "perubahan wujud benda cair menjadi benda padat karena melepaskan panas (didinginkan)",
-            },
-            {
-              desc: `menjemur handuk basah di bawah terik matahari sampai airnya hilang dan handuk menjadi kering`,
-              proses: "Menguap",
-              detail:
-                "perubahan wujud benda cair menjadi gas (uap air) karena terkena panas",
-            },
-            {
-              desc: `melihat titik-titik air di bagian luar gelas yang berisi air es dingin`,
-              proses: "Mengembun",
-              detail:
-                "perubahan wujud gas (uap air di udara) menjadi titik-titik air karena suhu dingin",
-            },
-          ];
-          const chosen = this.pickRandom(scenarios);
+        topic: "Bab 2 — Dahulu, Kini, dan Nanti",
+        subtopic: "Perkembangan sosial dan budaya",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  "Dahulu banyak orang memasak nasi menggunakan tungku kayu bakar, sedangkan sekarang banyak keluarga menggunakan penanak nasi listrik (rice cooker). Hal ini merupakan contoh perkembangan dalam ...",
+                correctAnswer: "Peralatan rumah tangga sehari-hari",
+                options: [
+                  "Peralatan rumah tangga sehari-hari",
+                  "Bentuk silsilah keluarga",
+                  "Siklus hidup tumbuhan",
+                  "Jumlah pancaindra manusia",
+                ],
+                explanation:
+                  "Perubahan dari tungku kayu ke penanak nasi listrik adalah contoh perkembangan teknologi peralatan sehari-hari.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  'Sebuah kampung yang dahulu terkenal dengan banyak perajin gerabah dari tanah liat dinamai "Kampung Gerabah". Hal tersebut menunjukkan bahwa nama tempat dapat mencerminkan ...',
+                correctAnswer:
+                  "Kegiatan mata pencaharian atau keahlian khas warga setempat",
+                options: [
+                  "Kegiatan mata pencaharian atau keahlian khas warga setempat",
+                  "Daftar pelajaran sekolah dasar di kota lain",
+                  "Cuaca hujan yang turun satu kali dalam setahun",
+                  "Jumlah kendaraan yang lewat pada hari Minggu",
+                ],
+                explanation:
+                  "Asal-usul nama tempat sering berkaitan dengan sejarah, ciri alam, atau keahlian khas masyarakat di wilayah tersebut.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Perubahan teknologi membuat kita mudah membeli makanan lewat aplikasi, tetapi juga bisa membuat orang jarang bertegur sapa dengan tetangga. Sikap bijak menghadapi perubahan tersebut adalah ...",
+                correctAnswer:
+                  "Tetap menggunakan teknologi secara seimbang sambil menjaga kebiasaan ramah dan gotong royong bersama tetangga",
+                options: [
+                  "Tetap menggunakan teknologi secara seimbang sambil menjaga kebiasaan ramah dan gotong royong bersama tetangga",
+                  "Melarang semua orang menggunakan telepon genggam di lingkungan rumah",
+                  "Tidak perlu mengenal tetangga lagi karena semua bisa dipesan lewat gawai",
+                  "Menganggap tradisi gotong royong sudah tidak penting di masa kini",
+                ],
+                explanation:
+                  "Kemajuan teknologi sebaiknya dimanfaatkan untuk kemudahan hidup tanpa menghilangkan nilai kerukunan dan kepedulian sosial.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Di rumah, ${person} ${chosen.desc}. Peristiwa perubahan wujud benda yang diamati ${person} disebut ...`,
-            options: this.shuffleArray([
-              "Mencair",
-              "Membeku",
-              "Menguap",
-              "Mengembun",
-            ]),
-            correctAnswer: chosen.proses,
-            explanation: `${chosen.proses} adalah ${chosen.detail}.`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 2 — Dahulu, Kini, dan Nanti" },
           };
         },
       },
       {
-        templateId: "TPL_IPAS3_ENERGI",
+        templateId: "TPL_IPAS3_BAB3_PERJALANANKU",
+        grade: 3,
         subject: "IPAS",
-        topic: "Energi dan Pemanfaatannya",
-        subtopic: "Perubahan Bentuk Energi di Rumah",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const devices = [
-            {
-              alat: "setrika listrik",
-              ubah: "Energi listrik menjadi energi panas",
-              manfaat: "merapikan pakaian yang kusut",
-            },
-            {
-              alat: "kipas angin listrik",
-              ubah: "Energi listrik menjadi energi gerak",
-              manfaat: "menggerakkan baling-baling agar ruangan sejuk",
-            },
-            {
-              alat: "lampu belajar",
-              ubah: "Energi listrik menjadi energi cahaya",
-              manfaat: "menerangi meja saat membaca buku",
-            },
-            {
-              alat: "bel listrik sekolah",
-              ubah: "Energi listrik menjadi energi bunyi",
-              manfaat: "memberi tanda waktu masuk dan istirahat",
-            },
-          ];
-          const chosen = this.pickRandom(devices);
-          const allOptions = devices.map((d) => d.ubah);
-
+        topic: "Bab 3 — Perjalananku",
+        subtopic: "Gizi seimbang",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  "Telur, ikan, tahu, dan tempe merupakan kelompok lauk pauk yang kaya protein. Manfaat utama protein bagi anak yang sedang tumbuh adalah ...",
+                correctAnswer:
+                  "Membantu pertumbuhan tubuh dan memperbaiki sel tubuh yang rusak",
+                options: [
+                  "Membantu pertumbuhan tubuh dan memperbaiki sel tubuh yang rusak",
+                  "Menggantikan kebutuhan tidur malam hari",
+                  "Membuat pakaian sekolah tetap bersih",
+                  "Mengubah warna rambut menjadi cerah",
+                ],
+                explanation:
+                  "Protein adalah zat pembangun yang sangat penting untuk mendukung pertumbuhan otot, tulang, dan jaringan tubuh anak.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Ketika masih bayi, Lani hanya bisa menangis dan tengkurap. Sekarang di kelas 3 SD, Lani sudah lancar bercerita dan menulis karangan pendek. Perubahan kemampuan Lani tersebut termasuk contoh ...",
+                correctAnswer: "Perkembangan kemampuan berpikir dan berbahasa",
+                options: [
+                  "Perkembangan kemampuan berpikir dan berbahasa",
+                  "Perubahan ukuran sepatu semata",
+                  "Pergantian musim di lingkungan rumah",
+                  "Metamorfosis sempurna seperti kupu-kupu",
+                ],
+                explanation:
+                  "Bertambahnya kecakapan berbicara, menulis, dan berpikir merupakan contoh perkembangan pada manusia.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Jika seorang anak hanya mau makan nasi dan kerupuk setiap hari tanpa sayur, buah, dan lauk pauk, mengapa pola makan tersebut TIDAK termasuk gizi seimbang?",
+                correctAnswer:
+                  "Karena tubuh kekurangan protein, vitamin, dan mineral yang dibutuhkan untuk pertumbuhan dan daya tahan tubuh",
+                options: [
+                  "Karena tubuh kekurangan protein, vitamin, dan mineral yang dibutuhkan untuk pertumbuhan dan daya tahan tubuh",
+                  "Karena nasi tidak mengandung karbohidrat sama sekali",
+                  "Karena kerupuk membuat tinggi badan langsung bertambah dua kali lipat",
+                  "Karena gizi seimbang hanya terdiri atas buah-buahan tanpa makanan pokok",
+                ],
+                explanation:
+                  "Gizi seimbang mengharuskan variasi makanan pokok, lauk berprotein, sayur, buah, dan air putih agar semua kebutuhan nutrisi terpenuhi.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Keluarga ${person} menyalakan ${chosen.alat} untuk ${chosen.manfaat}. Perubahan bentuk energi yang terjadi pada ${chosen.alat} adalah ...`,
-            options: this.shuffleArray(allOptions),
-            correctAnswer: chosen.ubah,
-            explanation: `Pada ${chosen.alat}, terjadi perubahan ${chosen.ubah.toLowerCase()} untuk ${chosen.manfaat}.`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 3 — Perjalananku" },
           };
         },
       },
       {
-        templateId: "TPL_IPAS3_SIFATBENDA",
+        templateId: "TPL_IPAS3_BAB3_PAHLAWAN",
+        grade: 3,
         subject: "IPAS",
-        topic: "Benda dan Sifat-sifatnya",
-        subtopic: "Klasifikasi Wujud Benda",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const groups = [
-            {
-              contoh: "buku tulis, batu kerikil, dan meja kayu",
-              wujud: "Benda Padat",
-              sifat: "bentuk dan ukurannya selalu tetap walau dipindahkan",
-            },
-            {
-              contoh: "air minum, minyak goreng, dan susu cair",
-              wujud: "Benda Cair",
-              sifat:
-                "bentuknya berubah-ubah mengikuti wadahnya dan mengalir ke tempat lebih rendah",
-            },
-            {
-              contoh: "udara di dalam balon dan angin yang berembus",
-              wujud: "Benda Gas",
-              sifat: "mengisi seluruh ruangan yang ditempatinya",
-            },
-          ];
-          const chosen = this.pickRandom(groups);
-
+        topic: "Bab 3 — Aku Peduli Aku Pahlawan",
+        subtopic: "Nilai dan norma keluarga",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  "Setelah selesai belajar di ruang tengah, buku dan alat tulis Adi masih berserakan di meja. Tindakan peduli yang harus segera dilakukan Adi adalah ...",
+                correctAnswer:
+                  "Merapikan kembali buku dan alat tulisnya ke dalam tas atau rak belajar",
+                options: [
+                  "Merapikan kembali buku dan alat tulisnya ke dalam tas atau rak belajar",
+                  "Membiarkannya berserakan hingga besok pagi",
+                  "Menyuruh adik kecilnya membereskan seluruh buku pelajaran",
+                  "Menyembunyikan buku di belakang sofa ruang tamu",
+                ],
+                explanation:
+                  "Membereskan barang milik sendiri adalah tanggung jawab anak untuk menjaga kerapian dan kenyamanan rumah.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Saat ayah dan ibu sedang berbincang di ruang keluarga, kita ingin menyampaikan sesuatu yang penting. Cara yang sesuai dengan norma kesopanan keluarga adalah ...",
+                correctAnswer:
+                  'Menunggu jeda pembicaraan lalu mengucapkan "Permisi, Ayah dan Ibu" dengan suara lembut',
+                options: [
+                  'Menunggu jeda pembicaraan lalu mengucapkan "Permisi, Ayah dan Ibu" dengan suara lembut',
+                  "Berteriak kencang memotong pembicaraan orang tua",
+                  "Menarik-narik baju orang tua dengan kasar agar langsung diperhatikan",
+                  "Membanting pintu kamar sampai orang tua menoleh",
+                ],
+                explanation:
+                  "Tidak memotong pembicaraan dan berbicara santun adalah penerapan norma kesopanan di dalam keluarga.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Di rumah Siti terdapat kesepakatan bahwa semua anggota keluarga makan malam bersama tanpa memainkan gawai di meja makan. Nilai positif yang dibangun dari norma keluarga tersebut adalah ...",
+                correctAnswer:
+                  "Kebersamaan, saling menghargai, dan komunikasi hangat antaranggota keluarga",
+                options: [
+                  "Kebersamaan, saling menghargai, dan komunikasi hangat antaranggota keluarga",
+                  "Persaingan agar siapa yang selesai makan paling cepat mendapat hadiah",
+                  "Larangan menggunakan teknologi untuk belajar sekolah selamanya",
+                  "Kebiasaan makan sambil menonton televisi dengan suara keras",
+                ],
+                explanation:
+                  "Makan bersama tanpa gawai melatih fokus pada keluarga, saling mendengarkan, dan mempererat kasih sayang.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `${person} mengelompokkan ${chosen.contoh} ke dalam satu kelompok yang sama. Benda-benda tersebut termasuk kelompok ...`,
-            options: this.shuffleArray([
-              "Benda Padat",
-              "Benda Cair",
-              "Benda Gas",
-              "Benda Cahaya",
-            ]),
-            correctAnswer: chosen.wujud,
-            explanation: `${chosen.contoh.charAt(0).toUpperCase() + chosen.contoh.slice(1)} adalah ${chosen.wujud.toLowerCase()} karena ${chosen.sifat}.`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 3 — Aku Peduli Aku Pahlawan" },
           };
         },
       },
       {
-        templateId: "TPL_IPAS3_EKONOMI",
+        templateId: "TPL_IPAS3_BAB4_HEWAN",
+        grade: 3,
         subject: "IPAS",
-        topic: "Aktivitas Ekonomi Sederhana",
-        subtopic: "Pekerjaan Menghasilkan Barang dan Jasa",
-        generate: () => {
-          const jobs = [
-            {
-              profesi: "dokter dan guru sekolah",
-              jenis: "Menghasilkan jasa (pelayanan)",
-              detail: "memberikan layanan kesehatan dan pendidikan",
-            },
-            {
-              profesi: "petani padi dan nelayan ikan",
-              jenis: "Menghasilkan barang (benda kebutuhan)",
-              detail: "menghasilkan bahan pangan berupa beras dan ikan segar",
-            },
-            {
-              profesi: "tukang cukur rambut dan sopir bus",
-              jenis: "Menghasilkan jasa (pelayanan)",
-              detail:
-                "memberikan layanan merapikan rambut dan mengantar penumpang",
-            },
-            {
-              profesi: "pengrajin meja kayu dan pembuat roti",
-              jenis: "Menghasilkan barang (benda kebutuhan)",
-              detail: "membuat produk perabot dan makanan yang dapat dibeli",
-            },
-          ];
-          const chosen = this.pickRandom(jobs);
-          const opts = [
-            "Menghasilkan jasa (pelayanan)",
-            "Menghasilkan barang (benda kebutuhan)",
-            "Menghasilkan cuaca alami",
-            "Tidak memiliki manfaat ekonomi",
-          ];
-
+        topic: "Bab 4 — Rahasia Kehidupan Hewan",
+        subtopic: "Metamorfosis sempurna dan tidak sempurna",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  "Hewan katak hidup di air saat masih kecil (berudu/kecebong) dan bernapas dengan insang, lalu berubah menjadi katak dewasa berkaki empat. Katak mengalami ...",
+                correctAnswer: "Metamorfosis sempurna",
+                options: [
+                  "Metamorfosis sempurna",
+                  "Perkembangbiakan dengan melahirkan",
+                  "Pertumbuhan tanpa perubahan bentuk",
+                  "Pembiakan melalui biji",
+                ],
+                explanation:
+                  "Katak mengalami metamorfosis sempurna karena bentuk berudu sangat berbeda dengan katak dewasa.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Belalang muda (nimfa) yang baru menetas dari telur memiliki bentuk tubuh yang sudah mirip dengan belalang dewasa, hanya saja ukurannya lebih kecil dan belum bersayap sempurna. Artinya belalang mengalami ...",
+                correctAnswer: "Metamorfosis tidak sempurna",
+                options: [
+                  "Metamorfosis tidak sempurna",
+                  "Metamorfosis sempurna dengan kepompong",
+                  "Perkembangbiakan vivipar",
+                  "Perubahan wujud benda",
+                ],
+                explanation:
+                  "Pada metamorfosis tidak sempurna (telur → nimfa → dewasa), hewan muda sudah menyerupai induknya tanpa fase kepompong.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Penyu laut sering terancam punah karena pantai tempat bertelurnya penuh sampah plastik dan telurnya diambil manusia. Langkah pelestarian yang paling tepat untuk membantu kelangsungan hidup penyu adalah ...",
+                correctAnswer:
+                  "Menjaga kebersihan pantai dari sampah plastik dan melindungi kawasan peneluran penyu",
+                options: [
+                  "Menjaga kebersihan pantai dari sampah plastik dan melindungi kawasan peneluran penyu",
+                  "Memindahkan seluruh penyu laut ke kolam ikan kecil di dalam ruangan",
+                  "Membuang sampah plastik ke tengah laut agar pantai terlihat bersih",
+                  "Mengumpulkan telur penyu untuk dijadikan mainan anak-anak",
+                ],
+                explanation:
+                  "Melindungi tempat bertelur penyu dan menjaga pantai bebas sampah plastik memastikan siklus hidup penyu tetap berlanjut.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Pekerjaan sebagai ${chosen.profesi} di masyarakat termasuk jenis aktivitas ekonomi yang ...`,
-            options: this.shuffleArray(opts),
-            correctAnswer: chosen.jenis,
-            explanation: `Profesi ${chosen.profesi} bekerja untuk ${chosen.detail}, sehingga termasuk pekerjaan yang ${chosen.jenis.toLowerCase()}.`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 4 — Rahasia Kehidupan Hewan" },
+          };
+        },
+      },
+      {
+        templateId: "TPL_IPAS3_BAB4_TUMBUHAN",
+        grade: 3,
+        subject: "IPAS",
+        topic: "Bab 4 — Tumbuhan",
+        subtopic: "Bagian tumbuhan",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  "Bagian tumbuhan yang berfungsi menyalurkan air dan zat hara dari akar menuju daun serta menopang dahan dan bunga adalah ...",
+                correctAnswer: "Batang",
+                options: ["Batang", "Biji", "Kelopak bunga", "Kulit buah"],
+                explanation:
+                  "Batang berfungsi sebagai penopang tubuh tumbuhan sekaligus saluran pengangkut air dan hasil makanan.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Pada banyak tumbuhan berbunga seperti mangga dan jeruk, bagian bunga yang sudah mengalami penyerbukan akan berkembang menjadi buah. Di dalam buah tersebut terdapat bagian penting untuk menghasilkan tumbuhan baru, yaitu ...",
+                correctAnswer: "Biji",
+                options: [
+                  "Biji",
+                  "Akar tunggang",
+                  "Kulit batang",
+                  "Tangkai daun",
+                ],
+                explanation:
+                  "Biji di dalam buah merupakan calon individu tumbuhan baru yang akan berkecambah jika ditanam di lingkungan yang sesuai.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Jika seluruh daun pada sebuah tanaman pot dipetik habis secara sengaja, apa akibat yang akan terjadi pada pertumbuhan tanaman tersebut?",
+                correctAnswer:
+                  "Tanaman kesulitan membuat makanannya sendiri melalui fotosintesis sehingga pertumbuhannya terganggu atau layu",
+                options: [
+                  "Tanaman kesulitan membuat makanannya sendiri melalui fotosintesis sehingga pertumbuhannya terganggu atau layu",
+                  "Akar tanaman langsung berubah warna menjadi hijau dan berbuah lebat",
+                  "Tanaman tidak lagi membutuhkan air untuk hidup",
+                  "Batang tanaman langsung membesar dua kali lipat dalam sehari",
+                ],
+                explanation:
+                  "Daun adalah tempat utama fotosintesis. Tanpa daun, tumbuhan kehilangan kemampuan utama memproduksi makanan.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 4 — Tumbuhan" },
           };
         },
       },
@@ -950,184 +1123,260 @@ export class HybridQuestionEngine {
   registerBindoTemplates() {
     return [
       {
-        templateId: "TPL_BINDO3_SINONIM_ANTONIM",
+        templateId: "TPL_BINDO3_BAB1",
+        grade: 3,
         subject: "Bahasa Indonesia",
-        topic: "Sinonim dan Antonim",
-        subtopic: "Persamaan dan Lawan Kata",
+        topic: "Bab 1",
+        subtopic: "Huruf kapital dan tanda baca",
         generate: (difficulty) => {
-          const person = this.pickRandom(NAMES_POOL);
-          const pairs = [
-            {
-              word: "Rajin",
-              syn: "Giat",
-              ant: "Malas",
-              wrong: ["Tinggi", "Cepat", "Lambat"],
-            },
-            {
-              word: "Gembira",
-              syn: "Senang",
-              ant: "Sedih",
-              wrong: ["Marah", "Takut", "Lapar"],
-            },
-            {
-              word: "Besar",
-              syn: "Raksasa",
-              ant: "Kecil",
-              wrong: ["Panjang", "Lebar", "Jauh"],
-            },
-            {
-              word: "Jauh",
-              syn: "Renggang",
-              ant: "Dekat",
-              wrong: ["Tinggi", "Rendah", "Dalam"],
-            },
-            {
-              word: "Hemat",
-              syn: "Cermat",
-              ant: "Boros",
-              wrong: ["Kaya", "Miskin", "Dermawan"],
-            },
-          ];
-          const p = this.pickRandom(pairs);
-          const askAntonym = difficulty !== "mudah" && Math.random() > 0.45;
-
-          if (askAntonym) {
-            return {
-              question: `${person} sedang mencari lawan kata (antonim) dari kata "${p.word}". Antonim dari kata "${p.word}" adalah ...`,
-              options: this.shuffleArray([
-                p.ant,
-                p.syn,
-                p.wrong[0],
-                p.wrong[1],
-              ]),
-              correctAnswer: p.ant,
-              explanation: `Antonim adalah lawan kata. Lawan kata dari "${p.word}" adalah "${p.ant}".`,
-              params: {},
-            };
-          }
-
+          const pool = {
+            mudah: [
+              {
+                question:
+                  'Kalimat yang menanyakan sesuatu seperti "Di mana kamu menyimpan bukumu" harus diakhiri dengan tanda baca ...',
+                correctAnswer: "Tanda tanya (?)",
+                options: [
+                  "Tanda tanya (?)",
+                  "Tanda titik (.)",
+                  "Tanda koma (,)",
+                  "Tanda hubung (-)",
+                ],
+                explanation:
+                  "Setiap kalimat tanya wajib diakhiri dengan tanda tanya (?).",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  'Perhatikan instruksi berikut: "Cuci tangan dengan sabun, bilas dengan air mengalir, lalu keringkan dengan handuk bersih." Apa langkah terakhir yang harus dilakukan sesuai instruksi tersebut?',
+                correctAnswer: "Mengeringkan tangan dengan handuk bersih",
+                options: [
+                  "Mengeringkan tangan dengan handuk bersih",
+                  "Menuangkan sabun ke atas handuk",
+                  "Membilas handuk dengan air kotor",
+                  "Langsung makan tanpa membilas tangan",
+                ],
+                explanation:
+                  'Kata penghubung "lalu" menandakan langkah terakhir dalam instruksi tersebut adalah mengeringkan tangan dengan handuk bersih.',
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Manakah penulisan kalimat berikut yang paling tepat sesuai kaidah huruf kapital dan tanda baca?",
+                correctAnswer:
+                  "Pada hari Selasa, Dina dan Edo berkunjung ke Museum Kota.",
+                options: [
+                  "Pada hari Selasa, Dina dan Edo berkunjung ke Museum Kota.",
+                  "Pada Hari selasa, dina dan Edo berkunjung ke museum kota.",
+                  "pada hari Selasa, Dina dan edo berkunjung ke Museum Kota?",
+                  "Pada hari Selasa Dina, dan Edo berkunjung ke Museum Kota!",
+                ],
+                explanation:
+                  "Huruf kapital digunakan pada awal kalimat, nama hari (Selasa), nama orang (Dina, Edo), dan nama tempat (Museum Kota), serta diakhiri tanda titik.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Persamaan kata (sinonim) dari kata "${p.word}" adalah ...`,
-            options: this.shuffleArray([p.syn, p.ant, p.wrong[0], p.wrong[2]]),
-            correctAnswer: p.syn,
-            explanation: `Sinonim adalah persamaan makna kata. Persamaan kata dari "${p.word}" adalah "${p.syn}".`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 1" },
           };
         },
       },
       {
-        templateId: "TPL_BINDO3_MENYUSUN_KALIMAT",
+        templateId: "TPL_BINDO3_BAB2",
+        grade: 3,
         subject: "Bahasa Indonesia",
-        topic: "Menyusun Kalimat",
-        subtopic: "Menyusun Kata Acak Menjadi Kalimat Padu",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const templates = [
-            {
-              scrambled: `menyiram - ${person} - di taman - bunga`,
-              correct: `${person} menyiram bunga di taman`,
-              w1: `Bunga menyiram ${person} di taman`,
-              w2: `Di taman bunga menyiram ${person}`,
-              w3: `Menyiram ${person} bunga di taman`,
-            },
-            {
-              scrambled: `di halaman - bermain - ${person} - sepeda`,
-              correct: `${person} bermain sepeda di halaman`,
-              w1: `Sepeda bermain ${person} di halaman`,
-              w2: `Di halaman sepeda bermain ${person}`,
-              w3: `Bermain ${person} di halaman sepeda`,
-            },
-            {
-              scrambled: `membantu - mencuci piring - ${person} - ibu`,
-              correct: `${person} membantu ibu mencuci piring`,
-              w1: `Piring mencuci ${person} membantu ibu`,
-              w2: `Mencuci piring ibu ${person} membantu`,
-              w3: `Membantu piring ${person} mencuci ibu`,
-            },
-          ];
-          const chosen = this.pickRandom(templates);
+        topic: "Bab 2",
+        subtopic: "Ciri dan unsur kalimat sederhana",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  'Perhatikan kalimat berikut: "Siti menulis puisi." Kata yang berperan sebagai Predikat (kegiatan yang dilakukan) adalah ...',
+                correctAnswer: "menulis",
+                options: ["menulis", "Siti", "puisi", "Siti puisi"],
+                explanation:
+                  "Siti adalah Subjek (pelaku), menulis adalah Predikat (tindakan), dan puisi adalah Objek.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Manakah di bawah ini yang merupakan cerita FIKSI (rekaan/khayalan)?",
+                correctAnswer:
+                  "Kisah seekor semut yang membangun kapal terbang dari sehelai daun untuk pergi ke negeri awan.",
+                options: [
+                  "Kisah seekor semut yang membangun kapal terbang dari sehelai daun untuk pergi ke negeri awan.",
+                  "Semut hidup berkelompok dan bekerja sama mengumpulkan makanan di sarangnya.",
+                  "Indonesia memiliki dua musim utama, yaitu musim hujan dan musim kemarau.",
+                  "Siswa kelas 3 mengikuti upacara bendera setiap hari Senin pagi.",
+                ],
+                explanation:
+                  "Semut membangun kapal terbang ke negeri awan adalah peristiwa imajinatif/rekaan (fiksi), bukan kenyataan.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  "Pada bagian TENGAH sebuah cerita pendek, unsur yang biasanya dimunculkan oleh penulis adalah ...",
+                correctAnswer:
+                  "Peristiwa utama atau masalah yang mulai dialami oleh tokoh cerita",
+                options: [
+                  "Peristiwa utama atau masalah yang mulai dialami oleh tokoh cerita",
+                  "Daftar pustaka dan nama penerbit buku cerita",
+                  "Penutup cerita sebelum tokoh diperkenalkan",
+                  "Judul buku dan nomor halaman saja",
+                ],
+                explanation:
+                  "Struktur cerita terdiri atas awal (pengenalan), tengah (peristiwa utama/masalah tokoh), dan akhir (penyelesaian).",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Susunlah kata-kata acak berikut menjadi kalimat yang benar: "${chosen.scrambled}"`,
-            options: this.shuffleArray([
-              chosen.correct,
-              chosen.w1,
-              chosen.w2,
-              chosen.w3,
-            ]),
-            correctAnswer: chosen.correct,
-            explanation: `Kalimat yang benar diawali Subjek (${person}) diikuti Predikat, Objek, dan Keterangan: "${chosen.correct}".`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 2" },
           };
         },
       },
       {
-        templateId: "TPL_BINDO3_KAPITAL_TANDABACA",
+        templateId: "TPL_BINDO3_BAB3",
+        grade: 3,
         subject: "Bahasa Indonesia",
-        topic: "Huruf Kapital dan Tanda Baca",
-        subtopic: "Penggunaan Huruf Kapital Nama Orang dan Tempat",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const kota = this.pickRandom([
-            "Jakarta",
-            "Bandung",
-            "Surabaya",
-            "Yogyakarta",
-            "Malang",
-          ]);
-          const hari = this.pickRandom(["Senin", "Minggu", "Sabtu", "Jumat"]);
-
-          const correct = `Pada hari ${hari}, ${person} pergi ke ${kota}.`;
-          const w1 = `pada hari ${hari.toLowerCase()}, ${person.toLowerCase()} pergi ke ${kota.toLowerCase()}.`;
-          const w2 = `Pada hari ${hari.toLowerCase()}, ${person} pergi ke ${kota.toLowerCase()}?`;
-          const w3 = `pada Hari ${hari}, ${person.toLowerCase()} Pergi ke ${kota}!`;
-
+        topic: "Bab 3",
+        subtopic: "Majas hiperbola",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  'Kalimat "Air matanya mengalir deras seperti sungai" menggunakan majas hiperbola yang berarti ...',
+                correctAnswer:
+                  "Ia menangis sangat sedih dan mengeluarkan banyak air mata",
+                options: [
+                  "Ia menangis sangat sedih dan mengeluarkan banyak air mata",
+                  "Ia sedang berenang di tengah sungai besar",
+                  "Ia sedang menyiram kebun dengan air sungai",
+                  "Ia tertawa terbahak-bahak bersama teman",
+                ],
+                explanation:
+                  "Majas hiperbola melebih-lebihkan keadaan untuk menekankan bahwa tangisannya sangat deras.",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  'Bacalah paragraf berikut! "Lebah madu sangat berguna bagi lingkungan. Lebah membantu penyerbukan berbagai bunga di kebun. Selain itu, lebah menghasilkan madu yang menyehatkan manusia." Ide pokok paragraf tersebut adalah ...',
+                correctAnswer: "Lebah madu sangat berguna bagi lingkungan",
+                options: [
+                  "Lebah madu sangat berguna bagi lingkungan",
+                  "Semua bunga di kebun berwarna kuning cerah",
+                  "Madu hanya bisa dibeli di toko kue",
+                  "Lebah tidak pernah terbang di pagi hari",
+                ],
+                explanation:
+                  "Kalimat pertama menyampaikan gagasan utama (lebah berguna), lalu kalimat berikutnya menjelaskan bentuk kegunaannya.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  'Ketika mencari informasi tentang "hewan langka Indonesia" di internet bersama orang tua, mengapa kita sebaiknya membandingkan minimal dua sumber tepercaya?',
+                correctAnswer:
+                  "Untuk memastikan kebenaran informasi agar terhindar dari berita keliru atau hoaks",
+                options: [
+                  "Untuk memastikan kebenaran informasi agar terhindar dari berita keliru atau hoaks",
+                  "Agar waktu menatap layar komputer menjadi berjam-jam lebih lama",
+                  "Karena semua buku pelajaran di sekolah tidak pernah benar",
+                  "Supaya kita bisa menyalin semua tulisan tanpa membacanya",
+                ],
+                explanation:
+                  "Membandingkan beberapa sumber resmi dan tepercaya membantu memastikan informasi dari internet akurat dan valid.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Manakah kalimat di bawah ini yang menggunakan huruf kapital dan tanda baca dengan benar?`,
-            options: this.shuffleArray([correct, w1, w2, w3]),
-            correctAnswer: correct,
-            explanation: `Huruf kapital digunakan pada awal kalimat (Pada), nama hari (${hari}), nama orang (${person}), dan nama kota (${kota}), serta diakhiri tanda titik (.).`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 3" },
           };
         },
       },
       {
-        templateId: "TPL_BINDO3_TEKS_PENDEK",
+        templateId: "TPL_BINDO3_BAB4",
+        grade: 3,
         subject: "Bahasa Indonesia",
-        topic: "Membaca dan Memahami Teks Pendek",
-        subtopic: "Menemukan Informasi Bacaan",
-        generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const stories = [
-            {
-              text: `Setiap sore pukul empat, ${person} memberi makan kelinci peliharaannya dengan sayur wortel segar.`,
-              q: `Apa makanan yang diberikan ${person} kepada kelinci peliharaannya?`,
-              ans: "Sayur wortel segar",
-              opts: [
-                "Sayur wortel segar",
-                "Biji jagung kering",
-                "Rumput laut",
-                "Ikan goreng",
-              ],
-            },
-            {
-              text: `${person} membawa payung berwarna merah ke sekolah karena sejak pagi langit tampak mendung tebal.`,
-              q: `Mengapa ${person} membawa payung ke sekolah?`,
-              ans: "Karena sejak pagi langit tampak mendung tebal",
-              opts: [
-                "Karena sejak pagi langit tampak mendung tebal",
-                "Karena ingin bermain hujan-hujanan di lapangan",
-                "Karena disuruh oleh penjaga sekolah",
-                "Karena cuaca sangat panas dan cerah",
-              ],
-            },
-          ];
-          const s = this.pickRandom(stories);
+        topic: "Bab 4",
+        subtopic: "Kalimat aktif dan pasif",
+        generate: (difficulty) => {
+          const pool = {
+            mudah: [
+              {
+                question:
+                  'Kalimat "Kue bolu itu dimakan oleh adik" merupakan kalimat pasif. Bentuk kalimat AKTIF yang tepat adalah ...',
+                correctAnswer: "Adik memakan kue bolu itu.",
+                options: [
+                  "Adik memakan kue bolu itu.",
+                  "Kue bolu memakan adik itu.",
+                  "Adik dimakan kue bolu itu.",
+                  "Memakan kue bolu adik itu.",
+                ],
+                explanation:
+                  "Pada kalimat aktif, pelaku (Adik) menjadi Subjek dan predikat berawalan di- (dimakan) berubah menjadi me- (memakan).",
+              },
+            ],
+            sedang: [
+              {
+                question:
+                  "Dalam sebuah puisi tentang keindahan alam pegunungan yang sejuk dan damai, tempo membaca yang paling sesuai adalah ...",
+                correctAnswer:
+                  "Sedang hingga pelan dengan penghayatan lembut dan tenang",
+                options: [
+                  "Sedang hingga pelan dengan penghayatan lembut dan tenang",
+                  "Sangat cepat sambil berteriak sekeras-kerasnya",
+                  "Terputus-putus sambil tertawa keras di setiap kata",
+                  "Berbisik tanpa terdengar oleh pendengar di baris depan",
+                ],
+                explanation:
+                  "Puisi bernuansa damai dan sejuk cocok dibacakan dengan tempo tenang, intonasi lembut, dan lafal yang jelas.",
+              },
+            ],
+            sulit: [
+              {
+                question:
+                  'Jika sebuah ilustrasi pada cerita "Piket Kelas yang Kompak" hanya menggambar satu anak menyapu sendirian sementara teman-teman lain tidur di bangku, evaluasi yang paling tepat adalah ...',
+                correctAnswer:
+                  'Ilustrasi tidak mencerminkan isi judul "kompak" sehingga perlu diperbaiki dengan menggambar beberapa siswa bekerja sama',
+                options: [
+                  'Ilustrasi tidak mencerminkan isi judul "kompak" sehingga perlu diperbaiki dengan menggambar beberapa siswa bekerja sama',
+                  "Ilustrasi sudah sempurna karena jumlah anak di gambar cukup banyak",
+                  "Semua kata di dalam cerita harus dihapus agar sesuai gambar",
+                  "Gambar tidak perlu menampilkan kegiatan membersihkan kelas sama sekali",
+                ],
+                explanation:
+                  "Ilustrasi yang baik harus mendukung makna utama cerita; kekompakan piket seharusnya digambarkan melalui kerja sama beberapa siswa.",
+              },
+            ],
+          };
+          const chosen = this.pickRandom(pool[difficulty] || pool.sedang);
           return {
-            question: `Bacalah teks berikut! "${s.text}" ${s.q}`,
-            options: this.shuffleArray(s.opts),
-            correctAnswer: s.ans,
-            explanation: `Berdasarkan teks bacaan tersebut, jawabannya adalah: ${s.ans}.`,
-            params: {},
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            params: { chapter: "Bab 4" },
           };
         },
       },
@@ -2392,35 +2641,41 @@ export class HybridQuestionEngine {
   registerPjokGrade3Templates() {
     return [
       {
-        templateId: 'TPL_PJOK3_GERAK_KESEHATAN',
+        templateId: "TPL_PJOK3_GERAK_KESEHATAN",
         grade: 3,
-        subject: 'PJOK',
-        topic: 'Gerak Dasar',
-        subtopic: 'Analisis Gerak Dasar dan Pola Hidup Sehat',
+        subject: "PJOK",
+        topic: "Gerak Dasar",
+        subtopic: "Analisis Gerak Dasar dan Pola Hidup Sehat",
         generate: () => {
           const cases = [
             {
-              question: 'Saat bermain lompat tali (skipping) di halaman sekolah, tubuh kita melakukan tolakan dua kaki ke atas melewati tali. Perbedaan utama antara gerakan "Melompat" dan "Meloncat" dalam PJOK adalah ...',
-              correct: 'Melompat menggunakan tumpuan satu kaki, sedangkan meloncat menggunakan tumpuan dua kaki secara bersamaan',
+              question:
+                'Saat bermain lompat tali (skipping) di halaman sekolah, tubuh kita melakukan tolakan dua kaki ke atas melewati tali. Perbedaan utama antara gerakan "Melompat" dan "Meloncat" dalam PJOK adalah ...',
+              correct:
+                "Melompat menggunakan tumpuan satu kaki, sedangkan meloncat menggunakan tumpuan dua kaki secara bersamaan",
               options: [
-                'Melompat menggunakan tumpuan satu kaki, sedangkan meloncat menggunakan tumpuan dua kaki secara bersamaan',
-                'Melompat dilakukan sambil duduk, sedangkan meloncat dilakukan sambil tidur',
-                'Melompat tidak berpindah tempat, sedangkan meloncat menggunakan bola',
-                'Keduanya hanya boleh dilakukan di dalam kolam renang'
+                "Melompat menggunakan tumpuan satu kaki, sedangkan meloncat menggunakan tumpuan dua kaki secara bersamaan",
+                "Melompat dilakukan sambil duduk, sedangkan meloncat dilakukan sambil tidur",
+                "Melompat tidak berpindah tempat, sedangkan meloncat menggunakan bola",
+                "Keduanya hanya boleh dilakukan di dalam kolam renang",
               ],
-              explanation: 'Dalam gerak dasar lokomotor, melompat bertumpu pada satu kaki (seperti lompat jauh), sedangkan meloncat bertumpu pada dua kaki sekaligus (seperti loncat katak).'
+              explanation:
+                "Dalam gerak dasar lokomotor, melompat bertumpu pada satu kaki (seperti lompat jauh), sedangkan meloncat bertumpu pada dua kaki sekaligus (seperti loncat katak).",
             },
             {
-              question: 'Agar tubuh anak usia sekolah dasar dapat tumbuh sehat, bugar, dan bersemangat mengikuti pelajaran di pagi hari, kebiasaan pola makan dan istirahat yang paling tepat adalah ...',
-              correct: 'Tidur malam tepat waktu (8–10 jam) dan selalu sarapan makanan bergizi seimbang sebelum berangkat sekolah',
+              question:
+                "Agar tubuh anak usia sekolah dasar dapat tumbuh sehat, bugar, dan bersemangat mengikuti pelajaran di pagi hari, kebiasaan pola makan dan istirahat yang paling tepat adalah ...",
+              correct:
+                "Tidur malam tepat waktu (8–10 jam) dan selalu sarapan makanan bergizi seimbang sebelum berangkat sekolah",
               options: [
-                'Tidur malam tepat waktu (8–10 jam) dan selalu sarapan makanan bergizi seimbang sebelum berangkat sekolah',
-                'Begadang bermain game sampai tengah malam lalu berangkat sekolah tanpa sarapan',
-                'Hanya makan permen dan kerupuk setiap pagi tanpa minum air putih',
-                'Berolahraga berat di bawah terik matahari siang saat perut sedang kosong'
+                "Tidur malam tepat waktu (8–10 jam) dan selalu sarapan makanan bergizi seimbang sebelum berangkat sekolah",
+                "Begadang bermain game sampai tengah malam lalu berangkat sekolah tanpa sarapan",
+                "Hanya makan permen dan kerupuk setiap pagi tanpa minum air putih",
+                "Berolahraga berat di bawah terik matahari siang saat perut sedang kosong",
               ],
-              explanation: 'Tidur yang cukup dan sarapan makanan bergizi (karbohidrat, lauk berprotein, sayur, buah, dan air putih) memberikan energi bagi otak dan otot untuk beraktivitas.'
-            }
+              explanation:
+                "Tidur yang cukup dan sarapan makanan bergizi (karbohidrat, lauk berprotein, sayur, buah, dan air putih) memberikan energi bagi otak dan otot untuk beraktivitas.",
+            },
           ];
           const chosen = this.pickRandom(cases);
           return {
@@ -2428,10 +2683,10 @@ export class HybridQuestionEngine {
             options: this.shuffleArray(chosen.options),
             correctAnswer: chosen.correct,
             explanation: chosen.explanation,
-            params: {}
+            params: {},
           };
-        }
-      }
+        },
+      },
     ];
   }
 
@@ -2459,7 +2714,11 @@ export class HybridQuestionEngine {
     else if (rawSubj === "pai" || rawSubj.includes("agama islam"))
       subjKey = "pai";
     else if (rawSubj.includes("madura")) subjKey = "bahasa_madura";
-    else if (rawSubj === "pjok" || rawSubj.includes("jasmani") || rawSubj.includes("olahraga"))
+    else if (
+      rawSubj === "pjok" ||
+      rawSubj.includes("jasmani") ||
+      rawSubj.includes("olahraga")
+    )
       subjKey = "pjok";
 
     let pool = [];
