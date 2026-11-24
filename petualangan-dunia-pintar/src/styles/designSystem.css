@@ -157,9 +157,7 @@ html {
     }
 }
 
-/* =========================================================
-   MAIN MENU FANTASY SCENE LAYOUT (ACUAN REFERENSI)
-   ========================================================= */
+
 .pdp-world-backdrop {
   position: fixed;
   inset: 0;
@@ -321,9 +319,7 @@ body.pdp-has-menu-art .pdp-fallback-only {
   }
 }
 
-/* =========================================================
-   3D GLOSSY ADVENTURE BUTTONS (GLOBAL)
-   ========================================================= */
+
 .btn-cartoon {
     cursor: pointer;
     border: 2.5px solid rgba(255, 255, 255, 0.72);
@@ -395,9 +391,7 @@ body.pdp-has-menu-art .pdp-fallback-only {
     font-size: 0.92rem;
 }
 
-/* =========================================================
-   WOOD-FRAMED PARCHMENT PANELS (SELURUH HALAMAN & MODAL)
-   ========================================================= */
+
 .cartoon-panel {
     background: linear-gradient(180deg, var(--pdp-parchment) 0%, var(--pdp-parchment-deep) 100%);
     border: 6px solid var(--pdp-wood-mid);
@@ -606,9 +600,7 @@ body.pdp-has-menu-art .pdp-fallback-only {
     color: var(--pdp-ink-900);
 }
 
-/* =========================================================
-   IN-GAME ADVENTURE HUD, QUESTION MODAL, NPC & BOSS BAR
-   ========================================================= */
+
 .hud-overlay {
     padding: 14px 20px;
 }
@@ -943,4 +935,100 @@ body.pdp-has-menu-art .pdp-fallback-only {
 
 .pdp-top-gear-btn:active {
   transform: translateY(2px);
+}
+.pdp-top-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 50%;
+}
+
+.pdp-char-studio-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 22px;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.pdp-char-stage-box {
+  background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 58%, #bbf7d0 100%);
+  border: 3px solid var(--pdp-parchment-border);
+  border-radius: 24px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: inset 0 4px 14px rgba(255, 255, 255, 0.85), 0 6px 16px rgba(92, 58, 33, 0.12);
+}
+
+.pdp-pose-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pdp-pose-btn {
+  cursor: pointer;
+  border: 1.5px solid var(--pdp-parchment-border);
+  background: #ffffff;
+  color: var(--pdp-ink-900);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  transition: background-color 140ms, color 140ms, border-color 140ms;
+}
+
+.pdp-pose-btn.active {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.pdp-char-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.pdp-char-select-card {
+  background: #ffffff;
+  border: 2.5px solid var(--pdp-parchment-border);
+  border-radius: 20px;
+  padding: 12px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 5px 0 #d4a36a;
+  transition: transform 140ms ease-out, border-color 140ms ease-out, background-color 140ms ease-out;
+}
+
+.pdp-char-select-card:hover {
+  transform: translateY(-2px);
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.pdp-char-select-card.selected {
+  background: #fef9c3;
+  border-color: #ea580c;
+  box-shadow: 0 5px 0 #c2410c;
+}
+
+.pdp-char-thumb {
+  width: 82px;
+  height: 94px;
+  object-fit: contain;
+}
+
+@media (max-width: 820px) {
+  .pdp-char-studio-grid {
+    grid-template-columns: 1fr;
+  }
 }
