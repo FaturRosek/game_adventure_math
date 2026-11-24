@@ -1,13 +1,15 @@
-import './styles/designSystem.css';
+import "./styles/designSystem.css";
 import Phaser from "phaser";
 import { GAME_CONFIG } from "./config/gameConfig.js";
 import { BootScene } from "./scenes/BootScene.js";
+import { TreasureExplorerScene } from "./scenes/TreasureExplorerScene.js";
 import { AdventureScene } from "./scenes/AdventureScene.js";
+import { SurvivalArenaScene } from "./scenes/SurvivalArenaScene.js";
 import { CarRacingScene } from "./scenes/CarRacingScene.js";
 import { MazeAdventureScene } from "./scenes/MazeAdventureScene.js";
 import { DuelScene } from "./scenes/DuelScene.js";
-import { uiManager } from "./systems/UIManager.js";
 import { BattleArenaScene } from "./scenes/BattleArenaScene.js";
+import { uiManager } from "./systems/UIManager.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   const phaserConfig = {
@@ -29,7 +31,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     },
     scene: [
       BootScene,
+      TreasureExplorerScene,
       AdventureScene,
+      SurvivalArenaScene,
       CarRacingScene,
       MazeAdventureScene,
       DuelScene,

@@ -1,354 +1,315 @@
-import Phaser from "phaser";
 import { GAME_CONFIG } from "../config/gameConfig.js";
 
 export class AdventureLevelBuilder {
   static buildLevel(scene) {
     const levelKey = scene.levelKey || "easy";
     if (levelKey === "medium") {
-      return this.buildMysteryTempleLevel(scene);
+      return this.buildTempleBiome(scene);
     }
     if (levelKey === "hard") {
-      return this.buildLavaFortressLevel(scene);
+      return this.buildSkyFortressBiome(scene);
     }
-    return this.buildForestLevel(scene);
+    return this.buildFantasyValleyBiome(scene);
   }
 
-  static buildForestLevel(scene) {
-    const worldW = GAME_CONFIG.worldWidth;
-    const worldH = GAME_CONFIG.worldHeight;
+  static renderParallaxFantasyBg(scene, tintHex = null, overlayAlpha = 0) {
+    const viewW = scene.scale.width || GAME_CONFIG.width || 1280;
+    const viewH = scene.scale.height || GAME_CONFIG.height || 720;
+
+    if (scene.textures.exists("fantasy_world_bg")) {
+      const bg1 = scene.add.image(viewW / 2, viewH / 2, "fantasy_world_bg");
+      const scale = Math.max((viewW * 1.35) / bg1.width, viewH / bg1.height);
+      bg1.setScale(scale);
+      bg1.setScrollFactor(0.14, 0);
+      bg1.setDepth(-20);
+      if (tintHex) bg1.setTint(tintHex);
+
+      const bg2 = scene.add.image(
+        bg1.x + bg1.displayWidth - 2,
+        viewH / 2,
+        "fantasy_world_bg",
+      );
+      bg2.setScale(scale);
+      bg2.setFlipX(true);
+      bg2.setScrollFactor(0.14, 0);
+      bg2.setDepth(-20);
+      if (tintHex) bg2.setTint(tintHex);
+    } else {
+      const fallback = scene.add.graphics().setDepth(-20).setScrollFactor(0);
+      fallback.fillGradientStyle(0x0ea5e9, 0x0ea5e9, 0xbae6fd, 0xbae6fd, 1);
+      fallback.fillRect(0, 0, viewW, viewH);
+    }
+
+    if (overlayAlpha > 0 && tintHex) {
+      const veil = scene.add.rectangle(
+        viewW / 2,
+        viewH / 2,
+        viewW,
+        viewH,
+        tintHex,
+        overlayAlpha,
+      );
+      veil.setScrollFactor(0);
+      veil.setDepth(-15);
+    }
+  }
+
+  static buildFantasyValleyBiome(scene) {
+    const worldW = GAME_CONFIG.worldWidth || 3600;
+    const worldH = GAME_CONFIG.worldHeight || 720;
     const subjLabel = scene.getSubjectLabel();
     const [q1, q2, q3, q4] = scene.boxDistribution;
 
-    const bg = scene.add.graphics();
-    bg.fillGradientStyle(0x56ccf2, 0x56ccf2, 0xe8f8f5, 0xe8f8f5, 1);
-    bg.fillRect(0, 0, worldW, worldH);
-
-    const hills = scene.add.graphics();
-    hills.fillStyle(0x2ecc71, 0.45);
-    for (let x = 0; x < worldW; x += 500) {
-      hills.fillCircle(x + 220, worldH - 50, 240);
-      hills.fillStyle(0x27ae60, 0.65);
-      hills.fillRect(x + 120, worldH - 170, 24, 110);
-      hills.fillCircle(x + 132, worldH - 190, 55);
-      hills.fillStyle(0x2ecc71, 0.45);
-    }
-
-    const clouds = scene.add.graphics();
-    clouds.fillStyle(0xffffff, 0.88);
-    for (let x = 140; x < worldW; x += 420) {
-      const y = 85 + (x % 90);
-      clouds.fillRoundedRect(x, y, 140, 44, 22);
-      clouds.fillCircle(x + 45, y, 26);
-      clouds.fillCircle(x + 95, y - 4, 32);
-    }
-
-    scene.addFloatingLabel(
-      340,
-      worldH - 195,
-      `🌲 Petualangan Hutan ${subjLabel} (5 Soal): Jelajahi hutan, kumpulkan koin & buka peti!`,
-      "#27ae60",
-    );
+    this.renderParallaxFantasyBg(scene, null, 0);
 
     for (let x = 32; x < worldW; x += 64) {
+      if (x > 1360 && x < 1560) continue;
       scene.platforms.create(x, worldH - 32, "ground_tile");
     }
 
-    const floatingCoords = [
-      { x: 520, y: worldH - 160 },
-      { x: 820, y: worldH - 240 },
-      { x: 1180, y: worldH - 175 },
-      { x: 1520, y: worldH - 250 },
-      { x: 1920, y: worldH - 170 },
-      { x: 2250, y: worldH - 245 },
-      { x: 2620, y: worldH - 180 },
-      { x: 3180, y: worldH - 210 },
+    const floating = [
+      { x: 480, y: worldH - 165 },
+      { x: 820, y: worldH - 250 },
+      { x: 1180, y: worldH - 180 },
+      { x: 1460, y: worldH - 210 },
+      { x: 1860, y: worldH - 185 },
+      { x: 2240, y: worldH - 265 },
+      { x: 2620, y: worldH - 190 },
+      { x: 3180, y: worldH - 215 },
     ];
+    floating.forEach((p) => scene.platforms.create(p.x, p.y, "platform_wood"));
 
-    floatingCoords.forEach((p) => {
-      scene.platforms.create(p.x, p.y, "platform_wood");
+    scene.createMovingPlatform({
+      x: 1460,
+      y: worldH - 125,
+      texture: "platform_moving_gold",
+      moveType: "horizontal",
+      minX: 1360,
+      maxX: 1580,
+      speed: 90,
+      active: true,
     });
 
-    const coinCoords = [
-      { x: 320, y: worldH - 100 },
-      { x: 380, y: worldH - 100 },
-      { x: 480, y: worldH - 215 },
-      { x: 560, y: worldH - 215 },
-      { x: 780, y: worldH - 295 },
-      { x: 860, y: worldH - 295 },
-      { x: 1140, y: worldH - 230 },
-      { x: 1220, y: worldH - 230 },
-      { x: 1480, y: worldH - 305 },
-      { x: 1560, y: worldH - 305 },
-      { x: 1880, y: worldH - 225 },
-      { x: 1960, y: worldH - 225 },
-      { x: 2210, y: worldH - 300 },
-      { x: 2290, y: worldH - 300 },
-      { x: 2600, y: worldH - 235 },
-      { x: 3180, y: worldH - 265 },
-      { x: 3420, y: worldH - 100 },
-    ];
-    this.spawnCoinList(scene, coinCoords);
+    scene.spawnPatrolEnemy(640, worldH - 92, 500, 780, 75, 0xa855f7);
+    scene.spawnPatrolEnemy(1180, worldH - 220, 1100, 1260, 70, 0xec4899);
+    scene.spawnPatrolEnemy(2040, worldH - 92, 1880, 2200, 85, 0xf97316);
+    scene.spawnPatrolEnemy(2780, worldH - 92, 2640, 2890, 90, 0xa855f7);
 
-    [1020, 2060, 3340].forEach((x) => {
-      scene.obstaclesGroup.create(x, worldH - 82, "obstacle_spike");
-    });
+    const coins = [
+      { x: 300, y: worldH - 105 },
+      { x: 360, y: worldH - 105 },
+      { x: 440, y: worldH - 220 },
+      { x: 520, y: worldH - 220 },
+      { x: 780, y: worldH - 305 },
+      { x: 860, y: worldH - 305 },
+      { x: 1420, y: worldH - 265 },
+      { x: 1500, y: worldH - 265 },
+      { x: 1820, y: worldH - 240 },
+      { x: 1900, y: worldH - 240 },
+      { x: 2200, y: worldH - 320 },
+      { x: 2280, y: worldH - 320 },
+      { x: 2620, y: worldH - 245 },
+      { x: 3180, y: worldH - 270 },
+      { x: 3420, y: worldH - 105 },
+    ];
+    this.spawnCoinList(scene, coins);
+
+    [1010, 2400, 3320].forEach((x) =>
+      scene.obstaclesGroup.create(x, worldH - 82, "obstacle_spike"),
+    );
 
     this.createChallengeNode(scene, {
       x: 820,
-      y: worldH - 282,
+      y: worldH - 294,
       texture: "chest_closed",
       id: "chal_1",
-      baseName: "Peti Hutan 1",
-      title: `📦 Peti Hutan ${subjLabel} 1`,
+      baseName: "Peti Lembah 1",
+      title: `Peti Lembah ${subjLabel} 1`,
       type: "chest",
       requiredCount: q1,
-      labelColor: "#d35400",
+      labelColor: "#b45309",
     });
 
     this.createChallengeNode(scene, {
-      x: 1680,
-      y: worldH - 96,
+      x: 1700,
+      y: worldH - 98,
       texture: "npc_owl",
       id: "chal_2",
-      baseName: "Burung Hantu Hutan",
-      title: `🦉 Misi Burung Hantu (${subjLabel})`,
+      baseName: "Penjaga Lembah",
+      title: `Misi Pemandu (${subjLabel})`,
       type: "npc",
       requiredCount: q2,
-      labelColor: "#8e44ad",
+      labelColor: "#6d28d9",
     });
 
     this.createChallengeNode(scene, {
-      x: 2250,
-      y: worldH - 287,
+      x: 2240,
+      y: worldH - 309,
       texture: "chest_closed",
       id: "chal_3",
-      baseName: "Peti Pohon Tinggi",
-      title: `📦 Peti Pohon ${subjLabel} 2`,
+      baseName: "Peti Menara 2",
+      title: `Peti Menara ${subjLabel} 2`,
       type: "chest",
       requiredCount: q3,
-      labelColor: "#d35400",
+      labelColor: "#b45309",
     });
 
-    const gate = this.createChallengeNode(scene, {
-      x: 2950,
-      y: worldH - 128,
+    scene.gateObject = this.createChallengeNode(scene, {
+      x: 2980,
+      y: worldH - 132,
       texture: "math_gate",
       id: "chal_4",
-      baseName: "Gerbang Hutan",
-      title: `🚪 Gerbang Hutan ${subjLabel}`,
+      baseName: "Gerbang Kastil",
+      title: `Gerbang Kastil ${subjLabel}`,
       type: "gate",
       requiredCount: q4,
-      labelColor: "#c0392b",
+      labelColor: "#991b1b",
     });
-    scene.gateObject = gate;
   }
 
-  static buildMysteryTempleLevel(scene) {
-    const worldW = GAME_CONFIG.worldWidth;
-    const worldH = GAME_CONFIG.worldHeight;
+  static buildTempleBiome(scene) {
+    const worldW = GAME_CONFIG.worldWidth || 3600;
+    const worldH = GAME_CONFIG.worldHeight || 720;
     const subjLabel = scene.getSubjectLabel();
     const [q1, q2, q3, q4] = scene.boxDistribution;
 
-    const bg = scene.add.graphics();
-    bg.fillGradientStyle(0x2c3e50, 0x2c3e50, 0xf39c12, 0xf39c12, 1);
-    bg.fillRect(0, 0, worldW, worldH);
+    const viewW = scene.scale.width || GAME_CONFIG.width || 1280;
+    const viewH = scene.scale.height || GAME_CONFIG.height || 720;
+    const bgKey = scene.textures.exists('medium_battle_bg') ? 'medium_battle_bg' : 'fantasy_world_bg';
 
-    const pillars = scene.add.graphics();
-    pillars.fillStyle(0x34495e, 0.55);
-    for (let x = 200; x < worldW; x += 460) {
-      pillars.fillRect(x, 120, 56, worldH - 180);
-      pillars.fillRect(x - 12, 120, 80, 24);
-      pillars.fillRect(x - 12, worldH - 95, 80, 30);
+    if (scene.textures.exists(bgKey)) {
+      const bg1 = scene.add.image(viewW / 2, viewH / 2, bgKey);
+      const scale = Math.max((viewW * 1.35) / bg1.width, viewH / bg1.height);
+      bg1.setScale(scale).setScrollFactor(0.16, 0).setDepth(-20);
+
+      const bg2 = scene.add.image(bg1.x + bg1.displayWidth - 2, viewH / 2, bgKey);
+      bg2.setScale(scale).setFlipX(true).setScrollFactor(0.16, 0).setDepth(-20);
     }
-
-    scene.addFloatingLabel(
-      380,
-      worldH - 195,
-      `🏛️ Kuil Misteri ${subjLabel} (7 Soal): Aktifkan Sakelar Kuno untuk menggerakkan jembatan & membuka jalur rahasia!`,
-      "#8e44ad",
-    );
 
     for (let x = 32; x < worldW; x += 64) {
-      if ((x > 960 && x < 1340) || (x > 2180 && x < 2620)) {
-        scene.obstaclesGroup.create(x, worldH - 46, "obstacle_spike");
+      if ((x > 1020 && x < 1260) || (x > 2180 && x < 2420)) {
         continue;
       }
-      scene.platforms.create(x, worldH - 32, "temple_tile");
+      scene.platforms.create(x, worldH - 32, 'twilight_tile');
     }
 
-    const templePlatforms = [
-      { x: 460, y: worldH - 155 },
-      { x: 760, y: worldH - 235 },
+    [280, 880, 1480, 2060, 2660, 3260].forEach((tx) => {
+      const torch = scene.add.image(tx, worldH - 102, 'torch_pillar').setDepth(2);
+      scene.tweens.add({ targets: torch, scaleY: 1.04, duration: 480, yoyo: true, repeat: -1 });
+    });
+
+    [
+      { x: 480, y: worldH - 165 },
+      { x: 780, y: worldH - 250 },
       { x: 1520, y: worldH - 185 },
       { x: 1840, y: worldH - 275 },
-      { x: 2060, y: worldH - 175 },
-      { x: 2820, y: worldH - 185 },
-      { x: 3260, y: worldH - 215 },
-    ];
-    templePlatforms.forEach((p) => {
-      scene.platforms.create(p.x, p.y, "platform_temple");
-    });
+      { x: 2660, y: worldH - 190 },
+      { x: 3260, y: worldH - 210 }
+    ].forEach((p) => scene.platforms.create(p.x, p.y, 'platform_twilight'));
 
-    const bridge1 = scene.createMovingPlatform({
-      x: 1020,
-      y: worldH - 210,
-      texture: "platform_moving_gold",
-      moveType: "horizontal",
-      minX: 980,
-      maxX: 1320,
-      speed: 115,
-      active: false,
-    });
-    const bridge1Hint = scene.addFloatingLabel(
-      1150,
-      worldH - 265,
-      "⏸️ Jembatan Kuno (Aktifkan Sakelar 1)",
-      "#7f8c8d",
-    );
-
-    const secretLift = scene.createMovingPlatform({
-      x: 1680,
-      y: worldH - 120,
-      texture: "platform_moving_gold",
-      moveType: "vertical",
-      minY: worldH - 390,
-      maxY: worldH - 120,
+    scene.createMovingPlatform({
+      x: 1140,
+      y: worldH - 135,
+      texture: 'platform_moving_gold',
+      moveType: 'horizontal',
+      minX: 1040,
+      maxX: 1240,
       speed: 95,
-      active: false,
+      active: true
     });
-    const secretPlatform = scene.platforms.create(
-      1840,
-      worldH - 410,
-      "platform_temple",
-    );
-    secretPlatform.setAlpha(0.35);
-    const secretLabel = scene.addFloatingLabel(
-      1840,
-      worldH - 465,
-      "✨ Jalur Rahasia Kuil (Terkunci)",
-      "#9b59b6",
-    );
 
-    const bridge2 = scene.createMovingPlatform({
-      x: 2220,
-      y: worldH - 205,
-      texture: "platform_moving_gold",
-      moveType: "horizontal",
+    scene.createMovingPlatform({
+      x: 2300,
+      y: worldH - 150,
+      texture: 'platform_moving_gold',
+      moveType: 'horizontal',
       minX: 2200,
-      maxX: 2590,
-      speed: 125,
-      active: false,
+      maxX: 2400,
+      speed: 105,
+      active: true
     });
-    const bridge2Hint = scene.addFloatingLabel(
-      2400,
-      worldH - 260,
-      "⏸️ Lift Jembatan 2 (Aktifkan Sakelar 2)",
-      "#7f8c8d",
-    );
 
-    const coinCoords = [
-      { x: 430, y: worldH - 210 },
-      { x: 490, y: worldH - 210 },
-      { x: 1100, y: worldH - 270 },
-      { x: 1200, y: worldH - 270 },
-      { x: 1780, y: worldH - 465 },
-      { x: 1840, y: worldH - 465 },
-      { x: 1900, y: worldH - 465 },
-      { x: 2350, y: worldH - 265 },
-      { x: 2450, y: worldH - 265 },
-      { x: 2820, y: worldH - 240 },
-      { x: 3260, y: worldH - 270 },
-      { x: 3480, y: worldH - 100 },
-    ];
-    this.spawnCoinList(scene, coinCoords);
+    scene.createBouncePad(620, worldH - 78, -790);
+    scene.createBouncePad(1980, worldH - 78, -810);
+
+    scene.createCheckpoint(1360, worldH - 110, 'Checkpoint 1');
+    scene.createCheckpoint(2540, worldH - 110, 'Checkpoint 2');
+
+    scene.createSecretGem(780, worldH - 315);
+    scene.createSecretGem(1840, worldH - 340);
+    scene.createSecretGem(3260, worldH - 275);
+    scene.createHeartPickup(1680, worldH - 115);
+
+    scene.spawnTypedEnemy({ type: 'walker', x: 560, y: worldH - 92, minX: 420, maxX: 740, speed: 95 });
+    scene.spawnTypedEnemy({ type: 'hopper', x: 900, y: worldH - 92, minX: 800, maxX: 980, speed: 92 });
+    scene.spawnTypedEnemy({ type: 'flyer', x: 1660, y: worldH - 255, minX: 1460, maxX: 1880, speed: 115 });
+    scene.spawnTypedEnemy({ type: 'shielded', x: 2040, y: worldH - 96, minX: 1920, maxX: 2140, speed: 68 });
+    scene.spawnTypedEnemy({ type: 'hopper', x: 2780, y: worldH - 92, minX: 2620, maxX: 2900, speed: 105 });
+
+    this.spawnCoinList(scene, [
+      { x: 340, y: worldH - 105 }, { x: 400, y: worldH - 105 },
+      { x: 450, y: worldH - 220 }, { x: 510, y: worldH - 220 },
+      { x: 1140, y: worldH - 200 }, { x: 1480, y: worldH - 240 },
+      { x: 1560, y: worldH - 240 }, { x: 2300, y: worldH - 215 },
+      { x: 2660, y: worldH - 245 }, { x: 3420, y: worldH - 105 }
+    ]);
 
     this.createChallengeNode(scene, {
-      x: 760,
-      y: worldH - 277,
-      texture: "switch_off",
-      id: "chal_1",
-      baseName: "Sakelar Jembatan 1",
-      title: `⚙️ Sakelar Kuno 1 (${subjLabel})`,
-      type: "switch",
+      x: 780,
+      y: worldH - 302,
+      texture: 'battle_totem',
+      id: 'chal_1',
+      baseName: 'Totem Senja 1',
+      title: `Totem Pertarungan 1 (${subjLabel})`,
+      type: 'totem',
       requiredCount: q1,
-      labelColor: "#d35400",
-      onSolved: () => {
-        bridge1.setData("active", true);
-        bridge1Hint.setText("⚡ Jembatan Kuno Aktif! Naiklah ke seberang!");
-      },
+      labelColor: '#6d28d9'
     });
 
     this.createChallengeNode(scene, {
       x: 1520,
-      y: worldH - 235,
-      texture: "npc_owl",
-      id: "chal_2",
-      baseName: "Penjaga Jalur Rahasia",
-      title: `🦉 Penjaga Kuil (${subjLabel})`,
-      type: "npc",
+      y: worldH - 240,
+      texture: 'npc_owl',
+      id: 'chal_2',
+      baseName: 'Ksatria Pengintai',
+      title: `Misi Pengintai Benteng (${subjLabel})`,
+      type: 'npc',
       requiredCount: q2,
-      labelColor: "#8e44ad",
-      onSolved: () => {
-        secretLift.setData("active", true);
-        secretPlatform.setAlpha(1);
-        secretLabel.setText(
-          "✨ Lift Jalur Rahasia Aktif! Ambil Koin Bonus di Atas!",
-        );
-      },
+      labelColor: '#1d4ed8'
     });
 
     this.createChallengeNode(scene, {
-      x: 2060,
-      y: worldH - 217,
-      texture: "switch_off",
-      id: "chal_3",
-      baseName: "Sakelar Jembatan 2",
-      title: `⚙️ Sakelar Kuno 2 (${subjLabel})`,
-      type: "switch",
+      x: 2660,
+      y: worldH - 242,
+      texture: 'battle_totem',
+      id: 'chal_3',
+      baseName: 'Totem Senja 2',
+      title: `Totem Pertarungan 2 (${subjLabel})`,
+      type: 'totem',
       requiredCount: q3,
-      labelColor: "#d35400",
-      onSolved: () => {
-        bridge2.setData("active", true);
-        bridge2Hint.setText("⚡ Lift Jembatan 2 Aktif!");
-      },
+      labelColor: '#6d28d9'
     });
 
-    const gate = this.createChallengeNode(scene, {
+    scene.gateObject = this.createChallengeNode(scene, {
       x: 3020,
-      y: worldH - 128,
-      texture: "math_gate",
-      id: "chal_4",
-      baseName: "Gerbang Kuil Kuno",
-      title: `🚪 Pintu Batu Kuil (${subjLabel})`,
-      type: "gate",
+      y: worldH - 132,
+      texture: 'math_gate',
+      id: 'chal_4',
+      baseName: 'Gerbang Benteng Senja',
+      title: `Gerbang Benteng Senja (${subjLabel})`,
+      type: 'gate',
       requiredCount: q4,
-      labelColor: "#c0392b",
+      labelColor: '#991b1b'
     });
-    scene.gateObject = gate;
   }
 
-  static buildLavaFortressLevel(scene) {
-    const worldW = GAME_CONFIG.worldWidth;
-    const worldH = GAME_CONFIG.worldHeight;
+    static buildSkyFortressBiome(scene) {
+    const worldW = GAME_CONFIG.worldWidth || 3600;
+    const worldH = GAME_CONFIG.worldHeight || 720;
     const subjLabel = scene.getSubjectLabel();
     const [q1, q2, q3, q4] = scene.boxDistribution;
 
-    const bg = scene.add.graphics();
-    bg.fillGradientStyle(0x1e272e, 0x1e272e, 0xc0392b, 0xc0392b, 1);
-    bg.fillRect(0, 0, worldW, worldH);
-
-    const volcano = scene.add.graphics();
-    volcano.fillStyle(0x2d3436, 0.7);
-    for (let x = 150; x < worldW; x += 650) {
-      volcano.fillTriangle(x, worldH - 60, x + 220, 180, x + 440, worldH - 60);
-    }
-
-    scene.addFloatingLabel(
-      400,
-      worldH - 195,
-      `🌋 Benteng Lava ${subjLabel} (10 Soal): Lompati kolam lava, waspadai pijakan rapuh & bola api!`,
-      "#c0392b",
-    );
+    this.renderParallaxFantasyBg(scene, 0xfca5a5, 0.22);
 
     const isLavaGap = (x) =>
       (x > 580 && x < 920) || (x > 1340 && x < 1760) || (x > 2180 && x < 2680);
@@ -362,13 +323,6 @@ export class AdventureLevelBuilder {
       scene.platforms.create(x, worldH - 32, "fortress_tile");
     }
 
-    scene.checkpoints = [
-      { x: 120, y: worldH - 150 },
-      { x: 1020, y: worldH - 150 },
-      { x: 1880, y: worldH - 150 },
-      { x: 2780, y: worldH - 150 },
-    ];
-
     scene.platforms.create(420, worldH - 155, "platform_fortress");
     scene.platforms.create(1120, worldH - 210, "platform_fortress");
     scene.platforms.create(1980, worldH - 210, "platform_fortress");
@@ -379,7 +333,7 @@ export class AdventureLevelBuilder {
     scene.createCrumblingPlatform(820, worldH - 225);
     scene.createCrumblingPlatform(2280, worldH - 210);
 
-    const lavaBridge1 = scene.createMovingPlatform({
+    scene.createMovingPlatform({
       x: 1420,
       y: worldH - 200,
       texture: "platform_moving_gold",
@@ -403,53 +357,53 @@ export class AdventureLevelBuilder {
     const lavaBridge2Hint = scene.addFloatingLabel(
       2520,
       worldH - 280,
-      "🔒 Platform Lava Terkunci (Selesaikan Pos 3)",
-      "#e67e22",
+      "Jembatan Benteng Terkunci",
+      "#b45309",
     );
 
     scene.spawnFireballTrap(740, worldH - 40, worldH - 310);
     scene.spawnFireballTrap(1560, worldH - 40, worldH - 320);
     scene.spawnFireballTrap(2420, worldH - 40, worldH - 330);
 
-    [1250, 3140, 3420].forEach((x) => {
-      scene.obstaclesGroup.create(x, worldH - 82, "obstacle_spike");
-    });
+    scene.spawnPatrolEnemy(1120, worldH - 92, 980, 1260, 110, 0xef4444);
+    scene.spawnPatrolEnemy(1960, worldH - 92, 1820, 2120, 115, 0xf97316);
+    scene.spawnPatrolEnemy(2860, worldH - 92, 2720, 2960, 120, 0xef4444);
 
-    const coinCoords = [
+    [1250, 3140, 3420].forEach((x) =>
+      scene.obstaclesGroup.create(x, worldH - 82, "obstacle_spike"),
+    );
+
+    this.spawnCoinList(scene, [
       { x: 420, y: worldH - 210 },
       { x: 660, y: worldH - 240 },
-      { x: 820, y: worldH - 280 },
       { x: 1480, y: worldH - 265 },
-      { x: 1620, y: worldH - 265 },
       { x: 2280, y: worldH - 265 },
-      { x: 2520, y: worldH - 280 },
       { x: 2840, y: worldH - 240 },
       { x: 3280, y: worldH - 270 },
-    ];
-    this.spawnCoinList(scene, coinCoords);
+    ]);
 
     this.createChallengeNode(scene, {
       x: 420,
-      y: worldH - 197,
+      y: worldH - 200,
       texture: "chest_closed",
       id: "chal_1",
       baseName: "Peti Benteng 1",
-      title: `🔥 Peti Benteng Lava 1 (${subjLabel})`,
+      title: `Peti Benteng ${subjLabel} 1`,
       type: "chest",
       requiredCount: q1,
-      labelColor: "#d35400",
+      labelColor: "#b45309",
     });
 
     this.createChallengeNode(scene, {
       x: 1120,
-      y: worldH - 260,
+      y: worldH - 262,
       texture: "npc_owl",
       id: "chal_2",
-      baseName: "Penjaga Gunung Api",
-      title: `🦉 Penjaga Benteng (${subjLabel})`,
+      baseName: "Penjaga Benteng",
+      title: `Penjaga Benteng (${subjLabel})`,
       type: "npc",
       requiredCount: q2,
-      labelColor: "#8e44ad",
+      labelColor: "#6d28d9",
     });
 
     this.createChallengeNode(scene, {
@@ -457,29 +411,28 @@ export class AdventureLevelBuilder {
       y: worldH - 252,
       texture: "switch_off",
       id: "chal_3",
-      baseName: "Sakelar Jembatan Lava",
-      title: `⚙️ Sakelar Benteng (${subjLabel})`,
+      baseName: "Sakelar Benteng",
+      title: `Sakelar Benteng (${subjLabel})`,
       type: "switch",
       requiredCount: q3,
-      labelColor: "#d35400",
+      labelColor: "#b45309",
       onSolved: () => {
         lavaBridge2.setData("active", true);
-        lavaBridge2Hint.setText("⚡ Platform Lava Aktif! Seberangi kawah!");
+        lavaBridge2Hint.setText("Jembatan Benteng Aktif!");
       },
     });
 
-    const gate = this.createChallengeNode(scene, {
+    scene.gateObject = this.createChallengeNode(scene, {
       x: 3040,
-      y: worldH - 128,
+      y: worldH - 132,
       texture: "math_gate",
       id: "chal_4",
-      baseName: "Gerbang Benteng Lava",
-      title: `🚪 Segel Benteng Lava (${subjLabel})`,
+      baseName: "Gerbang Benteng",
+      title: `Gerbang Benteng (${subjLabel})`,
       type: "gate",
       requiredCount: q4,
-      labelColor: "#c0392b",
+      labelColor: "#991b1b",
     });
-    scene.gateObject = gate;
   }
 
   static spawnCoinList(scene, coords) {
@@ -499,17 +452,12 @@ export class AdventureLevelBuilder {
 
   static createChallengeNode(scene, cfg) {
     const node = scene.challengesGroup.create(cfg.x, cfg.y, cfg.texture);
-    node.refreshBody();
-    if (cfg.type === 'gate') {
-      node.body.setSize(60, 140);
-      node.body.setOffset(-8, -6);
-    }
-    const labelOffset = cfg.type === 'gate' ? 88 : 55;
+    const labelOffset = cfg.type === "gate" ? 90 : 56;
     const label = scene.addFloatingLabel(
       cfg.x,
       cfg.y - labelOffset,
-      `❓ ${cfg.baseName} (0/${cfg.requiredCount})`,
-      cfg.labelColor || '#2c3e50'
+      `${cfg.baseName} (0/${cfg.requiredCount})`,
+      cfg.labelColor || "#2b1810",
     );
     node.setData({
       id: cfg.id,

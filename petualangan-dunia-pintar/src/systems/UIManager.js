@@ -1,4 +1,9 @@
 import { uiIcons } from "./UIIcons.js";
+import { getAdventureModeConfig } from "./adventure/AdventureModeConfig.js";
+import {
+  characterAssetManager,
+  CHARACTER_ROSTER,
+} from "./CharacterAssetManager.js";
 import {
   renderMainMenuBackdrop,
   renderFantasyWorldBackdrop,
@@ -195,7 +200,9 @@ export class UIManager {
   stopAllGameplayScenes() {
     if (!this.phaserGame) return;
     [
+      "TreasureExplorerScene",
       "AdventureScene",
+      "SurvivalArenaScene",
       "CarRacingScene",
       "MazeAdventureScene",
       "DuelScene",
@@ -210,7 +217,82 @@ export class UIManager {
   getActiveAdventureSceneInstance() {
     if (!this.phaserGame) return null;
     for (const key of [
+      "TreasureExplorerScene",
       "AdventureScene",
+      "SurvivalArenaScene",
+      "CarRacingScene",
+      "MazeAdventureScene",
+    ]) {
+      if (this.phaserGame.scene.isActive(key)) {
+        return this.phaserGame.scene.getScene(key);
+      }
+    }
+    return null;
+  }
+
+  startAdventureMode(levelKey = null) {
+    this.stopAllGameplayScenes();
+    const chosenLevelKey = String(
+      levelKey || this.selectedAdventureLevelKey || "easy",
+    ).toLowerCase();
+    this.selectedAdventureLevelKey = chosenLevelKey;
+
+    const modeCfg = getAdventureModeConfig(chosenLevelKey);
+    const targetSceneKey = modeCfg.sceneKey;
+
+    if (!this.phaserGame?.scene?.keys?.[targetSceneKey]) {
+      console.error(
+        `[PDP ROUTING ERROR] Scene "${targetSceneKey}" tidak terdaftar di src/main.js!`,
+        {
+          chosenLevelKey,
+          registeredScenes: Object.keys(this.phaserGame?.scene?.keys || {}),
+        },
+      );
+      alert(
+        `Scene "${targetSceneKey}" belum terdaftar di main.js. Periksa registrasi Phaser Scene.`,
+      );
+      return;
+    }
+
+    const subInfo = this.getSubjectInfo(this.selectedSubject);
+    const timerInit = modeCfg.timer.enabled
+      ? `${String(Math.floor(modeCfg.timer.durationSec / 60)).padStart(2, "0")}:00`
+      : "";
+
+    this.renderAdventureHUD({
+      playerName: this.activeProfile?.name || "Petualang",
+      subjectName: subInfo.name,
+      levelName: modeCfg.modeLabel,
+      genre: modeCfg.hudGenre,
+      controlHint: modeCfg.controlHint,
+      hearts: modeCfg.maxHearts,
+      maxHearts: modeCfg.maxHearts,
+      energyEnabled: modeCfg.energy.enabled,
+      energy: modeCfg.energy.initial,
+      maxEnergy: modeCfg.energy.max,
+      timerEnabled: modeCfg.timer.enabled,
+      timerText: timerInit,
+      specialSkillEnabled: modeCfg.combat.enableSpecialSkill,
+      objectiveText: modeCfg.mission.objectives[0]?.label || "",
+      coins: 0,
+      answeredCount: 0,
+      totalChallenges: modeCfg.totalChallenges,
+    });
+
+    this.phaserGame.scene.start(targetSceneKey, {
+      profile: this.activeProfile,
+      grade: this.selectedGrade,
+      subject: this.selectedSubject,
+      levelKey: chosenLevelKey,
+    });
+  }
+
+  getActiveAdventureSceneInstance() {
+    if (!this.phaserGame) return null;
+    for (const key of [
+      "TreasureExplorerScene",
+      "AdventureScene",
+      "SurvivalArenaScene",
       "CarRacingScene",
       "MazeAdventureScene",
     ]) {
@@ -240,6 +322,9 @@ export class UIManager {
       Math.floor((this.activeProfile?.totalScore || 0) / 500) + 1,
     );
     const avatarInitial = activeName.charAt(0).toUpperCase();
+    const activeCharId = this.activeProfile?.character || "kiko";
+    const activeCharUrl =
+      characterAssetManager.getPortraitDataURL(activeCharId);
 
     this.container.innerHTML = `
       <div class="screen-overlay">
@@ -248,18 +333,20 @@ export class UIManager {
           <div class="pdp-menu-topbar">
             <div class="pdp-top-right-group">
               <div id="btn-top-profile" class="pdp-top-profile-pill" title="Kelola Profil">
-                <div class="pdp-top-avatar">${this.escapeHtml(avatarInitial)}</div>
+                <div class="pdp-top-avatar">
+                  <img src="${activeCharUrl}" alt="${this.escapeHtml(activeName)}" />
+                </div>
                 <div style="text-align:left;line-height:1.25;">
                   <div style="font-weight:900;font-size:0.98rem;color:#ffffff;">${this.escapeHtml(activeName)}</div>
                   <div style="font-size:0.8rem;color:#fde68a;font-weight:800;display:flex;align-items:center;gap:5px;">
                     <span>Level ${activeLevel}</span>
-                    ${uiIcons.get('star', 14)}
+                    ${uiIcons.get("star", 14)}
                     <span>${activeStars}</span>
                   </div>
                 </div>
               </div>
               <button id="btn-top-settings" class="pdp-top-gear-btn" aria-label="Pengaturan">
-                ${uiIcons.get('settings', 24)}
+                ${uiIcons.get("settings", 24)}
               </button>
             </div>
           </div>
@@ -359,128 +446,319 @@ export class UIManager {
     });
   }
 
-  async showProfileMenu(redirectToPlay = false) {
-    const profiles = await db.getAllProfiles();
-    let selectedChar = "kiko";
-    const studentCharacters = GAME_CONFIG.characters.filter(
-      (c) => c.id !== "prof_panda",
-    );
+  async showCharacterSelection({
+    currentCharId = "kiko",
+    profileToUpdate = null,
+    onSelect,
+  } = {}) {
+    await characterAssetManager.ensureLineupImageLoaded();
+    let selectedCharId =
+      characterAssetManager.getCharacterMeta(currentCharId).id;
+    let previewPose = "idle";
+    let stopPreview = null;
 
-    const profileItemsHtml =
-      profiles.length === 0
-        ? `<p style="padding: 12px; font-weight: 700; color: #7f8c8d;">Belum ada profil tersimpan. Yuk buat profil barumu di bawah!</p>`
-        : profiles
-            .map((p) => {
-              const char = this.getCharacterInfo(p.character);
-              const isCurrent =
-                this.activeProfile && this.activeProfile.id === p.id;
-              return `
-            <div class="profile-item" style="${isCurrent ? "background:#fff9db; border-color:#f39c12;" : ""}">
-              <div class="profile-item-info">
-                <span style="font-size: 2rem;">${char.emoji}</span>
-                <div>
-                  <div style="font-weight: 900; font-size: 1.05rem;">${this.escapeHtml(p.name)} ${isCurrent ? "✅" : ""}</div>
-                  <div style="font-size: 0.84rem; font-weight: 700; color: #576574;">
-                    ${this.formatGradeLabel(p.grade)} | 🪙 ${p.coins || 0} | ⭐ ${p.stars || 0} | 📝 ${p.totalQuestionsAnswered || 0} Soal Dijawab
+    const poses = [
+      { key: "idle", label: "Diam" },
+      { key: "run", label: "Berlari" },
+      { key: "jump", label: "Melompat" },
+      { key: "attack", label: "Menyerang" },
+      { key: "victory", label: "Menang" },
+    ];
+
+    const renderScreen = () => {
+      if (stopPreview) stopPreview();
+      const meta = characterAssetManager.getCharacterMeta(selectedCharId);
+
+      const cardsHtml = CHARACTER_ROSTER.map((c) => {
+        const thumbUrl = characterAssetManager.getPortraitDataURL(c.id);
+        const isSel = c.id === selectedCharId;
+        return `
+          <div class="pdp-char-select-card ${isSel ? "selected" : ""}" data-char="${c.id}">
+            <img class="pdp-char-thumb" src="${thumbUrl}" alt="${this.escapeHtml(c.name)}" />
+            <div style="font-weight:900;font-size:1rem;color:#2b1810;">${this.escapeHtml(c.name)}</div>
+            <span class="status-badge" style="background:${c.badgeBg};color:${c.badgeText};font-size:0.68rem;">
+              ${this.escapeHtml(c.title)}
+            </span>
+          </div>
+        `;
+      }).join("");
+
+      const posesHtml = poses
+        .map(
+          (p) => `
+        <button class="pdp-pose-btn ${p.key === previewPose ? "active" : ""}" data-pose="${p.key}">
+          ${this.escapeHtml(p.label)}
+        </button>
+      `,
+        )
+        .join("");
+
+      this.container.innerHTML = `
+        <div class="screen-overlay">
+          ${this.renderFantasyBackdrop()}
+          <div class="cartoon-panel" style="max-width:940px;">
+            <div>
+              <h2 class="panel-header-title">${uiIcons.get("users", 26)} Pilih Karakter Petualang 3D</h2>
+              <p class="game-subtitle" style="margin-bottom:8px;">
+                ${profileToUpdate ? `Pilih karakter untuk profil <strong>${this.escapeHtml(profileToUpdate.name)}</strong>` : "Lihat animasi karakter sebelum memulai petualanganmu!"}
+              </p>
+            </div>
+
+            <div class="pdp-char-studio-grid">
+              <div class="pdp-char-stage-box">
+                <canvas id="pdp-char-live-canvas" width="250" height="250"></canvas>
+                <div class="pdp-pose-bar">${posesHtml}</div>
+                <div style="text-align:center;padding:4px 8px;">
+                  <div style="font-weight:900;font-size:1.2rem;color:#2b1810;">${this.escapeHtml(meta.name)}</div>
+                  <div style="font-weight:800;font-size:0.86rem;color:${meta.accentColor};margin-bottom:4px;">
+                    ${this.escapeHtml(meta.specialty)}
+                  </div>
+                  <div style="font-size:0.84rem;font-weight:600;color:#5c3a21;line-height:1.4;">
+                    ${this.escapeHtml(meta.desc)}
                   </div>
                 </div>
               </div>
-              <button class="btn-cartoon btn-small ${isCurrent ? "btn-green" : "btn-blue"} btn-select-prof" data-id="${p.id}">
-                ${isCurrent ? "Dipilih" : "Pilih"}
+
+              <div class="pdp-char-cards-grid">
+                ${cardsHtml}
+              </div>
+            </div>
+
+            <div class="btn-group-horizontal">
+              <button id="btn-char-cancel" class="btn-cartoon btn-gray btn-small">
+                ${uiIcons.get("back", 16)} <span>Kembali</span>
+              </button>
+              <button id="btn-char-confirm" class="btn-cartoon btn-green">
+                ${uiIcons.get("check", 18)} <span>Gunakan ${this.escapeHtml(meta.name)}</span>
               </button>
             </div>
-          `;
+          </div>
+        </div>
+      `;
+
+      const liveCanvas = document.getElementById("pdp-char-live-canvas");
+      stopPreview = characterAssetManager.mountLivePreview(
+        liveCanvas,
+        () => selectedCharId,
+        () => previewPose,
+      );
+
+      this.container
+        .querySelectorAll(".pdp-char-select-card")
+        .forEach((card) => {
+          card.addEventListener("click", () => {
+            this.playTone("click");
+            selectedCharId = card.dataset.char;
+            renderScreen();
+          });
+        });
+
+      this.container.querySelectorAll(".pdp-pose-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          this.playTone("click");
+          previewPose = btn.dataset.pose;
+          renderScreen();
+        });
+      });
+
+      document
+        .getElementById("btn-char-cancel")
+        .addEventListener("click", () => {
+          if (stopPreview) stopPreview();
+          this.playTone("click");
+          this.showProfileMenu();
+        });
+
+      document
+        .getElementById("btn-char-confirm")
+        .addEventListener("click", async () => {
+          if (stopPreview) stopPreview();
+          this.playTone("correct");
+          if (profileToUpdate) {
+            profileToUpdate.character = selectedCharId;
+            await db.saveProfile(profileToUpdate);
+            if (
+              this.activeProfile &&
+              this.activeProfile.id === profileToUpdate.id
+            ) {
+              this.activeProfile = profileToUpdate;
+            }
+            if (this.phaserGame) {
+              characterAssetManager.buildTexturesAndAnimations(
+                this.phaserGame.scene.getScene("BootScene"),
+              );
+            }
+            this.showProfileMenu();
+            return;
+          }
+          if (onSelect) {
+            onSelect(selectedCharId);
+          } else {
+            this.showProfileMenu();
+          }
+        });
+    };
+
+    renderScreen();
+  }
+
+  async showProfileMenu(draftState = null) {
+    this.stopAllGameplayScenes();
+    await characterAssetManager.ensureLineupImageLoaded();
+    const profiles = await db.getAllProfiles();
+    let draftName = draftState?.name || "";
+    let draftGrade = draftState?.grade ?? 3;
+    let selectedChar = draftState?.character || "kiko";
+
+    const charMeta = characterAssetManager.getCharacterMeta(selectedChar);
+    const charThumbUrl = characterAssetManager.getPortraitDataURL(selectedChar);
+
+    const profileItemsHtml =
+      profiles.length === 0
+        ? `<div style="padding:14px;color:#7c563a;font-weight:700;">Belum ada profil siswa. Buat profil pertamamu di bawah ini!</div>`
+        : profiles
+            .map((p) => {
+              const isCurrent =
+                this.activeProfile && this.activeProfile.id === p.id;
+              const pMeta = characterAssetManager.getCharacterMeta(p.character);
+              const pThumb = characterAssetManager.getPortraitDataURL(
+                p.character,
+              );
+              return `
+                <div class="profile-item" style="${isCurrent ? "border-color:#f59e0b;background:#fffbeb;" : ""}">
+                  <div class="profile-item-info">
+                    <img src="${pThumb}" alt="${this.escapeHtml(pMeta.name)}" style="width:48px;height:56px;object-fit:contain;flex-shrink:0;" />
+                    <div>
+                      <div style="font-weight:900;font-size:1.02rem;color:#2b1810;">
+                        ${this.escapeHtml(p.name)} ${isCurrent ? '<span class="status-badge badge-active" style="margin-left:6px;">Aktif</span>' : ""}
+                      </div>
+                      <div style="font-size:0.84rem;font-weight:700;color:#5c3a21;">
+                        ${this.escapeHtml(this.formatGradeLabel(p.grade))} · ${this.escapeHtml(pMeta.name)} · ${p.coins || 0} Koin · ${p.stars || 0} Bintang
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="btn-cartoon btn-purple btn-small btn-change-char" data-id="${p.id}">
+                      ${uiIcons.get("users", 15)} <span>Karakter</span>
+                    </button>
+                    <button class="btn-cartoon btn-blue btn-small btn-select-prof" data-id="${p.id}">
+                      ${uiIcons.get("check", 15)} <span>Pilih</span>
+                    </button>
+                    <button class="btn-cartoon btn-red btn-small btn-del-prof" data-id="${p.id}">
+                      ${uiIcons.get("x", 15)}
+                    </button>
+                  </div>
+                </div>
+              `;
             })
             .join("");
 
-    const charCardsHtml = studentCharacters
-      .map(
-        (c, idx) => `
-      <div class="choice-card char-choice ${idx === 0 ? "selected" : ""}" data-char="${c.id}" style="padding: 10px;">
-        <div style="font-size: 2.1rem;">${c.emoji}</div>
-        <div style="font-weight: 900; font-size: 0.95rem;">${c.name}</div>
-        <div style="font-size: 0.78rem; color: #636e72; font-weight: 600;">${c.desc}</div>
-      </div>
-    `,
-      )
-      .join("");
-
     this.container.innerHTML = `
       <div class="screen-overlay">
-        <div class="cartoon-panel" style="max-width: 780px;">
-          <h2 class="panel-header-title">👦 Pilih atau Buat Profil Siswa</h2>
+        ${this.renderFantasyBackdrop()}
+        <div class="cartoon-panel" style="max-width:880px;">
+          <h2 class="panel-header-title">${uiIcons.get("users", 26)} Profil &amp; Karakter Petualang</h2>
+          <p class="game-subtitle" style="margin-bottom:10px;">Pilih profil murid yang sudah tersimpan atau buat profil petualang baru.</p>
 
-          <div style="text-align: left; font-weight: 800; margin-bottom: 4px;">Daftar Profil Tersimpan:</div>
-          <div class="profile-list">
-            ${profileItemsHtml}
-          </div>
+          <div class="profile-list">${profileItemsHtml}</div>
 
           <div class="form-box">
-            <div style="font-weight: 900; font-size: 1.08rem; margin-bottom: 8px; color: #d35400;">
-              ➕ Buat Profil Siswa Baru
-            </div>
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-              <div class="form-group">
-                <label for="inp-student-name">Nama Siswa:</label>
-                <input id="inp-student-name" type="text" class="input-cartoon" placeholder="Contoh: Budi Santoso" maxlength="25" />
+            <div style="font-weight:900;font-size:1.04rem;margin-bottom:10px;color:#2b1810;">Buat Profil Siswa Baru</div>
+            <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:16px;align-items:center;">
+              <div>
+                <div class="form-group">
+                  <label for="inp-student-name">Nama Siswa</label>
+                  <input type="text" id="inp-student-name" class="input-cartoon" placeholder="Contoh: Raka" maxlength="24" value="${this.escapeHtml(draftName)}" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label for="inp-student-grade">Jenjang / Kelas</label>
+                  <select id="inp-student-grade" class="input-cartoon">
+                    <option value="paud" ${String(draftGrade) === "paud" ? "selected" : ""}>PAUD (Aktif)</option>
+                    <option value="tk" ${String(draftGrade) === "tk" ? "selected" : ""}>TK (Aktif)</option>
+                    <option value="1" ${Number(draftGrade) === 1 ? "selected" : ""}>Kelas 1 SD (Aktif)</option>
+                    <option value="2" ${Number(draftGrade) === 2 ? "selected" : ""}>Kelas 2 SD (Aktif)</option>
+                    <option value="3" ${Number(draftGrade) === 3 ? "selected" : ""}>Kelas 3 SD (Aktif)</option>
+                    <option value="4" ${Number(draftGrade) === 4 ? "selected" : ""}>Kelas 4 SD (Aktif)</option>
+                    <option value="5" disabled>Kelas 5 SD (Coming Soon)</option>
+                    <option value="6" disabled>Kelas 6 SD (Coming Soon)</option>
+                  </select>
+                </div>
               </div>
-              <div class="form-group">
-                <label for="inp-student-grade">Kelas:</label>
-                <select id="inp-student-grade" class="input-cartoon">
-                  <option value="paud">PAUD (Aktif)</option>
-                  <option value="tk">TK (Aktif)</option>
-                  <option value="1">Kelas 1 SD (Aktif)</option>
-                  <option value="2">Kelas 2 SD (Aktif)</option>
-                  <option value="3" selected>Kelas 3 SD (Aktif)</option>
-                  <option value="4">Kelas 4 SD (Aktif)</option>
-                  <option value="5" disabled>Kelas 5 SD (Coming Soon)</option>
-                  <option value="6" disabled>Kelas 6 SD (Coming Soon)</option>
-                </select>
+
+              <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:18px;padding:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <img src="${charThumbUrl}" alt="${this.escapeHtml(charMeta.name)}" style="width:86px;height:98px;object-fit:contain;" />
+                <div style="font-weight:900;font-size:0.98rem;color:#2b1810;">${this.escapeHtml(charMeta.name)}</div>
+                <button type="button" id="btn-open-char-studio" class="btn-cartoon btn-blue btn-small">
+                  ${uiIcons.get("users", 15)} <span>Pilih Karakter 3D</span>
+                </button>
               </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 8px;">
-              <label>Pilih Karakter Petualang:</label>
-              <div class="selection-grid-3" id="char-picker-grid" style="margin: 6px 0;">
-                ${charCardsHtml}
-              </div>
+            <div class="btn-group-horizontal" style="margin-top:14px;">
+              <button id="btn-save-profile" class="btn-cartoon btn-green">
+                ${uiIcons.get("check", 18)} <span>Simpan &amp; Mulai</span>
+              </button>
+              <button id="btn-back-from-profile" class="btn-cartoon btn-gray btn-small">
+                ${uiIcons.get("back", 16)} <span>Kembali ke Menu</span>
+              </button>
             </div>
-
-            <div id="profile-err-msg" style="color: #e74c3c; font-weight: 800; margin-bottom: 8px; display: none;"></div>
-
-            <button id="btn-save-profile" class="btn-cartoon btn-green btn-small" style="width: 100%;">
-              💾 Simpan & Gunakan Profil Baru
-            </button>
-          </div>
-
-          <div class="btn-group-horizontal">
-            <button id="btn-back-main" class="btn-cartoon btn-gray btn-small">⬅️ Menu Utama</button>
-            ${this.activeProfile ? `<button id="btn-continue-grade" class="btn-cartoon btn-blue btn-small">Lanjut Pilih Kelas ➡️</button>` : ""}
           </div>
         </div>
       </div>
     `;
 
-    const charCards = this.container.querySelectorAll(".char-choice");
-    charCards.forEach((card) => {
-      card.addEventListener("click", () => {
+    document
+      .getElementById("btn-open-char-studio")
+      .addEventListener("click", () => {
         this.playTone("click");
-        charCards.forEach((c) => c.classList.remove("selected"));
-        card.classList.add("selected");
-        selectedChar = card.dataset.char;
+        const currentName = document.getElementById("inp-student-name").value;
+        const currentGrade = document.getElementById("inp-student-grade").value;
+        this.showCharacterSelection({
+          currentCharId: selectedChar,
+          onSelect: (chosenId) => {
+            this.showProfileMenu({
+              name: currentName,
+              grade: currentGrade,
+              character: chosenId,
+            });
+          },
+        });
+      });
+
+    this.container.querySelectorAll(".btn-change-char").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this.playTone("click");
+        const target = profiles.find((p) => p.id === btn.dataset.id);
+        if (!target) return;
+        this.showCharacterSelection({
+          currentCharId: target.character,
+          profileToUpdate: target,
+        });
       });
     });
 
     this.container.querySelectorAll(".btn-select-prof").forEach((btn) => {
       btn.addEventListener("click", async () => {
         this.playTone("click");
-        const profId = btn.dataset.id;
-        db.setActiveProfileId(profId);
-        this.activeProfile = await db.getProfileById(profId);
-        if (redirectToPlay) {
-          this.showGradeSelection();
-        } else {
-          this.showProfileMenu(false);
+        const found = await db.getProfileById(btn.dataset.id);
+        if (found) {
+          this.activeProfile = found;
+          this.selectedGrade = found.grade;
+          db.setActiveProfileId(found.id);
+          this.showMainMenu();
+        }
+      });
+    });
+
+    this.container.querySelectorAll(".btn-del-prof").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        this.playTone("wrong");
+        if (confirm("Hapus profil siswa ini beserta progresnya?")) {
+          await db.deleteProfile(btn.dataset.id);
+          if (this.activeProfile && this.activeProfile.id === btn.dataset.id) {
+            this.activeProfile = await db.getActiveProfile();
+          }
+          this.showProfileMenu();
         }
       });
     });
@@ -488,52 +766,33 @@ export class UIManager {
     document
       .getElementById("btn-save-profile")
       .addEventListener("click", async () => {
-        const nameInput = document.getElementById("inp-student-name");
-        const gradeInput = document.getElementById("inp-student-grade");
-        const errBox = document.getElementById("profile-err-msg");
-        const cleanName = nameInput.value.trim();
-
-        if (!cleanName) {
+        const nameVal = document
+          .getElementById("inp-student-name")
+          .value.trim();
+        const gradeVal = document.getElementById("inp-student-grade").value;
+        if (!nameVal) {
           this.playTone("wrong");
-          errBox.textContent = "⚠️ Nama siswa tidak boleh kosong ya!";
-          errBox.style.display = "block";
-          nameInput.focus();
+          alert("Silakan masukkan nama siswa terlebih dahulu.");
           return;
         }
-
         this.playTone("correct");
-        const gradeVal = gradeInput.value;
-        const finalGrade =
-          gradeVal === "paud" || gradeVal === "tk"
-            ? gradeVal
-            : Number(gradeVal) || 3;
-        this.activeProfile = await db.createProfile({
-          name: cleanName,
-          grade: finalGrade,
+        const created = await db.createProfile({
+          name: nameVal,
+          grade: gradeVal,
           character: selectedChar,
         });
-
-        if (redirectToPlay) {
-          this.showGradeSelection();
-        } else {
-          this.showProfileMenu(false);
-        }
+        this.activeProfile = created;
+        this.selectedGrade = created.grade;
+        this.showMainMenu();
       });
 
-    document.getElementById("btn-back-main").addEventListener("click", () => {
-      this.playTone("click");
-      this.showMainMenu();
-    });
-
-    const btnCont = document.getElementById("btn-continue-grade");
-    if (btnCont) {
-      btnCont.addEventListener("click", () => {
+    document
+      .getElementById("btn-back-from-profile")
+      .addEventListener("click", () => {
         this.playTone("click");
-        this.showGradeSelection();
+        this.showMainMenu();
       });
-    }
   }
-
   showGradeSelection() {
     this.stopAllGameplayScenes();
     const cardsHtml = GAME_CONFIG.classes
@@ -736,6 +995,12 @@ export class UIManager {
       this.selectedGrade,
     );
 
+    const iconStyleByLevel = {
+      easy: "background:#d1fae5;color:#059669;",
+      medium: "background:#ede9fe;color:#6d28d9;",
+      hard: "background:#fee2e2;color:#dc2626;",
+    };
+
     const levelCardsHtml = GAME_CONFIG.adventureLevels
       .map((lvl) => {
         const minCorrect = Math.ceil(lvl.totalQuestions * 0.8);
@@ -751,13 +1016,13 @@ export class UIManager {
         const isUnlocked = Boolean(state.unlocked);
         const isCompleted = Boolean(state.completed);
 
-        let statusLabel = "🔒 Terkunci";
+        let statusLabel = "Terkunci";
         let badgeClass = "badge-soon";
         if (isCompleted) {
-          statusLabel = "✅ Lulus (Bisa Diulang)";
+          statusLabel = "Lulus (Bisa Diulang)";
           badgeClass = "badge-active";
         } else if (isUnlocked) {
-          statusLabel = "🔓 Terbuka";
+          statusLabel = "Terbuka";
           badgeClass = "badge-active";
         }
 
@@ -770,24 +1035,30 @@ export class UIManager {
 
         const progressDetailHtml = isUnlocked
           ? isCompleted
-            ? `<div style="font-size:0.84rem; font-weight:800; color:#1e8449; background:#e8f8f5; padding:6px 10px; border-radius:10px; width:100%;">
-               🏆 Rekor Terbaik: ${state.correctAnswers}/${lvl.totalQuestions} Benar (${state.bestAccuracy || state.accuracy || 0}%)
+            ? `<div style="font-size:0.84rem; font-weight:800; color:#14532d; background:#dcfce7; padding:6px 10px; border-radius:10px; width:100%;">
+               Rekor Terbaik: ${state.correctAnswers}/${lvl.totalQuestions} Benar (${state.bestAccuracy || state.accuracy || 0}%)
              </div>`
-            : `<div style="font-size:0.84rem; font-weight:800; color:#2980b9; background:#eef9ff; padding:6px 10px; border-radius:10px; width:100%;">
-               🎯 Target Lulus: Minimal ${minCorrect} dari ${lvl.totalQuestions} soal benar
+            : `<div style="font-size:0.84rem; font-weight:800; color:#1e40af; background:#dbeafe; padding:6px 10px; border-radius:10px; width:100%;">
+               Target Lulus: Minimal ${minCorrect} dari ${lvl.totalQuestions} soal benar
              </div>`
-          : `<div style="font-size:0.84rem; font-weight:800; color:#c0392b; background:#fadbd8; padding:6px 10px; border-radius:10px; width:100%;">
-             🔒 ${this.escapeHtml(lvl.unlockRequirementText)}
+          : `<div style="font-size:0.84rem; font-weight:800; color:#991b1b; background:#fee2e2; padding:6px 10px; border-radius:10px; width:100%;">
+             ${this.escapeHtml(lvl.unlockRequirementText)}
            </div>`;
+
+        const iconWrapStyle = isUnlocked
+          ? iconStyleByLevel[lvl.id] || ""
+          : "background:#f1f5f9;color:#94a3b8;";
 
         return `
         <div class="choice-card adv-level-card ${isUnlocked ? "" : "card-disabled"} ${isCompleted ? "selected" : ""}"
              data-level="${lvl.id}"
              data-unlocked="${isUnlocked}">
-          <div class="card-icon">${isUnlocked ? lvl.icon : "🔒"}</div>
+          <div class="pdp-card-icon-wrap" style="${iconWrapStyle}">
+            ${uiIcons.get(isUnlocked ? lvl.icon || "compass" : "lock", 28)}
+          </div>
           <div class="card-title">${this.escapeHtml(lvl.name)}</div>
-          <div style="font-weight:900; font-size:0.92rem; color:#d35400;">
-            📝 ${this.escapeHtml(targetInfoText)}
+          <div style="font-weight:900; font-size:0.88rem; color:#b45309;">
+            ${this.escapeHtml(targetInfoText)}
           </div>
           <div class="card-desc">${this.escapeHtml(lvl.desc)}</div>
           ${progressDetailHtml}
@@ -801,28 +1072,40 @@ export class UIManager {
 
     this.container.innerHTML = `
       <div class="screen-overlay">
-        <div class="cartoon-panel" style="max-width: 880px;">
+        ${this.renderFantasyBackdrop()}
+        <div class="cartoon-panel" style="max-width: 900px;">
           ${this.renderProfileBanner()}
-          <div class="game-logo-badge">${subInfo.icon} ADVENTURE ${subInfo.name.toUpperCase()}</div>
-          <h2 class="panel-header-title" style="margin-bottom: 6px;">🗺️ Pilih Level Adventure ${this.escapeHtml(subInfo.name)}</h2>
+          <div class="game-logo-badge">
+            ${uiIcons.forSubject(this.selectedSubject)}
+            <span>ADVENTURE ${this.escapeHtml(subInfo.name.toUpperCase())}</span>
+          </div>
+          <div>
+            <h2 class="panel-header-title" style="margin-bottom: 8px;">
+              ${uiIcons.get("compass", 26)} Pilih Level Adventure ${this.escapeHtml(subInfo.name)}
+            </h2>
+          </div>
 
-          <div style="background:#fff9db; border:3px solid #f39c12; border-radius:18px; padding:10px 16px; margin: 0 auto 12px; max-width: 760px; text-align:left; font-size:0.92rem; font-weight:800; color:#2c3e50; box-shadow: 0 4px 0 rgba(0,0,0,0.08);">
-            <div style="color:#d35400; font-size:0.98rem; margin-bottom:4px;">⭐ Syarat Membuka Level Berikutnya (Minimal Nilai 80%):</div>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:6px;">
-              <div>🌱 <strong>Mudah:</strong> 5 soal, minimal <strong>4 benar (80%)</strong></div>
-              <div>⚡ <strong>Sedang:</strong> 7 soal, minimal <strong>6 benar (minimal 80%)</strong></div>
-              <div>🔥 <strong>Sulit:</strong> 10 soal, minimal <strong>8 benar (80%)</strong></div>
+          <div style="background:#fffbeb; border:2px solid #f59e0b; border-radius:16px; padding:10px 16px; margin: 0 auto 14px; max-width: 780px; text-align:left; font-size:0.88rem; font-weight:800; color:#2b1810;">
+            <div style="color:#b45309; font-size:0.94rem; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+              ${uiIcons.get("star", 16)} <span>Syarat Membuka Level Berikutnya (Minimal Nilai 80%):</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:6px;">
+              <div><strong>Mudah (Treasure Explorer):</strong> min. 4/5 benar</div>
+              <div><strong>Sedang (Battle Adventure):</strong> min. 6/7 benar</div>
+              <div><strong>Sulit (Survival Arena):</strong> min. 8/10 benar</div>
             </div>
           </div>
 
-          <div id="adv-level-notice" style="display:none; background:#fadbd8; color:#78281f; border:3px solid #34495e; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;"></div>
+          <div id="adv-level-notice" style="display:none; background:#fee2e2; color:#991b1b; border:2px solid #ef4444; border-radius:14px; padding:10px; font-weight:800; margin-bottom:10px;"></div>
 
           <div class="selection-grid-3">
             ${levelCardsHtml}
           </div>
 
           <div class="btn-group-horizontal">
-            <button id="btn-back-mode-sel" class="btn-cartoon btn-gray btn-small">⬅️ Kembali ke Pilihan Mode</button>
+            <button id="btn-back-mode-sel" class="btn-cartoon btn-gray btn-small">
+              ${uiIcons.get("back", 16)} <span>Kembali ke Pilihan Mode</span>
+            </button>
           </div>
         </div>
       </div>
@@ -843,9 +1126,9 @@ export class UIManager {
           if (noticeEl && lvlCfg) {
             const prevName =
               levelKey === "medium"
-                ? "Level Mudah (minimal 4/5 benar)"
-                : "Level Sedang (minimal 6/7 benar)";
-            noticeEl.textContent = `🔒 Level ini masih terkunci! Selesaikan ${prevName} terlebih dahulu untuk membukanya.`;
+                ? "Level Mudah: Treasure Explorer (minimal 4/5 benar)"
+                : "Level Sedang: Battle Adventure (minimal 6/7 benar)";
+            noticeEl.textContent = `Level ini masih terkunci! Selesaikan ${prevName} terlebih dahulu untuk membukanya.`;
             noticeEl.style.display = "block";
           }
           return;
@@ -1013,31 +1296,31 @@ export class UIManager {
     const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || "easy";
     this.selectedAdventureLevelKey = chosenLevelKey;
 
-    const levelMeta =
-      GAME_CONFIG.adventureLevels.find((l) => l.id === chosenLevelKey) ||
-      GAME_CONFIG.adventureLevels[0];
-
-    const charInfo = this.getCharacterInfo(this.activeProfile?.character);
     const subInfo = this.getSubjectInfo(this.selectedSubject);
+    const modeCfg = getAdventureModeConfig(chosenLevelKey);
+    const targetSceneKey = modeCfg.sceneKey || "AdventureScene";
 
     this.renderAdventureHUD({
-      characterEmoji: charInfo.emoji,
       playerName: this.activeProfile?.name || "Petualang",
       subjectName: subInfo.name,
-      levelName: levelMeta.name,
-      genre: levelMeta.genre || "platformer",
-      controlHint: levelMeta.controlHint || "",
+      levelName: modeCfg.modeLabel,
+      genre: modeCfg.hudGenre,
+      controlHint: modeCfg.controlHint,
+      hearts: modeCfg.modeType === "exploration" ? 0 : modeCfg.maxHearts,
+      maxHearts: modeCfg.modeType === "exploration" ? 0 : modeCfg.maxHearts,
+      energyEnabled: modeCfg.energy.enabled,
+      energy: modeCfg.energy.initial,
+      maxEnergy: modeCfg.energy.max,
+      timerEnabled: modeCfg.timer.enabled,
+      timerText: modeCfg.timer.enabled
+        ? `${String(Math.floor(modeCfg.timer.durationSec / 60)).padStart(2, "0")}:00`
+        : "",
+      specialSkillEnabled: modeCfg.combat.enableSpecialSkill,
+      objectiveText: modeCfg.mission.objectives[0]?.label || "",
       coins: 0,
       answeredCount: 0,
-      totalChallenges: levelMeta.totalQuestions,
+      totalChallenges: modeCfg.totalChallenges,
     });
-
-    const targetSceneKey =
-      chosenLevelKey === "medium"
-        ? "CarRacingScene"
-        : chosenLevelKey === "hard"
-          ? "MazeAdventureScene"
-          : "AdventureScene";
 
     this.phaserGame.scene.start(targetSceneKey, {
       profile: this.activeProfile,
@@ -1050,27 +1333,26 @@ export class UIManager {
   renderAdventureHUD(stats) {
     let touchHtml = "<div></div>";
     if (this.settings.showTouchControls) {
-      if (stats.genre === "racing") {
+      if (stats.genre === "topdown") {
         touchHtml = `
           <div class="hud-touch-controls">
-            <button id="touch-left" class="btn-touch" style="width:108px;font-size:0.95rem;" aria-label="Geser Kiri">◀ KIRI</button>
-            <button id="touch-right" class="btn-touch" style="width:108px;font-size:0.95rem;" aria-label="Geser Kanan">KANAN ▶</button>
-          </div>
-        `;
-      } else if (stats.genre === "maze") {
-        touchHtml = `
-          <div class="hud-touch-controls">
-            <div class="touch-dpad">
-              <button id="touch-left" class="btn-touch" aria-label="Kiri">◀</button>
-              <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
+            <div style="display:grid;grid-template-columns:repeat(3,54px);gap:6px;pointer-events:auto;">
+              <div></div>
+              <button id="touch-up" class="btn-touch" style="width:54px;height:54px;" aria-label="Atas">▲</button>
+              <div></div>
+              <button id="touch-left" class="btn-touch" style="width:54px;height:54px;" aria-label="Kiri">◀</button>
+              <button id="touch-down" class="btn-touch" style="width:54px;height:54px;" aria-label="Bawah">▼</button>
+              <button id="touch-right" class="btn-touch" style="width:54px;height:54px;" aria-label="Kanan">▶</button>
             </div>
             <div class="touch-dpad">
-              <button id="touch-up" class="btn-touch" aria-label="Atas">▲</button>
-              <button id="touch-down" class="btn-touch" aria-label="Bawah">▼</button>
+              <button id="touch-interact" class="btn-touch btn-touch-jump" style="background:linear-gradient(180deg,#4ade80,#16a34a);color:#ffffff;" aria-label="Interaksi">INTERAKSI (E)</button>
             </div>
           </div>
         `;
       } else {
+        const skillBtnHtml = stats.specialSkillEnabled
+          ? `<button id="touch-skill" class="btn-touch" style="width:auto;padding:0 14px;font-size:0.88rem;font-weight:900;background:linear-gradient(180deg,#c084fc,#7e22ce);" aria-label="Skill">SKILL (Q)</button>`
+          : "";
         touchHtml = `
           <div class="hud-touch-controls">
             <div class="touch-dpad">
@@ -1078,6 +1360,7 @@ export class UIManager {
               <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
             </div>
             <div class="touch-dpad">
+              ${skillBtnHtml}
               <button id="touch-attack" class="btn-touch" style="width:auto;padding:0 16px;font-size:0.9rem;font-weight:900;background:linear-gradient(180deg,#38bdf8,#1d4ed8);" aria-label="Serang">SERANG</button>
               <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT ▲</button>
             </div>
@@ -1086,8 +1369,18 @@ export class UIManager {
       }
     }
 
-    const heartsPill = stats.maxHearts
-      ? `<div class="hud-pill" id="hud-hearts-val">${uiIcons.renderHearts(stats.hearts ?? stats.maxHearts, stats.maxHearts)}</div>`
+    const heartsPill =
+      stats.maxHearts > 0
+        ? `<div class="hud-pill" id="hud-hearts-val">${uiIcons.renderHearts(stats.hearts ?? stats.maxHearts, stats.maxHearts)}</div>`
+        : "";
+    const energyPill = stats.energyEnabled
+      ? `<div class="hud-pill" style="border-color:#38bdf8;">${uiIcons.get("sparkle", 15)} <span id="hud-energy-val">${stats.energy ?? 0}/${stats.maxEnergy ?? 100}</span></div>`
+      : "";
+    const timerPill = stats.timerEnabled
+      ? `<div class="hud-pill" style="border-color:#f97316;">⏱ <span id="hud-timer-val">${this.escapeHtml(stats.timerText || "--:--")}</span></div>`
+      : "";
+    const objectivePill = stats.objectiveText
+      ? `<div class="hud-pill" style="border-color:#22c55e;">${uiIcons.get("flag", 15)} <span id="hud-objective-val">${this.escapeHtml(stats.objectiveText)}</span></div>`
       : "";
 
     this.container.innerHTML = `
@@ -1103,6 +1396,8 @@ export class UIManager {
               <span>${this.escapeHtml(stats.subjectName)} · ${this.escapeHtml(stats.levelName)}</span>
             </div>
             ${heartsPill}
+            ${energyPill}
+            ${timerPill}
             <div class="hud-pill">
               ${uiIcons.get("coin", 16)}
               <span id="hud-coin-val">${stats.coins}</span>
@@ -1115,6 +1410,7 @@ export class UIManager {
               ${uiIcons.get("puzzle", 16)}
               <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span>
             </div>
+            ${objectivePill}
           </div>
 
           <div style="display:flex;gap:8px;pointer-events:auto;">
@@ -1122,6 +1418,10 @@ export class UIManager {
               ${uiIcons.get("pause", 15)} <span>Jeda</span>
             </button>
           </div>
+        </div>
+
+        <div id="hud-runtime-debug" style="position:absolute;top:64px;left:20px;background:rgba(15,23,42,0.78);color:#fef08a;border:1px solid #f59e0b;border-radius:8px;padding:3px 9px;font-size:0.7rem;font-family:monospace;font-weight:700;pointer-events:none;">
+          [Menunggu konfirmasi Scene aktif...]
         </div>
 
         <div id="hud-boss-bar" class="pdp-boss-hud">
@@ -1145,7 +1445,7 @@ export class UIManager {
       if (hintEl && hintEl.dataset.sticky !== "true") {
         hintEl.style.display = "none";
       }
-    }, 4000);
+    }, 4500);
 
     document.getElementById("btn-hud-exit").addEventListener("click", () => {
       this.playTone("click");
@@ -1164,17 +1464,26 @@ export class UIManager {
     hearts,
     maxHearts,
     collectibles,
+    energy,
+    maxEnergy,
+    timerText,
+    objectiveText,
     boss,
+    debugInfo,
   }) {
     const coinEl = document.getElementById("hud-coin-val");
     const questEl = document.getElementById("hud-quest-val");
     const heartsEl = document.getElementById("hud-hearts-val");
+    const energyEl = document.getElementById("hud-energy-val");
+    const timerEl = document.getElementById("hud-timer-val");
+    const objEl = document.getElementById("hud-objective-val");
     const hintEl = document.getElementById("hud-hint-banner");
     const gemPill = document.getElementById("hud-gem-pill");
     const gemVal = document.getElementById("hud-collectible-val");
     const bossBar = document.getElementById("hud-boss-bar");
     const bossName = document.getElementById("hud-boss-name");
     const bossFill = document.getElementById("hud-boss-hp-fill");
+    const debugEl = document.getElementById("hud-runtime-debug");
 
     if (coinEl && typeof coins === "number") coinEl.textContent = String(coins);
     if (questEl && typeof totalChallenges === "number") {
@@ -1189,9 +1498,25 @@ export class UIManager {
     ) {
       heartsEl.innerHTML = uiIcons.renderHearts(hearts, maxHearts);
     }
+    if (
+      energyEl &&
+      typeof energy === "number" &&
+      typeof maxEnergy === "number"
+    ) {
+      energyEl.textContent = `${energy}/${maxEnergy}`;
+    }
+    if (timerEl && typeof timerText === "string") {
+      timerEl.textContent = timerText;
+    }
+    if (objEl && typeof objectiveText === "string") {
+      objEl.textContent = objectiveText;
+    }
     if (gemPill && gemVal && typeof collectibles === "number") {
       gemPill.style.display = "flex";
       gemVal.textContent = String(collectibles);
+    }
+    if (debugEl && debugInfo) {
+      debugEl.textContent = `SCENE: ${debugInfo.sceneKey} | MODE: ${debugInfo.mode} | CTRL: ${debugInfo.controller} | HUD: ${debugInfo.hudControlType} | GRAVITY: ${debugInfo.gravityY}`;
     }
     if (bossBar && boss) {
       if (boss.active) {
@@ -1229,6 +1554,9 @@ export class UIManager {
     if (advScene && advScene.physics) {
       advScene.physics.pause();
     }
+    if (advScene && advScene.missionState) {
+      advScene.missionState.pauseTimer();
+    }
 
     const modal = document.createElement("div");
     modal.id = "pdp-pause-modal";
@@ -1258,6 +1586,9 @@ export class UIManager {
       modal.remove();
       if (advScene && advScene.physics && !advScene.isQuizOpen) {
         advScene.physics.resume();
+      }
+      if (advScene && advScene.missionState && !advScene.isQuizOpen) {
+        advScene.missionState.resumeTimer();
       }
     });
 
@@ -1349,6 +1680,9 @@ export class UIManager {
     bindKey("touch-up", "up");
     bindKey("touch-down", "down");
     bindKey("touch-jump", "jump");
+    bindKey("touch-attack", "attack");
+    bindKey("touch-interact", "interact");
+    bindKey("touch-skill", "specialSkill");
   }
 
   showQuestionModal({ questionData, triggerTitle, onComplete }) {
