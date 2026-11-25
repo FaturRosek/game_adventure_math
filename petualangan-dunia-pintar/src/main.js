@@ -10,6 +10,9 @@ import { MazeAdventureScene } from "./scenes/MazeAdventureScene.js";
 import { DuelScene } from "./scenes/DuelScene.js";
 import { BattleArenaScene } from "./scenes/BattleArenaScene.js";
 import { uiManager } from "./systems/UIManager.js";
+import { ForestClimbScene } from "./scenes/ForestClimbScene.js";
+import { OceanExplorerScene } from "./scenes/OceanExplorerScene.js";
+import { LavaAdventureScene } from "./scenes/LavaAdventureScene.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   const phaserConfig = {
@@ -31,6 +34,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     },
     scene: [
       BootScene,
+      ForestClimbScene,
+      OceanExplorerScene,
+      LavaAdventureScene,
       TreasureExplorerScene,
       AdventureScene,
       SurvivalArenaScene,
