@@ -159,7 +159,7 @@ export class AdventureScene extends Phaser.Scene {
 
       const charId = this.profile?.character || "kiko";
       this.activeCharId = charId;
-      this.basePlayerScale = 0.84;
+      this.basePlayerScale = 0.42;
 
       const sheetKey = this.textures.exists(`player_sheet_${charId}`)
         ? `player_sheet_${charId}`
@@ -174,8 +174,8 @@ export class AdventureScene extends Phaser.Scene {
       this.player.setDepth(10);
       this.player.setCollideWorldBounds(true);
       this.player.setBounce(0.02);
-      this.player.body.setSize(40, 86);
-      this.player.body.setOffset(28, 18);
+      this.player.body.setSize(80, 172);
+      this.player.body.setOffset(56, 36);
 
       this.enemySystem.bindCollisions(this.player, this.attackWavesGroup);
       this.bossTriggered = false;

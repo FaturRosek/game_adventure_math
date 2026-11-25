@@ -165,18 +165,18 @@ export class SurvivalArenaScene extends Phaser.Scene {
       this.arenaSpawn.y,
       sheetKey,
     );
-    this.player.setScale(0.84);
+    this.player.setScale(0.42);
     this.player.setDepth(10);
     this.player.setCollideWorldBounds(true);
-    this.player.body.setSize(40, 86);
-    this.player.body.setOffset(28, 18);
+    this.player.body.setSize(80, 172);
+    this.player.body.setOffset(56, 36);
     if (this.anims.exists(`${charId}_idle`)) {
       this.player.play(`${charId}_idle`);
     }
 
     this.controller = new AdventurePhysicsController(this, this.player, {
       charId,
-      baseScale: 0.84,
+      baseScale: 0.42,
       maxSpeed: 315,
       jumpVelocity: -630,
       maxHearts: this.maxHearts,

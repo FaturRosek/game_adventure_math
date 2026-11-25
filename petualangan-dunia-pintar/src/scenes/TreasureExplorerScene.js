@@ -155,11 +155,11 @@ export class TreasureExplorerScene extends Phaser.Scene {
       : `player_${charId}`;
 
     this.player = this.physics.add.sprite(280, 290, sheetKey);
-    this.player.setScale(0.78);
+    this.player.setScale(0.39);
     this.player.setCollideWorldBounds(true);
     this.player.body.setAllowGravity(false);
-    this.player.body.setSize(42, 34);
-    this.player.body.setOffset(27, 68);
+    this.player.body.setSize(84, 68);
+    this.player.body.setOffset(54, 136);
     if (this.anims.exists(`${charId}_idle`)) {
       this.player.play(`${charId}_idle`);
     }
