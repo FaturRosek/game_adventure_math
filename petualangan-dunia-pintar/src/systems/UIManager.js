@@ -13,6 +13,7 @@ import { GAME_CONFIG } from "../config/gameConfig.js";
 import { db } from "../storage/db.js";
 import { questionManager } from "./QuestionManager.js";
 import { hybridEngine } from "./HybridQuestionEngine.js";
+import { questionQualityEngine } from "./QuestionQualityEngine.js";
 import {
   BATTLE_CHARACTERS,
   BATTLE_COSTUMES,
@@ -200,13 +201,16 @@ export class UIManager {
   stopAllGameplayScenes() {
     if (!this.phaserGame) return;
     [
-      "TreasureExplorerScene",
-      "AdventureScene",
-      "SurvivalArenaScene",
-      "CarRacingScene",
-      "MazeAdventureScene",
-      "DuelScene",
-      "BattleArenaScene",
+      'ForestClimbScene',
+      'OceanExplorerScene',
+      'LavaAdventureScene',
+      'TreasureExplorerScene',
+      'AdventureScene',
+      'SurvivalArenaScene',
+      'CarRacingScene',
+      'MazeAdventureScene',
+      'DuelScene',
+      'BattleArenaScene'
     ].forEach((scKey) => {
       if (this.phaserGame.scene.isActive(scKey)) {
         this.phaserGame.scene.stop(scKey);
@@ -217,84 +221,14 @@ export class UIManager {
   getActiveAdventureSceneInstance() {
     if (!this.phaserGame) return null;
     for (const key of [
-      "TreasureExplorerScene",
-      "AdventureScene",
-      "SurvivalArenaScene",
-      "CarRacingScene",
-      "MazeAdventureScene",
-    ]) {
-      if (this.phaserGame.scene.isActive(key)) {
-        return this.phaserGame.scene.getScene(key);
-      }
-    }
-    return null;
-  }
-
-  startAdventureMode(levelKey = null) {
-    this.stopAllGameplayScenes();
-    const chosenLevelKey = String(
-      levelKey || this.selectedAdventureLevelKey || "easy",
-    ).toLowerCase();
-    this.selectedAdventureLevelKey = chosenLevelKey;
-
-    const modeCfg = getAdventureModeConfig(chosenLevelKey);
-    const targetSceneKey = modeCfg.sceneKey;
-
-    if (!this.phaserGame?.scene?.keys?.[targetSceneKey]) {
-      console.error(
-        `[PDP ROUTING ERROR] Scene "${targetSceneKey}" tidak terdaftar di src/main.js!`,
-        {
-          chosenLevelKey,
-          registeredScenes: Object.keys(this.phaserGame?.scene?.keys || {}),
-        },
-      );
-      alert(
-        `Scene "${targetSceneKey}" belum terdaftar di main.js. Periksa registrasi Phaser Scene.`,
-      );
-      return;
-    }
-
-    const subInfo = this.getSubjectInfo(this.selectedSubject);
-    const timerInit = modeCfg.timer.enabled
-      ? `${String(Math.floor(modeCfg.timer.durationSec / 60)).padStart(2, "0")}:00`
-      : "";
-
-    this.renderAdventureHUD({
-      playerName: this.activeProfile?.name || "Petualang",
-      subjectName: subInfo.name,
-      levelName: modeCfg.modeLabel,
-      genre: modeCfg.hudGenre,
-      controlHint: modeCfg.controlHint,
-      hearts: modeCfg.maxHearts,
-      maxHearts: modeCfg.maxHearts,
-      energyEnabled: modeCfg.energy.enabled,
-      energy: modeCfg.energy.initial,
-      maxEnergy: modeCfg.energy.max,
-      timerEnabled: modeCfg.timer.enabled,
-      timerText: timerInit,
-      specialSkillEnabled: modeCfg.combat.enableSpecialSkill,
-      objectiveText: modeCfg.mission.objectives[0]?.label || "",
-      coins: 0,
-      answeredCount: 0,
-      totalChallenges: modeCfg.totalChallenges,
-    });
-
-    this.phaserGame.scene.start(targetSceneKey, {
-      profile: this.activeProfile,
-      grade: this.selectedGrade,
-      subject: this.selectedSubject,
-      levelKey: chosenLevelKey,
-    });
-  }
-
-  getActiveAdventureSceneInstance() {
-    if (!this.phaserGame) return null;
-    for (const key of [
-      "TreasureExplorerScene",
-      "AdventureScene",
-      "SurvivalArenaScene",
-      "CarRacingScene",
-      "MazeAdventureScene",
+      'ForestClimbScene',
+      'OceanExplorerScene',
+      'LavaAdventureScene',
+      'TreasureExplorerScene',
+      'AdventureScene',
+      'SurvivalArenaScene',
+      'CarRacingScene',
+      'MazeAdventureScene'
     ]) {
       if (this.phaserGame.scene.isActive(key)) {
         return this.phaserGame.scene.getScene(key);
@@ -1293,66 +1227,47 @@ export class UIManager {
 
   startAdventureMode(levelKey = null) {
     this.stopAllGameplayScenes();
-    const chosenLevelKey = levelKey || this.selectedAdventureLevelKey || "easy";
+    const chosenLevelKey = String(levelKey || this.selectedAdventureLevelKey || 'easy').toLowerCase();
     this.selectedAdventureLevelKey = chosenLevelKey;
 
-    const subInfo = this.getSubjectInfo(this.selectedSubject);
     const modeCfg = getAdventureModeConfig(chosenLevelKey);
-    const targetSceneKey = modeCfg.sceneKey || "AdventureScene";
+    const targetSceneKey = modeCfg.sceneKey;
+
+    if (!this.phaserGame?.scene?.keys?.[targetSceneKey]) {
+      console.error(`[PDP ROUTING ERROR] Scene "${targetSceneKey}" belum terdaftar di src/main.js!`);
+      return;
+    }
+
+    const subInfo = this.getSubjectInfo(this.selectedSubject);
 
     this.renderAdventureHUD({
-      playerName: this.activeProfile?.name || "Petualang",
+      playerName: this.activeProfile?.name || 'Petualang',
       subjectName: subInfo.name,
       levelName: modeCfg.modeLabel,
       genre: modeCfg.hudGenre,
       controlHint: modeCfg.controlHint,
-      hearts: modeCfg.modeType === "exploration" ? 0 : modeCfg.maxHearts,
-      maxHearts: modeCfg.modeType === "exploration" ? 0 : modeCfg.maxHearts,
-      energyEnabled: modeCfg.energy.enabled,
-      energy: modeCfg.energy.initial,
-      maxEnergy: modeCfg.energy.max,
-      timerEnabled: modeCfg.timer.enabled,
-      timerText: modeCfg.timer.enabled
-        ? `${String(Math.floor(modeCfg.timer.durationSec / 60)).padStart(2, "0")}:00`
-        : "",
-      specialSkillEnabled: modeCfg.combat.enableSpecialSkill,
-      objectiveText: modeCfg.mission.objectives[0]?.label || "",
+      hearts: modeCfg.maxHearts,
+      maxHearts: modeCfg.maxHearts,
+      oxygenEnabled: Boolean(modeCfg.oxygenEnabled),
+      oxygenPct: 100,
+      objectiveText: modeCfg.mission.objectives[0]?.label || '',
       coins: 0,
       answeredCount: 0,
-      totalChallenges: modeCfg.totalChallenges,
+      totalChallenges: modeCfg.totalChallenges
     });
 
     this.phaserGame.scene.start(targetSceneKey, {
       profile: this.activeProfile,
       grade: this.selectedGrade,
       subject: this.selectedSubject,
-      levelKey: chosenLevelKey,
+      levelKey: chosenLevelKey
     });
   }
 
   renderAdventureHUD(stats) {
-    let touchHtml = "<div></div>";
+    let touchHtml = '<div></div>';
     if (this.settings.showTouchControls) {
-      if (stats.genre === "topdown") {
-        touchHtml = `
-          <div class="hud-touch-controls">
-            <div style="display:grid;grid-template-columns:repeat(3,54px);gap:6px;pointer-events:auto;">
-              <div></div>
-              <button id="touch-up" class="btn-touch" style="width:54px;height:54px;" aria-label="Atas">▲</button>
-              <div></div>
-              <button id="touch-left" class="btn-touch" style="width:54px;height:54px;" aria-label="Kiri">◀</button>
-              <button id="touch-down" class="btn-touch" style="width:54px;height:54px;" aria-label="Bawah">▼</button>
-              <button id="touch-right" class="btn-touch" style="width:54px;height:54px;" aria-label="Kanan">▶</button>
-            </div>
-            <div class="touch-dpad">
-              <button id="touch-interact" class="btn-touch btn-touch-jump" style="background:linear-gradient(180deg,#4ade80,#16a34a);color:#ffffff;" aria-label="Interaksi">INTERAKSI (E)</button>
-            </div>
-          </div>
-        `;
-      } else {
-        const skillBtnHtml = stats.specialSkillEnabled
-          ? `<button id="touch-skill" class="btn-touch" style="width:auto;padding:0 14px;font-size:0.88rem;font-weight:900;background:linear-gradient(180deg,#c084fc,#7e22ce);" aria-label="Skill">SKILL (Q)</button>`
-          : "";
+      if (stats.genre === 'climb') {
         touchHtml = `
           <div class="hud-touch-controls">
             <div class="touch-dpad">
@@ -1360,8 +1275,36 @@ export class UIManager {
               <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
             </div>
             <div class="touch-dpad">
-              ${skillBtnHtml}
-              <button id="touch-attack" class="btn-touch" style="width:auto;padding:0 16px;font-size:0.9rem;font-weight:900;background:linear-gradient(180deg,#38bdf8,#1d4ed8);" aria-label="Serang">SERANG</button>
+              <button id="touch-up" class="btn-touch" style="background:linear-gradient(180deg,#4ade80,#16a34a);" aria-label="Panjat Atas">▲</button>
+              <button id="touch-down" class="btn-touch" style="background:linear-gradient(180deg,#4ade80,#16a34a);" aria-label="Turun">▼</button>
+              <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT</button>
+            </div>
+          </div>
+        `;
+      } else if (stats.genre === 'ocean') {
+        touchHtml = `
+          <div class="hud-touch-controls">
+            <div style="display:grid;grid-template-columns:repeat(3,54px);gap:6px;pointer-events:auto;">
+              <div></div>
+              <button id="touch-up" class="btn-touch" style="width:54px;height:54px;" aria-label="Naik/Berenang Atas">▲</button>
+              <div></div>
+              <button id="touch-left" class="btn-touch" style="width:54px;height:54px;" aria-label="Kiri">◀</button>
+              <button id="touch-down" class="btn-touch" style="width:54px;height:54px;" aria-label="Menyelam Bawah">▼</button>
+              <button id="touch-right" class="btn-touch" style="width:54px;height:54px;" aria-label="Kanan">▶</button>
+            </div>
+            <div class="touch-dpad">
+              <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat / Naik">LOMPAT ▲</button>
+            </div>
+          </div>
+        `;
+      } else {
+        touchHtml = `
+          <div class="hud-touch-controls">
+            <div class="touch-dpad">
+              <button id="touch-left" class="btn-touch" aria-label="Kiri">◀</button>
+              <button id="touch-right" class="btn-touch" aria-label="Kanan">▶</button>
+            </div>
+            <div class="touch-dpad">
               <button id="touch-jump" class="btn-touch btn-touch-jump" aria-label="Lompat">LOMPAT ▲</button>
             </div>
           </div>
@@ -1369,45 +1312,50 @@ export class UIManager {
       }
     }
 
-    const heartsPill =
-      stats.maxHearts > 0
-        ? `<div class="hud-pill" id="hud-hearts-val">${uiIcons.renderHearts(stats.hearts ?? stats.maxHearts, stats.maxHearts)}</div>`
-        : "";
-    const energyPill = stats.energyEnabled
-      ? `<div class="hud-pill" style="border-color:#38bdf8;">${uiIcons.get("sparkle", 15)} <span id="hud-energy-val">${stats.energy ?? 0}/${stats.maxEnergy ?? 100}</span></div>`
-      : "";
-    const timerPill = stats.timerEnabled
-      ? `<div class="hud-pill" style="border-color:#f97316;">⏱ <span id="hud-timer-val">${this.escapeHtml(stats.timerText || "--:--")}</span></div>`
-      : "";
+    const heartsPill = stats.maxHearts > 0
+      ? `<div class="hud-pill" id="hud-hearts-val">${uiIcons.renderHearts(stats.hearts ?? stats.maxHearts, stats.maxHearts)}</div>`
+      : '';
+
+    const oxygenPill = stats.oxygenEnabled
+      ? `
+        <div class="hud-pill" id="hud-oxygen-pill" style="border-color:#38bdf8;gap:8px;">
+          <span>🫧 Napas</span>
+          <div style="width:92px;height:12px;background:rgba(15,23,42,0.55);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,0.4);">
+            <div id="hud-oxygen-fill" style="width:${stats.oxygenPct ?? 100}%;height:100%;background:linear-gradient(90deg,#38bdf8,#22d3ee);transition:width 120ms linear;"></div>
+          </div>
+          <span id="hud-oxygen-val">${stats.oxygenPct ?? 100}%</span>
+        </div>
+      `
+      : '';
+
     const objectivePill = stats.objectiveText
-      ? `<div class="hud-pill" style="border-color:#22c55e;">${uiIcons.get("flag", 15)} <span id="hud-objective-val">${this.escapeHtml(stats.objectiveText)}</span></div>`
-      : "";
+      ? `<div class="hud-pill" style="border-color:#22c55e;">${uiIcons.get('flag', 15)} <span id="hud-objective-val">${this.escapeHtml(stats.objectiveText)}</span></div>`
+      : '';
 
     this.container.innerHTML = `
       <div class="hud-overlay" id="adventure-hud">
         <div class="hud-top-bar">
           <div class="hud-stats-group">
             <div class="hud-pill">
-              ${uiIcons.get("user", 16)}
+              ${uiIcons.get('user', 16)}
               <span>${this.escapeHtml(stats.playerName)}</span>
             </div>
             <div class="hud-pill">
-              ${uiIcons.get("book", 16)}
+              ${uiIcons.get('book', 16)}
               <span>${this.escapeHtml(stats.subjectName)} · ${this.escapeHtml(stats.levelName)}</span>
             </div>
             ${heartsPill}
-            ${energyPill}
-            ${timerPill}
+            ${oxygenPill}
             <div class="hud-pill">
-              ${uiIcons.get("coin", 16)}
+              ${uiIcons.get('coin', 16)}
               <span id="hud-coin-val">${stats.coins}</span>
             </div>
             <div class="hud-pill" id="hud-gem-pill" style="display:none;">
-              ${uiIcons.get("gem", 16)}
+              ${uiIcons.get('gem', 16)}
               <span id="hud-collectible-val">0</span>
             </div>
             <div class="hud-pill">
-              ${uiIcons.get("puzzle", 16)}
+              ${uiIcons.get('puzzle', 16)}
               <span id="hud-quest-val">${stats.answeredCount}/${stats.totalChallenges}</span>
             </div>
             ${objectivePill}
@@ -1415,25 +1363,13 @@ export class UIManager {
 
           <div style="display:flex;gap:8px;pointer-events:auto;">
             <button id="btn-hud-exit" class="btn-cartoon btn-red btn-small">
-              ${uiIcons.get("pause", 15)} <span>Jeda</span>
+              ${uiIcons.get('pause', 15)} <span>Jeda</span>
             </button>
           </div>
         </div>
 
-        <div id="hud-runtime-debug" style="position:absolute;top:64px;left:20px;background:rgba(15,23,42,0.78);color:#fef08a;border:1px solid #f59e0b;border-radius:8px;padding:3px 9px;font-size:0.7rem;font-family:monospace;font-weight:700;pointer-events:none;">
-          [Menunggu konfirmasi Scene aktif...]
-        </div>
-
-        <div id="hud-boss-bar" class="pdp-boss-hud">
-          ${uiIcons.get("boss", 22)}
-          <span id="hud-boss-name">Penjaga Gerbang</span>
-          <div class="pdp-boss-hp-track">
-            <div id="hud-boss-hp-fill" class="pdp-boss-hp-fill"></div>
-          </div>
-        </div>
-
         <div id="hud-hint-banner" class="pdp-hud-hint" style="display:block;">
-          ${this.escapeHtml(stats.controlHint || "Gunakan tombol arah untuk menjelajah!")}
+          ${this.escapeHtml(stats.controlHint || 'Gunakan tombol arah untuk menjelajah!')}
         </div>
 
         ${touchHtml}
@@ -1441,14 +1377,14 @@ export class UIManager {
     `;
 
     setTimeout(() => {
-      const hintEl = document.getElementById("hud-hint-banner");
-      if (hintEl && hintEl.dataset.sticky !== "true") {
-        hintEl.style.display = "none";
+      const hintEl = document.getElementById('hud-hint-banner');
+      if (hintEl && hintEl.dataset.sticky !== 'true') {
+        hintEl.style.display = 'none';
       }
     }, 4500);
 
-    document.getElementById("btn-hud-exit").addEventListener("click", () => {
-      this.playTone("click");
+    document.getElementById('btn-hud-exit').addEventListener('click', () => {
+      this.playTone('click');
       this.showPauseConfirmModal();
     });
 
@@ -1464,84 +1400,56 @@ export class UIManager {
     hearts,
     maxHearts,
     collectibles,
-    energy,
-    maxEnergy,
-    timerText,
-    objectiveText,
-    boss,
-    debugInfo,
+    oxygenPct,
+    objectiveText
   }) {
-    const coinEl = document.getElementById("hud-coin-val");
-    const questEl = document.getElementById("hud-quest-val");
-    const heartsEl = document.getElementById("hud-hearts-val");
-    const energyEl = document.getElementById("hud-energy-val");
-    const timerEl = document.getElementById("hud-timer-val");
-    const objEl = document.getElementById("hud-objective-val");
-    const hintEl = document.getElementById("hud-hint-banner");
-    const gemPill = document.getElementById("hud-gem-pill");
-    const gemVal = document.getElementById("hud-collectible-val");
-    const bossBar = document.getElementById("hud-boss-bar");
-    const bossName = document.getElementById("hud-boss-name");
-    const bossFill = document.getElementById("hud-boss-hp-fill");
-    const debugEl = document.getElementById("hud-runtime-debug");
+    const coinEl = document.getElementById('hud-coin-val');
+    const questEl = document.getElementById('hud-quest-val');
+    const heartsEl = document.getElementById('hud-hearts-val');
+    const objEl = document.getElementById('hud-objective-val');
+    const hintEl = document.getElementById('hud-hint-banner');
+    const gemPill = document.getElementById('hud-gem-pill');
+    const gemVal = document.getElementById('hud-collectible-val');
+    const oxyPill = document.getElementById('hud-oxygen-pill');
+    const oxyFill = document.getElementById('hud-oxygen-fill');
+    const oxyVal = document.getElementById('hud-oxygen-val');
 
-    if (coinEl && typeof coins === "number") coinEl.textContent = String(coins);
-    if (questEl && typeof totalChallenges === "number") {
-      const shown =
-        typeof answeredCount === "number" ? answeredCount : correctCount || 0;
+    if (coinEl && typeof coins === 'number') coinEl.textContent = String(coins);
+    if (questEl && typeof totalChallenges === 'number') {
+      const shown = typeof answeredCount === 'number' ? answeredCount : (correctCount || 0);
       questEl.textContent = `${shown}/${totalChallenges}`;
     }
-    if (
-      heartsEl &&
-      typeof hearts === "number" &&
-      typeof maxHearts === "number"
-    ) {
+    if (heartsEl && typeof hearts === 'number' && typeof maxHearts === 'number') {
       heartsEl.innerHTML = uiIcons.renderHearts(hearts, maxHearts);
     }
-    if (
-      energyEl &&
-      typeof energy === "number" &&
-      typeof maxEnergy === "number"
-    ) {
-      energyEl.textContent = `${energy}/${maxEnergy}`;
-    }
-    if (timerEl && typeof timerText === "string") {
-      timerEl.textContent = timerText;
-    }
-    if (objEl && typeof objectiveText === "string") {
+    if (objEl && typeof objectiveText === 'string') {
       objEl.textContent = objectiveText;
     }
-    if (gemPill && gemVal && typeof collectibles === "number") {
-      gemPill.style.display = "flex";
+    if (gemPill && gemVal && typeof collectibles === 'number') {
+      gemPill.style.display = 'flex';
       gemVal.textContent = String(collectibles);
     }
-    if (debugEl && debugInfo) {
-      debugEl.textContent = `SCENE: ${debugInfo.sceneKey} | MODE: ${debugInfo.mode} | CTRL: ${debugInfo.controller} | HUD: ${debugInfo.hudControlType} | GRAVITY: ${debugInfo.gravityY}`;
-    }
-    if (bossBar && boss) {
-      if (boss.active) {
-        bossBar.style.display = "flex";
-        if (bossName) bossName.textContent = boss.name || "Boss Arena";
-        if (bossFill) {
-          const pct = Math.max(
-            0,
-            Math.min(
-              100,
-              Math.round((boss.hp / Math.max(1, boss.maxHp)) * 100),
-            ),
-          );
-          bossFill.style.width = `${pct}%`;
-        }
+    if (oxyFill && oxyVal && typeof oxygenPct === 'number') {
+      const pct = Math.max(0, Math.min(100, Math.round(oxygenPct)));
+      oxyFill.style.width = `${pct}%`;
+      oxyVal.textContent = `${pct}%`;
+      if (pct <= 22) {
+        oxyFill.style.background = 'linear-gradient(90deg,#ef4444,#f87171)';
+        if (oxyPill) oxyPill.style.borderColor = '#ef4444';
+      } else if (pct <= 40) {
+        oxyFill.style.background = 'linear-gradient(90deg,#f59e0b,#facc15)';
+        if (oxyPill) oxyPill.style.borderColor = '#f59e0b';
       } else {
-        bossBar.style.display = "none";
+        oxyFill.style.background = 'linear-gradient(90deg,#38bdf8,#22d3ee)';
+        if (oxyPill) oxyPill.style.borderColor = '#38bdf8';
       }
     }
-    if (hintEl && typeof hintText === "string") {
+    if (hintEl && typeof hintText === 'string') {
       if (hintText.trim()) {
         hintEl.textContent = hintText;
-        hintEl.style.display = "block";
+        hintEl.style.display = 'block';
       } else {
-        hintEl.style.display = "none";
+        hintEl.style.display = 'none';
       }
     }
   }
@@ -1652,22 +1560,19 @@ export class UIManager {
     const bindKey = (elId, stateProp) => {
       const btn = document.getElementById(elId);
       if (!btn) return;
-
       const setVal = (val) => {
         const activeScene = this.getActiveAdventureSceneInstance();
         if (activeScene && activeScene.touchState) {
           activeScene.touchState[stateProp] = val;
         }
       };
-
-      ["mousedown", "touchstart"].forEach((evt) => {
+      ['mousedown', 'touchstart'].forEach((evt) => {
         btn.addEventListener(evt, (e) => {
           e.preventDefault();
           setVal(true);
         });
       });
-
-      ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach((evt) => {
+      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach((evt) => {
         btn.addEventListener(evt, (e) => {
           e.preventDefault();
           setVal(false);
@@ -1675,55 +1580,116 @@ export class UIManager {
       });
     };
 
-    bindKey("touch-left", "left");
-    bindKey("touch-right", "right");
-    bindKey("touch-up", "up");
-    bindKey("touch-down", "down");
-    bindKey("touch-jump", "jump");
-    bindKey("touch-attack", "attack");
-    bindKey("touch-interact", "interact");
-    bindKey("touch-skill", "specialSkill");
+    bindKey('touch-left', 'left');
+    bindKey('touch-right', 'right');
+    bindKey('touch-up', 'up');
+    bindKey('touch-down', 'down');
+    bindKey('touch-jump', 'jump');
   }
 
   showQuestionModal({ questionData, triggerTitle, onComplete }) {
-    const existing = document.getElementById("active-quiz-modal");
+    const existing = document.getElementById('active-quiz-modal');
     if (existing) existing.remove();
 
-    const letters = ["A", "B", "C", "D"];
-    const diffLabel = String(questionData.difficulty || "sedang").toUpperCase();
+    const qType = questionData.questionType || 'multiple_choice';
+    const diffLabel = String(questionData.difficulty || 'sedang').toUpperCase();
     const diffStyle =
-      diffLabel === "MUDAH"
-        ? "background:#d1fae5;color:#065f46;"
-        : diffLabel === "SULIT"
-          ? "background:#fee2e2;color:#991b1b;"
-          : "background:#fef3c7;color:#92400e;";
+      diffLabel === 'MUDAH'
+        ? 'background:#d1fae5;color:#065f46;'
+        : diffLabel === 'SULIT'
+          ? 'background:#fee2e2;color:#991b1b;'
+          : 'background:#fef3c7;color:#92400e;';
 
-    const optionsHtml = questionData.options
-      .map(
-        (opt, idx) => `
-      <button class="btn-option pdp-quiz-opt" data-answer="${this.escapeHtml(opt)}">
-        <span class="option-letter">${letters[idx] || idx + 1}</span>
-        <span>${this.escapeHtml(opt)}</span>
-      </button>
-    `,
-      )
-      .join("");
+    const typeBadgeLabel =
+      qType === 'matching'
+        ? 'Mencocokkan'
+        : qType === 'essay'
+          ? 'Isian / Essay'
+          : 'Pilihan Ganda';
 
-    const modalEl = document.createElement("div");
-    modalEl.id = "active-quiz-modal";
-    modalEl.className = "modal-backdrop";
-    modalEl.style.position = "absolute";
-    modalEl.style.inset = "0";
+    const modalEl = document.createElement('div');
+    modalEl.id = 'active-quiz-modal';
+    modalEl.className = 'modal-backdrop';
+    modalEl.style.position = 'absolute';
+    modalEl.style.inset = '0';
+
+    let bodyHtml = '';
+
+    if (qType === 'matching') {
+      const leftHtml = (questionData.leftItems || []).map((item, idx) => `
+        <button type="button" class="pdp-match-btn pdp-match-left" data-left-id="${this.escapeHtml(item.id)}">
+          <span class="pdp-match-num">${idx + 1}</span>
+          <span>${this.escapeHtml(item.text)}</span>
+          <span class="pdp-match-tag" data-tag-for="${this.escapeHtml(item.id)}"></span>
+        </button>
+      `).join('');
+
+      const rightHtml = (questionData.rightItems || []).map((item) => `
+        <button type="button" class="pdp-match-btn pdp-match-right" data-right-id="${this.escapeHtml(item.id)}">
+          <span>${this.escapeHtml(item.text)}</span>
+          <span class="pdp-match-badge" data-rbadge-for="${this.escapeHtml(item.id)}"></span>
+        </button>
+      `).join('');
+
+      bodyHtml = `
+        <div style="font-size:0.86rem;font-weight:700;color:#5c3a21;margin-bottom:8px;">
+          Klik satu kotak di sebelah kiri, lalu klik pasangannya di sebelah kanan.
+        </div>
+        <div class="pdp-matching-grid">
+          <div class="pdp-match-col">${leftHtml}</div>
+          <div class="pdp-match-col">${rightHtml}</div>
+        </div>
+        <div class="btn-group-horizontal" style="margin-top:12px;">
+          <button id="btn-check-matching" class="btn-cartoon btn-blue btn-small" disabled>
+            ${uiIcons.get('check', 16)} <span>Periksa Pasangan</span>
+          </button>
+        </div>
+      `;
+    } else if (qType === 'essay') {
+      const cluesCount = (questionData.clues || []).length;
+      bodyHtml = `
+        <div class="pdp-essay-wrap">
+          <input
+            type="text"
+            id="inp-essay-answer"
+            class="input-cartoon"
+            placeholder="Ketik jawabanmu di sini..."
+            autocomplete="off"
+          />
+          <div class="pdp-essay-actions">
+            <button type="button" id="btn-check-essay" class="btn-cartoon btn-blue btn-small">
+              ${uiIcons.get('check', 16)} <span>Periksa Jawaban</span>
+            </button>
+            <button type="button" id="btn-essay-clue" class="btn-cartoon btn-small pdp-clue-btn">
+              💡 <span>Clue (0/${cluesCount})</span>
+            </button>
+          </div>
+          <div id="essay-clues-box" class="pdp-clues-box" style="display:none;"></div>
+        </div>
+      `;
+    } else {
+      const letters = ['A', 'B', 'C', 'D'];
+      const optionsHtml = (questionData.options || []).map((opt, idx) => `
+        <button class="btn-option pdp-quiz-opt" data-answer="${this.escapeHtml(opt)}">
+          <span class="option-letter">${letters[idx] || idx + 1}</span>
+          <span>${this.escapeHtml(opt)}</span>
+        </button>
+      `).join('');
+      bodyHtml = `<div class="quiz-options-grid">${optionsHtml}</div>`;
+    }
 
     modalEl.innerHTML = `
       <div class="quiz-panel">
         <div class="quiz-header-badges">
           <span class="status-badge" style="background:#eff6ff;color:#1d4ed8;">
-            ${this.escapeHtml(triggerTitle || "Tantangan Belajar")}
+            ${this.escapeHtml(triggerTitle || 'Tantangan Belajar')}
           </span>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="status-badge" style="background:#ede9fe;color:#5b21b6;">
+              ${typeBadgeLabel}
+            </span>
             <span class="status-badge" style="background:#f1f5f9;color:#334155;">
-              ${this.escapeHtml(questionData.topic || "Materi")}
+              ${this.escapeHtml(questionData.topic || 'Materi')}
             </span>
             <span class="status-badge" style="${diffStyle}">
               ${this.escapeHtml(diffLabel)}
@@ -1735,15 +1701,13 @@ export class UIManager {
           ${this.escapeHtml(questionData.question)}
         </div>
 
-        <div class="quiz-options-grid">
-          ${optionsHtml}
-        </div>
+        ${bodyHtml}
 
         <div id="quiz-feedback" style="display:none;"></div>
 
         <div id="quiz-continue-wrap" class="btn-group-horizontal" style="display:none;margin-top:14px;">
           <button id="btn-quiz-continue" class="btn-cartoon btn-green btn-small">
-            ${uiIcons.get("check", 16)} <span>Lanjutkan Petualangan</span>
+            ${uiIcons.get('check', 16)} <span>Lanjutkan Petualangan</span>
           </button>
         </div>
       </div>
@@ -1751,14 +1715,180 @@ export class UIManager {
 
     this.container.appendChild(modalEl);
 
+    const feedbackEl = modalEl.querySelector('#quiz-feedback');
+    const continueWrap = modalEl.querySelector('#quiz-continue-wrap');
+    const continueBtn = modalEl.querySelector('#btn-quiz-continue');
+
+    const enableContinue = (isCorrect, chosenVal, meta = {}) => {
+      continueWrap.style.display = 'flex';
+      continueBtn.onclick = () => {
+        this.playTone('click');
+        modalEl.remove();
+        if (onComplete) onComplete(isCorrect, chosenVal, meta);
+      };
+    };
+
+    if (qType === 'matching') {
+      const pairs = questionData.pairs || [];
+      const mappings = {};
+      let activeLeftId = null;
+      let submitted = false;
+
+      const leftBtns = modalEl.querySelectorAll('.pdp-match-left');
+      const rightBtns = modalEl.querySelectorAll('.pdp-match-right');
+      const checkBtn = modalEl.querySelector('#btn-check-matching');
+
+      const refreshMatchUI = () => {
+        const leftOrder = Array.from(leftBtns).map((b) => b.dataset.leftId);
+        leftBtns.forEach((btn) => {
+          const lid = btn.dataset.leftId;
+          btn.classList.toggle('active', lid === activeLeftId);
+          btn.classList.toggle('paired', Boolean(mappings[lid]));
+          const tag = btn.querySelector('.pdp-match-tag');
+          if (tag) tag.textContent = mappings[lid] ? '✓' : '';
+        });
+
+        rightBtns.forEach((btn) => {
+          const rid = btn.dataset.rightId;
+          const pairedLeftId = Object.keys(mappings).find((k) => mappings[k] === rid);
+          btn.classList.toggle('paired', Boolean(pairedLeftId));
+          const badge = btn.querySelector('.pdp-match-badge');
+          if (badge) {
+            badge.textContent = pairedLeftId ? `#${leftOrder.indexOf(pairedLeftId) + 1}` : '';
+          }
+        });
+
+        checkBtn.disabled = Object.keys(mappings).length < pairs.length;
+      };
+
+      leftBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (submitted) return;
+          this.playTone('click');
+          activeLeftId = btn.dataset.leftId;
+          refreshMatchUI();
+        });
+      });
+
+      rightBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (submitted || !activeLeftId) return;
+          this.playTone('click');
+          const rid = btn.dataset.rightId;
+          Object.keys(mappings).forEach((k) => {
+            if (mappings[k] === rid) delete mappings[k];
+          });
+          mappings[activeLeftId] = rid;
+          activeLeftId = null;
+          refreshMatchUI();
+        });
+      });
+
+      checkBtn.addEventListener('click', () => {
+        if (submitted) return;
+        submitted = true;
+        checkBtn.style.display = 'none';
+
+        const result = questionQualityEngine.evaluateMatchingAnswer(mappings, pairs);
+        if (result.isCorrect) {
+          this.playTone('correct');
+          feedbackEl.className = 'quiz-feedback-box feedback-correct';
+          feedbackEl.innerHTML = `
+            <div style="font-weight:800;margin-bottom:4px;">Semua pasangan tepat (${result.correctCount}/${result.totalPairs})!</div>
+            <div>${this.escapeHtml(questionData.explanation || '')}</div>
+          `;
+        } else {
+          this.playTone('wrong');
+          const keySummary = pairs.map((p) => `${p.left} → ${p.right}`).join(' · ');
+          feedbackEl.className = 'quiz-feedback-box feedback-wrong';
+          feedbackEl.innerHTML = `
+            <div style="font-weight:800;margin-bottom:4px;">Tepat ${result.correctCount}/${result.totalPairs} pasangan.</div>
+            <div><strong>Pasangan benar:</strong> ${this.escapeHtml(keySummary)}</div>
+          `;
+        }
+        feedbackEl.style.display = 'block';
+        enableContinue(result.isCorrect, JSON.stringify(mappings));
+      });
+      return;
+    }
+
+    if (qType === 'essay') {
+      const inp = modalEl.querySelector('#inp-essay-answer');
+      const checkBtn = modalEl.querySelector('#btn-check-essay');
+      const clueBtn = modalEl.querySelector('#btn-essay-clue');
+      const cluesBox = modalEl.querySelector('#essay-clues-box');
+      const clues = questionData.clues || [];
+      let cluesUsed = 0;
+      let solved = false;
+
+      setTimeout(() => inp?.focus(), 60);
+
+      clueBtn.addEventListener('click', () => {
+        if (solved || cluesUsed >= clues.length) return;
+        this.playTone('click');
+        cluesUsed += 1;
+        clueBtn.innerHTML = `💡 <span>Clue (${cluesUsed}/${clues.length})</span>`;
+        if (cluesUsed >= clues.length) {
+          clueBtn.disabled = true;
+        }
+        cluesBox.style.display = 'block';
+        cluesBox.innerHTML = clues
+          .slice(0, cluesUsed)
+          .map((c, i) => `<div><strong>Petunjuk ${i + 1}:</strong> ${this.escapeHtml(c)}</div>`)
+          .join('');
+      });
+
+      const handleCheckEssay = () => {
+        if (solved) return;
+        const userVal = inp.value.trim();
+        const evalRes = questionQualityEngine.evaluateEssayAnswer(userVal, questionData);
+
+        if (evalRes.isCorrect) {
+          solved = true;
+          this.playTone('correct');
+          inp.disabled = true;
+          checkBtn.disabled = true;
+          clueBtn.disabled = true;
+
+          feedbackEl.className = 'quiz-feedback-box feedback-correct';
+          feedbackEl.innerHTML = `
+            <div style="font-weight:800;margin-bottom:4px;">${this.escapeHtml(evalRes.feedback)}</div>
+            <div>${this.escapeHtml(questionData.explanation || '')}</div>
+          `;
+          feedbackEl.style.display = 'block';
+          enableContinue(true, userVal, { cluesUsed });
+        } else {
+          this.playTone('wrong');
+          feedbackEl.className = 'quiz-feedback-box feedback-wrong';
+          feedbackEl.innerHTML = `
+            <div style="font-weight:800;">${this.escapeHtml(evalRes.feedback)}</div>
+            <div style="font-size:0.86rem;margin-top:3px;">Perbaiki jawabanmu dulu agar bisa melanjutkan petualangan!</div>
+          `;
+          feedbackEl.style.display = 'block';
+          inp.focus();
+        }
+      };
+
+      checkBtn.addEventListener('click', handleCheckEssay);
+      inp.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleCheckEssay();
+        }
+      });
+
+      inp.addEventListener('keyup', (e) => {
+        e.stopPropagation();
+      });
+      return;
+    }
+
     let answered = false;
-    const optButtons = modalEl.querySelectorAll(".pdp-quiz-opt");
-    const feedbackEl = modalEl.querySelector("#quiz-feedback");
-    const continueWrap = modalEl.querySelector("#quiz-continue-wrap");
-    const continueBtn = modalEl.querySelector("#btn-quiz-continue");
+    const optButtons = modalEl.querySelectorAll('.pdp-quiz-opt');
 
     optButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener('click', () => {
         if (answered) return;
         answered = true;
 
@@ -1768,40 +1898,34 @@ export class UIManager {
         optButtons.forEach((b) => {
           b.disabled = true;
           if (b.dataset.answer === questionData.correctAnswer) {
-            b.classList.add("correct");
+            b.classList.add('correct');
           }
         });
 
         if (isCorrect) {
-          this.playTone("correct");
-          btn.classList.add("correct");
-          feedbackEl.className = "quiz-feedback-box feedback-correct";
+          this.playTone('correct');
+          btn.classList.add('correct');
+          feedbackEl.className = 'quiz-feedback-box feedback-correct';
           feedbackEl.innerHTML = `
             <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px;">
-              ${uiIcons.get("check", 18)} <span>Jawaban Tepat!</span>
+              ${uiIcons.get('check', 18)} <span>Jawaban Tepat!</span>
             </div>
-            <div>${this.escapeHtml(questionData.explanation || "")}</div>
+            <div>${this.escapeHtml(questionData.explanation || '')}</div>
           `;
         } else {
-          this.playTone("wrong");
-          btn.classList.add("wrong");
-          feedbackEl.className = "quiz-feedback-box feedback-wrong";
+          this.playTone('wrong');
+          btn.classList.add('wrong');
+          feedbackEl.className = 'quiz-feedback-box feedback-wrong';
           feedbackEl.innerHTML = `
             <div style="display:flex;align-items:center;gap:6px;font-weight:800;margin-bottom:4px;">
-              ${uiIcons.get("x", 18)} <span>Belum tepat. Jawaban benar: ${this.escapeHtml(questionData.correctAnswer)}</span>
+              ${uiIcons.get('x', 18)} <span>Belum tepat. Jawaban benar: ${this.escapeHtml(questionData.correctAnswer)}</span>
             </div>
-            <div>${this.escapeHtml(questionData.explanation || "")}</div>
+            <div>${this.escapeHtml(questionData.explanation || '')}</div>
           `;
         }
 
-        feedbackEl.style.display = "block";
-        continueWrap.style.display = "flex";
-
-        continueBtn.onclick = () => {
-          this.playTone("click");
-          modalEl.remove();
-          if (onComplete) onComplete(isCorrect, chosen);
-        };
+        feedbackEl.style.display = 'block';
+        enableContinue(isCorrect, chosen);
       });
     });
   }
@@ -1954,6 +2078,98 @@ export class UIManager {
     document.getElementById("btn-back-menu").addEventListener("click", () => {
       this.playTone("click");
       this.showMainMenu();
+    });
+  }
+
+  showAdventureGameOver({
+    levelKey = 'medium',
+    modeLabel = 'Ocean Explorer',
+    subjectName = '',
+    answeredCount = 0,
+    remainingCount = 0,
+    totalChallenges = 7,
+    correctCount = 0,
+    reason = 'Daya napas habis sebelum misi selesai.',
+    theme = 'ocean'
+  } = {}) {
+    const existingQuiz = document.getElementById('active-quiz-modal');
+    if (existingQuiz) existingQuiz.remove();
+
+    const existingModal = document.getElementById('adventure-gameover-modal');
+    if (existingModal) existingModal.remove();
+
+    const isOcean = theme === 'ocean';
+    const headerGrad = isOcean
+      ? 'linear-gradient(135deg, #0369a1 0%, #06b6d4 100%)'
+      : 'linear-gradient(135deg, #991b1b 0%, #ea580c 100%)';
+
+    const modalEl = document.createElement('div');
+    modalEl.id = 'adventure-gameover-modal';
+    modalEl.className = 'modal-backdrop';
+    modalEl.style.position = 'absolute';
+    modalEl.style.inset = '0';
+    modalEl.style.zIndex = '60';
+
+    modalEl.innerHTML = `
+      <div class="cartoon-panel" style="max-width:520px;padding:0;overflow:hidden;border:4px solid #0284c7;background:#f0f9ff;">
+        <div style="background:${headerGrad};color:#ffffff;padding:22px 24px 18px;text-align:center;">
+          <div style="font-size:2.6rem;line-height:1;margin-bottom:6px;">${isOcean ? '🫧🌊' : '⚠️'}</div>
+          <h2 style="margin:0;font-size:1.65rem;font-weight:900;letter-spacing:0.4px;text-shadow:0 2px 6px rgba(15,23,42,0.35);">
+            Misi Gagal!
+          </h2>
+          <div style="margin-top:4px;font-size:0.92rem;font-weight:700;opacity:0.95;">
+            ${this.escapeHtml(modeLabel)}${subjectName ? ` · ${this.escapeHtml(subjectName)}` : ''}
+          </div>
+        </div>
+
+        <div style="padding:20px 24px 24px;text-align:center;">
+          <div style="background:#e0f2fe;border:2px solid #7dd3fc;border-radius:14px;padding:10px 14px;color:#0c4a6e;font-weight:800;font-size:0.92rem;margin-bottom:16px;">
+            ${this.escapeHtml(reason)}
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+            <div style="background:#ffffff;border:2px solid #bae6fd;border-radius:16px;padding:12px 10px;">
+              <div style="font-size:0.8rem;font-weight:800;color:#0369a1;margin-bottom:4px;">Soal Selesai</div>
+              <div style="font-size:1.55rem;font-weight:900;color:#15803d;">${answeredCount}/${totalChallenges}</div>
+              <div style="font-size:0.78rem;font-weight:700;color:#64748b;">(${correctCount} dijawab benar)</div>
+            </div>
+
+            <div style="background:#ffffff;border:2px solid #fecaca;border-radius:16px;padding:12px 10px;">
+              <div style="font-size:0.8rem;font-weight:800;color:#b91c1c;margin-bottom:4px;">Belum Selesai</div>
+              <div style="font-size:1.55rem;font-weight:900;color:#dc2626;">${remainingCount} Soal</div>
+              <div style="font-size:0.78rem;font-weight:700;color:#64748b;">Selesaikan semua untuk lulus</div>
+            </div>
+          </div>
+
+          <div style="font-size:0.84rem;font-weight:700;color:#475569;margin-bottom:18px;">
+            Progres percobaan ini direset, tetapi profil &amp; pencapaian sebelumnya tetap aman tersimpan.
+          </div>
+
+          <div class="btn-group-horizontal" style="justify-content:center;gap:10px;">
+            <button id="btn-gameover-retry" class="btn-cartoon btn-green">
+              🔄 <span>Coba Lagi</span>
+            </button>
+            <button id="btn-gameover-levels" class="btn-cartoon btn-gray btn-small">
+              ${uiIcons.get('back', 16)} <span>Pilih Level</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(modalEl);
+
+    document.getElementById('btn-gameover-retry').addEventListener('click', () => {
+      this.playTone('click');
+      modalEl.remove();
+      questionManager.resetSession();
+      this.startAdventureMode(levelKey);
+    });
+
+    document.getElementById('btn-gameover-levels').addEventListener('click', () => {
+      this.playTone('click');
+      modalEl.remove();
+      this.showAdventureLevelSelection();
     });
   }
 
@@ -3654,23 +3870,29 @@ export class UIManager {
     this.showBattleArenaHub("setup");
   }
 
-  async showBattleArenaHub(activeTab = "setup") {
+  isBattleCharOwned(charObj, bp) {
+    if (!charObj) return false;
+    return Boolean(charObj.free) || (bp?.unlockedCharacters || []).includes(charObj.id);
+  }
+
+  async showBattleArenaHub(activeTab = 'setup', options = {}) {
     this.stopAllGameplayScenes();
+    await characterAssetManager.ensureLineupImageLoaded();
+
     if (this.activeProfile) {
       this.activeProfile = await db.getProfileById(this.activeProfile.id);
     }
 
-    const bp =
-      this.activeProfile?.battleArenaProgress || db.ensureBattleArenaProgress();
+    const bp = this.activeProfile?.battleArenaProgress || db.ensureBattleArenaProgress();
     const lvlInfo = calculateBattleLevel(bp.xp);
 
-    if (activeTab === "setup") {
+    if (activeTab === 'setup') {
       this.renderBattleArenaSetupTab(bp, lvlInfo);
-    } else if (activeTab === "collection") {
-      this.renderBattleCollectionTab(bp, lvlInfo);
-    } else if (activeTab === "achievements") {
+    } else if (activeTab === 'collection') {
+      this.renderBattleCollectionTab(bp, lvlInfo, options);
+    } else if (activeTab === 'achievements') {
       this.renderBattleAchievementsTab(bp, lvlInfo);
-    } else if (activeTab === "history") {
+    } else if (activeTab === 'history') {
       this.renderBattleHistoryTab(bp, lvlInfo);
     }
   }
@@ -3680,12 +3902,12 @@ export class UIManager {
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
           <span class="game-logo-badge" style="margin:0; background:#e74c3c; color:#fff;">⚔️ QUIZ BATTLE ARENA</span>
-          <span class="badge-tag" style="background:#fff9db;">🪙 ${bp.coins} Koin</span>
+          <span class="badge-tag" id="ba-header-coins" style="background:#fff9db;">🪙 ${bp.coins} Koin</span>
           <span class="badge-tag" style="background:#d6eaf8;">⭐ Lv.${lvlInfo.level} (${lvlInfo.currentLevelXp}/${lvlInfo.nextLevelXp} XP)</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button id="btn-ba-mute" class="btn-cartoon btn-small ${this.settings.battleMuted ? "btn-red" : "btn-green"}" style="padding:5px 10px; font-size:0.85rem;">
-            ${this.settings.battleMuted ? "🔇 Mute" : "🔊 Audio"}
+          <button id="btn-ba-mute" class="btn-cartoon btn-small ${this.settings.battleMuted ? 'btn-red' : 'btn-green'}" style="padding:5px 10px; font-size:0.85rem;">
+            ${this.settings.battleMuted ? '🔇 Mute' : '🔊 Audio'}
           </button>
           <input id="inp-ba-vol" type="range" min="0" max="1" step="0.1" value="${this.settings.battleVolume ?? 0.6}" style="width:75px; cursor:pointer;" />
           <button id="btn-ba-home-top" class="btn-cartoon btn-gray btn-small" style="padding:5px 12px; font-size:0.85rem;">🏠 Menu</button>
@@ -3693,10 +3915,10 @@ export class UIManager {
       </div>
 
       <div class="tutor-tabs-nav" style="margin-bottom:12px;">
-        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "setup" ? "active" : ""}" data-tab="setup">⚔️ Pertarungan</button>
-        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "collection" ? "active" : ""}" data-tab="collection">🎨 Koleksi & Kostum</button>
-        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "achievements" ? "active" : ""}" data-tab="achievements">🏆 Level & Achievement</button>
-        <button class="tutor-tab-btn ba-hub-tab ${activeTab === "history" ? "active" : ""}" data-tab="history">📜 Riwayat</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === 'setup' ? 'active' : ''}" data-tab="setup">⚔️ Pertarungan</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === 'collection' ? 'active' : ''}" data-tab="collection">🎨 Kustom & Toko</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === 'achievements' ? 'active' : ''}" data-tab="achievements">🏆 Level & Achievement</button>
+        <button class="tutor-tab-btn ba-hub-tab ${activeTab === 'history' ? 'active' : ''}" data-tab="history">📜 Riwayat</button>
       </div>
     `;
   }
@@ -3740,60 +3962,66 @@ export class UIManager {
   }
 
   renderBattleArenaSetupTab(bp, lvlInfo) {
-    let tutorName = "Tutor";
-    let studentName = this.activeProfile?.name || "Murid";
-    let tutorChar = bp.selectedTutorChar || "prof_panda";
-    let studentChar = bp.selectedStudentChar || "kiko";
+    let tutorName = 'Tutor';
+    let studentName = this.activeProfile?.name || 'Murid';
+    let tutorChar = bp.unlockedCharacters.includes(bp.selectedTutorChar) ? bp.selectedTutorChar : 'prof_panda';
+    let studentChar = bp.unlockedCharacters.includes(bp.selectedStudentChar) ? bp.selectedStudentChar : 'kiko';
     let chosenGrade = this.selectedGrade || this.activeProfile?.grade || 3;
     let availableSubjects = this.getSubjectsForGrade(chosenGrade);
-    let chosenSubject = availableSubjects[0]?.id || "matematika";
-    let chosenDifficulty = "adaptif";
-    let chosenLives = 5;
+    let chosenSubject = availableSubjects[0]?.id || 'matematika';
+    let chosenDifficulty = 'adaptif';
+    let chosenRounds = 5;
+    let lockedNotice = '';
 
     const renderView = () => {
       availableSubjects = this.getSubjectsForGrade(chosenGrade);
       if (!availableSubjects.some((s) => s.id === chosenSubject)) {
-        chosenSubject = availableSubjects[0]?.id || "matematika";
+        chosenSubject = availableSubjects[0]?.id || 'matematika';
       }
 
       const classOpts = GAME_CONFIG.classes
         .filter((c) => c.active)
-        .map(
-          (c) =>
-            `<option value="${c.grade}" ${chosenGrade === c.grade ? "selected" : ""}>${c.name}</option>`,
-        )
-        .join("");
+        .map((c) => `<option value="${c.grade}" ${chosenGrade === c.grade ? 'selected' : ''}>${c.name}</option>`)
+        .join('');
 
       const subjOpts = availableSubjects
-        .map(
-          (s) =>
-            `<option value="${s.id}" ${chosenSubject === s.id ? "selected" : ""}>${s.icon} ${this.escapeHtml(s.name)}</option>`,
-        )
-        .join("");
+        .map((s) => `<option value="${s.id}" ${chosenSubject === s.id ? 'selected' : ''}>${s.icon} ${this.escapeHtml(s.name)}</option>`)
+        .join('');
 
       const renderCharCards = (role, selectedId) =>
         BATTLE_CHARACTERS.map((ch) => {
-          const unlocked = bp.unlockedCharacters.includes(ch.id);
-          const previewUrl = BattleFighterRig.renderPreviewDataURL(
-            ch.id,
-            role,
-            role === "student" ? bp.equipped : {},
-          );
+          const owned = this.isBattleCharOwned(ch, bp);
+          const previewUrl = BattleFighterRig.renderPreviewDataURL(ch.id);
+          const statusLabel = owned
+            ? selectedId === ch.id
+              ? '✅ Dipilih'
+              : ch.free
+                ? 'Gratis'
+                : 'Dimiliki'
+            : `🔒 ${ch.price} Koin`;
+
           return `
-            <div class="choice-card ${role === "tutor" ? "ba-tutor-char" : "ba-student-char"} ${selectedId === ch.id ? "selected" : ""} ${!unlocked ? "card-disabled" : ""}" data-char="${ch.id}" data-unlocked="${unlocked}" style="padding:6px;">
-              <img src="${previewUrl}" alt="${this.escapeHtml(ch.name)}" style="width:54px; height:58px; object-fit:contain;" />
-              <div style="font-weight:900; font-size:0.78rem;">${this.escapeHtml(ch.name)}</div>
-              <span style="font-size:0.7rem; font-weight:800; color:${unlocked ? "#27ae60" : "#c0392b"};">
-                ${unlocked ? (selectedId === ch.id ? "✅ Dipilih" : "Gratis/Milik") : `🔒 ${ch.price} Koin`}
+            <div class="choice-card ${role === 'tutor' ? 'ba-tutor-char' : 'ba-student-char'} ${selectedId === ch.id ? 'selected' : ''} ${!owned ? 'card-disabled' : ''}"
+                 data-char="${ch.id}"
+                 data-name="${this.escapeHtml(ch.name)}"
+                 data-price="${ch.price}"
+                 data-unlocked="${owned}"
+                 style="padding:6px; gap:3px;">
+              <img src="${previewUrl}" alt="${this.escapeHtml(ch.name)}" style="width:52px; height:58px; object-fit:contain; ${!owned ? 'filter:grayscale(0.65) opacity(0.75);' : ''}" />
+              <div style="font-weight:900; font-size:0.76rem; line-height:1.15;">${this.escapeHtml(ch.name)}</div>
+              <span style="font-size:0.68rem; font-weight:800; color:${owned ? '#15803d' : '#b91c1c'};">
+                ${statusLabel}
               </span>
+              ${!owned ? `<span style="font-size:0.64rem; font-weight:700; color:#64748b;">Beli di menu Kustom</span>` : ''}
             </div>
           `;
-        }).join("");
+        }).join('');
 
       this.container.innerHTML = `
         <div class="screen-overlay">
-          <div class="cartoon-panel" style="max-width: 960px;">
-            ${this.renderBattleHubHeader("setup", bp, lvlInfo)}
+          ${this.renderFantasyBackdrop()}
+          <div class="cartoon-panel" style="max-width: 980px;">
+            ${this.renderBattleHubHeader('setup', bp, lvlInfo)}
 
             <div class="form-box" style="margin-top:0;">
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:8px;">
@@ -3811,26 +4039,35 @@ export class UIManager {
                 <select id="ba-sel-grade" class="input-cartoon">${classOpts}</select>
                 <select id="ba-sel-subject" class="input-cartoon">${subjOpts}</select>
                 <select id="ba-sel-diff" class="input-cartoon">
-                  <option value="adaptif" ${chosenDifficulty === "adaptif" ? "selected" : ""}>🤖 Adaptif Setara</option>
-                  <option value="mudah" ${chosenDifficulty === "mudah" ? "selected" : ""}>🌱 Mudah</option>
-                  <option value="sedang" ${chosenDifficulty === "sedang" ? "selected" : ""}>⚡ Sedang</option>
-                  <option value="sulit" ${chosenDifficulty === "sulit" ? "selected" : ""}>🔥 Sulit</option>
+                  <option value="adaptif" ${chosenDifficulty === 'adaptif' ? 'selected' : ''}>🤖 Adaptif Setara</option>
+                  <option value="mudah" ${chosenDifficulty === 'mudah' ? 'selected' : ''}>🌱 Mudah</option>
+                  <option value="sedang" ${chosenDifficulty === 'sedang' ? 'selected' : ''}>⚡ Sedang</option>
+                  <option value="sulit" ${chosenDifficulty === 'sulit' ? 'selected' : ''}>🔥 Sulit</option>
                 </select>
-                <select id="ba-sel-lives" class="input-cartoon">
-                  <option value="5" ${chosenLives === 5 ? "selected" : ""}>❤️ Normal (5 Nyawa)</option>
-                  <option value="7" ${chosenLives === 7 ? "selected" : ""}>❤️❤️ Panjang (7 Nyawa)</option>
-                  <option value="10" ${chosenLives === 10 ? "selected" : ""}>❤️❤️❤️ Epik (10 Nyawa)</option>
+                <select id="ba-sel-rounds" class="input-cartoon">
+                  <option value="5" ${chosenRounds === 5 ? 'selected' : ''}>5 Ronde</option>
+                  <option value="7" ${chosenRounds === 7 ? 'selected' : ''}>7 Ronde</option>
+                  <option value="10" ${chosenRounds === 10 ? 'selected' : ''}>10 Ronde</option>
                 </select>
               </div>
 
+              ${lockedNotice ? `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; background:#fffbeb; border:2px solid #f59e0b; border-radius:12px; padding:8px 12px; margin-bottom:10px; font-size:0.84rem; font-weight:800; color:#92400e;">
+                  <span>🔒 ${this.escapeHtml(lockedNotice)}</span>
+                  <button type="button" id="btn-go-char-shop" class="btn-cartoon btn-purple btn-small" style="padding:4px 12px; font-size:0.78rem;">
+                    🛒 Buka Toko Karakter
+                  </button>
+                </div>
+              ` : ''}
+
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                 <div>
-                  <div style="font-weight:900; font-size:0.9rem; margin-bottom:4px;">Pilih Karakter Tutor:</div>
-                  <div class="selection-grid-3" style="margin:0; gap:6px;">${renderCharCards("tutor", tutorChar)}</div>
+                  <div style="font-weight:900; font-size:0.88rem; margin-bottom:4px;">Pilih Karakter Tutor:</div>
+                  <div style="display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:6px;">${renderCharCards('tutor', tutorChar)}</div>
                 </div>
                 <div>
-                  <div style="font-weight:900; font-size:0.9rem; margin-bottom:4px;">Pilih Karakter Murid:</div>
-                  <div class="selection-grid-3" style="margin:0; gap:6px;">${renderCharCards("student", studentChar)}</div>
+                  <div style="font-weight:900; font-size:0.88rem; margin-bottom:4px;">Pilih Karakter Murid:</div>
+                  <div style="display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:6px;">${renderCharCards('student', studentChar)}</div>
                 </div>
               </div>
             </div>
@@ -3842,198 +4079,397 @@ export class UIManager {
         </div>
       `;
 
-      this.bindBattleHubHeaderEvents("setup");
+      this.bindBattleHubHeaderEvents('setup');
 
-      document
-        .getElementById("ba-tutor-name")
-        .addEventListener("input", (e) => {
-          tutorName = e.target.value;
+      const goShopBtn = document.getElementById('btn-go-char-shop');
+      if (goShopBtn) {
+        goShopBtn.addEventListener('click', () => {
+          battleAudio.play('click');
+          this.showBattleArenaHub('collection', { subCategory: 'character' });
         });
-      document
-        .getElementById("ba-student-name")
-        .addEventListener("input", (e) => {
-          studentName = e.target.value;
-        });
-      document
-        .getElementById("ba-sel-grade")
-        .addEventListener("change", (e) => {
-          chosenGrade = Number(e.target.value);
-          renderView();
-        });
-      document
-        .getElementById("ba-sel-subject")
-        .addEventListener("change", (e) => {
-          chosenSubject = e.target.value;
-        });
-      document.getElementById("ba-sel-diff").addEventListener("change", (e) => {
-        chosenDifficulty = e.target.value;
+      }
+
+      document.getElementById('ba-tutor-name').addEventListener('input', (e) => { tutorName = e.target.value; });
+      document.getElementById('ba-student-name').addEventListener('input', (e) => { studentName = e.target.value; });
+      document.getElementById('ba-sel-grade').addEventListener('change', (e) => {
+        chosenGrade = Number(e.target.value);
+        renderView();
       });
-      document
-        .getElementById("ba-sel-lives")
-        .addEventListener("change", (e) => {
-          chosenLives = Number(e.target.value);
-        });
+      document.getElementById('ba-sel-subject').addEventListener('change', (e) => { chosenSubject = e.target.value; });
+      document.getElementById('ba-sel-diff').addEventListener('change', (e) => { chosenDifficulty = e.target.value; });
+      document.getElementById('ba-sel-rounds').addEventListener('change', (e) => { chosenRounds = Number(e.target.value); });
 
-      this.container.querySelectorAll(".ba-tutor-char").forEach((card) => {
-        card.addEventListener("click", () => {
-          if (card.dataset.unlocked !== "true") {
-            battleAudio.play("wrong");
-            return;
-          }
-          battleAudio.play("click");
-          tutorChar = card.dataset.char;
-          renderView();
-        });
-      });
-
-      this.container.querySelectorAll(".ba-student-char").forEach((card) => {
-        card.addEventListener("click", () => {
-          if (card.dataset.unlocked !== "true") {
-            battleAudio.play("wrong");
-            return;
-          }
-          battleAudio.play("click");
-          studentChar = card.dataset.char;
-          renderView();
-        });
-      });
-
-      document
-        .getElementById("btn-ba-start")
-        .addEventListener("click", async () => {
-          battleAudio.play("special");
-          if (this.activeProfile) {
-            this.activeProfile = await db.updateBattleArenaSelection(
-              this.activeProfile.id,
-              {
-                tutorChar,
-                studentChar,
-              },
-            );
-          }
-          this.startBattleArenaMatch({
-            tutorName: tutorName.trim() || "Tutor",
-            studentName: studentName.trim() || "Murid",
-            tutorCharacter: tutorChar,
-            studentCharacter: studentChar,
-            studentCosmetic: bp.equipped,
-            grade: chosenGrade,
-            subject: chosenSubject,
-            difficulty: chosenDifficulty,
-            maxLives: chosenLives,
-            rounds: chosenLives,
+      const bindCharSelect = (selector, onSelect) => {
+        this.container.querySelectorAll(selector).forEach((card) => {
+          card.addEventListener('click', () => {
+            if (card.dataset.unlocked !== 'true') {
+              battleAudio.play('wrong');
+              lockedNotice = `${card.dataset.name} masih terkunci (${card.dataset.price} Koin). Kamu bisa membelinya di menu Kustom → Karakter.`;
+              renderView();
+              return;
+            }
+            battleAudio.play('click');
+            lockedNotice = '';
+            onSelect(card.dataset.char);
+            renderView();
           });
         });
+      };
+
+      bindCharSelect('.ba-tutor-char', (id) => { tutorChar = id; });
+      bindCharSelect('.ba-student-char', (id) => { studentChar = id; });
+
+      document.getElementById('btn-ba-start').addEventListener('click', async () => {
+        battleAudio.play('special');
+        if (this.activeProfile) {
+          this.activeProfile = await db.updateBattleArenaSelection(this.activeProfile.id, {
+            tutorChar,
+            studentChar
+          });
+        }
+        this.startBattleArenaMatch({
+          tutorName: tutorName.trim() || 'Tutor',
+          studentName: studentName.trim() || 'Murid',
+          tutorCharacter: tutorChar,
+          studentCharacter: studentChar,
+          studentCosmetic: bp.equipped,
+          grade: chosenGrade,
+          subject: chosenSubject,
+          difficulty: chosenDifficulty,
+          maxLives: chosenRounds,
+          rounds: chosenRounds
+        });
+      });
     };
 
     renderView();
   }
 
-  renderBattleCollectionTab(bp, lvlInfo) {
-    const renderShopGroup = (title, category, items, ownedList, equippedId) => {
-      const cards = items
-        .map((it) => {
+  renderBattleCollectionTab(bp, lvlInfo, options = {}) {
+    let activeSubCat = options.subCategory || 'character';
+    let previewCharId = options.previewCharId || bp.selectedStudentChar || 'kiko';
+    let shopFeedback = options.feedback || null;
+    let isProcessingPurchase = false;
+
+    const subCategories = [
+      { key: 'character', label: '🦁 Karakter' },
+      { key: 'costume', label: '👕 Kostum' },
+      { key: 'accessory', label: '👑 Aksesori' },
+      { key: 'effects', label: '⚡ Efek Arena' }
+    ];
+
+    const renderView = () => {
+      const previewCharObj = BATTLE_CHARACTERS.find((c) => c.id === previewCharId) || BATTLE_CHARACTERS[0];
+      const isPreviewOwned = this.isBattleCharOwned(previewCharObj, bp);
+      const previewUrl = BattleFighterRig.renderPreviewDataURL(previewCharObj.id);
+
+      const renderStandardShopGroup = (title, category, items, ownedList, equippedId) => {
+        const cards = items.map((it) => {
           const owned = ownedList.includes(it.id);
           const equipped = equippedId === it.id;
           return `
-          <div class="choice-card" style="padding:10px; ${equipped ? "background:#fff6d6; border-color:#f39c12;" : ""}">
-            <div style="font-weight:900; font-size:0.9rem;">${this.escapeHtml(it.name)}</div>
-            <div style="font-size:0.8rem; font-weight:700; color:#576574;">${owned ? "Dimiliki" : `🪙 ${it.price} Koin`}</div>
-            ${
-              owned
-                ? category === "character"
-                  ? `<span class="status-badge badge-active">✅ Terbuka</span>`
-                  : `<button class="btn-cartoon btn-small ${equipped ? "btn-green" : "btn-blue"} btn-equip-item" data-cat="${category}" data-id="${it.id}" style="padding:4px 10px; font-size:0.8rem;">${equipped ? "Dipakai" : "Pakai"}</button>`
-                : `<button class="btn-cartoon btn-small btn-purple btn-buy-item" data-cat="${category}" data-id="${it.id}" data-price="${it.price}" style="padding:4px 10px; font-size:0.8rem;">Beli 🪙${it.price}</button>`
-            }
+            <div class="choice-card" style="padding:10px; gap:6px; ${equipped ? 'background:#fff6d6; border-color:#f39c12;' : ''}">
+              <div style="font-weight:900; font-size:0.88rem;">${this.escapeHtml(it.name)}</div>
+              <div style="font-size:0.78rem; font-weight:700; color:#576574;">${owned ? 'Dimiliki' : `🪙 ${it.price} Koin`}</div>
+              ${owned
+                ? `<button type="button" class="btn-cartoon btn-small ${equipped ? 'btn-green' : 'btn-blue'} btn-equip-item" data-cat="${category}" data-id="${it.id}" style="padding:4px 10px; font-size:0.78rem;">${equipped ? 'Dipakai' : 'Pakai'}</button>`
+                : `<button type="button" class="btn-cartoon btn-small btn-purple btn-buy-item" data-cat="${category}" data-id="${it.id}" data-name="${this.escapeHtml(it.name)}" data-price="${it.price}" style="padding:4px 10px; font-size:0.78rem;">Beli 🪙${it.price}</button>`
+              }
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:900; text-align:left; margin-bottom:6px; font-size:0.92rem;">${title}</div>
+            <div class="selection-grid-4" style="margin:0;">${cards}</div>
           </div>
         `;
-        })
-        .join("");
+      };
 
-      return `
-        <div style="margin-bottom:12px;">
-          <div style="font-weight:900; text-align:left; margin-bottom:4px;">${title}</div>
-          <div class="selection-grid-4" style="margin:0;">${cards}</div>
-        </div>
-      `;
-    };
+      const renderCharacterShopSection = () => {
+        const purchasableChars = BATTLE_CHARACTERS.filter((c) => !c.free);
+        const cards = purchasableChars.map((ch) => {
+          const owned = this.isBattleCharOwned(ch, bp);
+          const isPreviewing = previewCharId === ch.id;
+          const thumbUrl = BattleFighterRig.renderPreviewDataURL(ch.id);
 
-    const previewUrl = BattleFighterRig.renderPreviewDataURL(
-      bp.selectedStudentChar,
-      "student",
-      bp.equipped,
-    );
+          return `
+            <div class="choice-card" style="padding:10px; gap:5px; ${isPreviewing ? 'background:#eef9ff; border-color:#2563eb;' : ''}">
+              <img src="${thumbUrl}" alt="${this.escapeHtml(ch.name)}" style="width:68px; height:76px; object-fit:contain;" />
+              <div style="font-weight:900; font-size:0.9rem; color:#2b1810;">${this.escapeHtml(ch.name)}</div>
+              <div style="font-size:0.74rem; font-weight:700; color:#64748b;">${this.escapeHtml(ch.roleTag || 'Koleksi Karakter')}</div>
+              <div style="font-size:0.8rem; font-weight:800; color:${owned ? '#15803d' : '#b45309'};">
+                ${owned ? '✅ Dimiliki' : `🪙 ${ch.price} Koin`}
+              </div>
+              <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:2px;">
+                <button type="button" class="btn-cartoon btn-small btn-blue btn-preview-char" data-id="${ch.id}" style="padding:4px 9px; font-size:0.74rem;">
+                  👁️ Preview
+                </button>
+                ${owned
+                  ? `<span class="status-badge badge-active" style="font-size:0.72rem;">Dimiliki</span>`
+                  : `<button type="button" class="btn-cartoon btn-small btn-purple btn-buy-char" data-id="${ch.id}" data-name="${this.escapeHtml(ch.name)}" data-price="${ch.price}" style="padding:4px 10px; font-size:0.74rem;">Beli</button>`
+                }
+              </div>
+            </div>
+          `;
+        }).join('');
 
-    this.container.innerHTML = `
-      <div class="screen-overlay">
-        <div class="cartoon-panel" style="max-width: 960px;">
-          ${this.renderBattleHubHeader("collection", bp, lvlInfo)}
+        return `
+          <div style="margin-bottom:10px;">
+            <div style="font-weight:900; text-align:left; margin-bottom:6px; font-size:0.92rem;">
+              🦁 Toko Karakter Koleksi (Dapat dipakai sebagai Tutor &amp; Murid)
+            </div>
+            <div class="selection-grid-4" style="margin:0;">${cards}</div>
+          </div>
+        `;
+      };
 
-          <div style="display:flex; align-items:center; justify-content:center; gap:18px; background:#eef9ff; border:3px solid #3498db; border-radius:16px; padding:10px; margin-bottom:10px;">
-            <img src="${previewUrl}" alt="Preview" style="width:74px; height:80px; object-fit:contain;" />
-            <div style="text-align:left; font-size:0.9rem; font-weight:800;">
-              <div>✨ Preview Karakter Murid (Kosmetik Saja — Adil Tanpa Bonus Damage)</div>
-              <div style="color:#2980b9;">Kostum: ${bp.equipped.costume} | Aksesori: ${bp.equipped.accessory} | Efek: ${bp.equipped.attackEffect}</div>
+      let shopContentHtml = '';
+      if (activeSubCat === 'character') {
+        shopContentHtml = renderCharacterShopSection();
+      } else if (activeSubCat === 'costume') {
+        shopContentHtml = renderStandardShopGroup('👕 Kostum Petarung', 'costume', BATTLE_COSTUMES, bp.unlockedCostumes, bp.equipped.costume);
+      } else if (activeSubCat === 'accessory') {
+        shopContentHtml = renderStandardShopGroup('👑 Aksesori Petarung', 'accessory', BATTLE_ACCESSORIES, bp.unlockedAccessories, bp.equipped.accessory);
+      } else {
+        shopContentHtml = `
+          ${renderStandardShopGroup('⚡ Efek Serangan', 'attackEffect', BATTLE_ATTACK_EFFECTS, bp.unlockedAttackEffects, bp.equipped.attackEffect)}
+          ${renderStandardShopGroup('🎉 Efek Kemenangan', 'victoryEffect', BATTLE_VICTORY_EFFECTS, bp.unlockedVictoryEffects, bp.equipped.victoryEffect)}
+        `;
+      }
+
+      const subTabsHtml = subCategories.map((sc) => `
+        <button type="button" class="btn-cartoon btn-small ba-shop-subtab ${activeSubCat === sc.key ? 'btn-blue' : 'btn-gray'}" data-subcat="${sc.key}" style="padding:5px 12px; font-size:0.82rem;">
+          ${sc.label}
+        </button>
+      `).join('');
+
+      this.container.innerHTML = `
+        <div class="screen-overlay">
+          ${this.renderFantasyBackdrop()}
+          <div class="cartoon-panel" style="max-width: 980px;">
+            ${this.renderBattleHubHeader('collection', bp, lvlInfo)}
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:18px; background:#eef9ff; border:3px solid #3498db; border-radius:16px; padding:10px 14px; margin-bottom:10px; flex-wrap:wrap;">
+              <img src="${previewUrl}" alt="Preview" style="width:76px; height:86px; object-fit:contain;" />
+              <div style="text-align:left; font-size:0.88rem; font-weight:800;">
+                <div style="font-size:1rem; color:#1e3a8a;">
+                  ✨ Preview: ${this.escapeHtml(previewCharObj.name)}
+                  <span class="status-badge ${isPreviewOwned ? 'badge-active' : 'badge-soon'}" style="margin-left:6px; font-size:0.72rem;">
+                    ${isPreviewOwned ? 'Dimiliki' : `Preview Saja · 🔒 ${previewCharObj.price} Koin`}
+                  </span>
+                </div>
+                <div style="color:#475569; font-size:0.8rem; margin-top:2px;">
+                  Kosmetik murni — adil tanpa bonus damage atau statistik pertandingan.
+                </div>
+                <div style="color:#0369a1; font-size:0.8rem; margin-top:2px;">
+                  Kostum Aktif: ${this.escapeHtml(bp.equipped.costume)} · Aksesori Aktif: ${this.escapeHtml(bp.equipped.accessory)} · Efek: ${this.escapeHtml(bp.equipped.attackEffect)}
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+              ${subTabsHtml}
+            </div>
+
+            ${shopFeedback ? `
+              <div id="shop-msg" style="background:${shopFeedback.type === 'success' ? '#dcfce7' : '#fee2e2'}; color:${shopFeedback.type === 'success' ? '#14532d' : '#991b1b'}; border:2px solid ${shopFeedback.type === 'success' ? '#22c55e' : '#ef4444'}; border-radius:12px; padding:8px 12px; font-weight:800; font-size:0.86rem; margin-bottom:10px;">
+                ${this.escapeHtml(shopFeedback.text)}
+              </div>
+            ` : ''}
+
+            <div class="tutor-scroll-area" style="max-height:300px;">
+              ${shopContentHtml}
             </div>
           </div>
+        </div>
+      `;
 
-          <div id="shop-msg" style="display:none; font-weight:900; margin-bottom:8px;"></div>
+      this.bindBattleHubHeaderEvents('collection');
 
-          <div class="tutor-scroll-area" style="max-height:310px;">
-            ${renderShopGroup(
-              "🦁 Karakter Terkunci",
-              "character",
-              BATTLE_CHARACTERS.filter((c) => !c.free),
-              bp.unlockedCharacters,
-              null,
-            )}
-            ${renderShopGroup("👕 Kostum Petarung", "costume", BATTLE_COSTUMES, bp.unlockedCostumes, bp.equipped.costume)}
-            ${renderShopGroup("👑 Aksesori", "accessory", BATTLE_ACCESSORIES, bp.unlockedAccessories, bp.equipped.accessory)}
-            ${renderShopGroup("⚡ Efek Serangan", "attackEffect", BATTLE_ATTACK_EFFECTS, bp.unlockedAttackEffects, bp.equipped.attackEffect)}
-            ${renderShopGroup("🎉 Efek Kemenangan", "victoryEffect", BATTLE_VICTORY_EFFECTS, bp.unlockedVictoryEffects, bp.equipped.victoryEffect)}
+      this.container.querySelectorAll('.ba-shop-subtab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          battleAudio.play('click');
+          activeSubCat = btn.dataset.subcat;
+          shopFeedback = null;
+          renderView();
+        });
+      });
+
+      this.container.querySelectorAll('.btn-preview-char').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          battleAudio.play('click');
+          previewCharId = btn.dataset.id;
+          renderView();
+        });
+      });
+
+      this.container.querySelectorAll('.btn-buy-char').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (!this.activeProfile || isProcessingPurchase) return;
+          const charId = btn.dataset.id;
+          const charObj = BATTLE_CHARACTERS.find((c) => c.id === charId);
+          if (!charObj) return;
+
+          if (this.isBattleCharOwned(charObj, bp)) {
+            shopFeedback = { type: 'error', text: `${charObj.name} sudah dimiliki.` };
+            renderView();
+            return;
+          }
+
+          if ((bp.coins || 0) < charObj.price) {
+            battleAudio.play('wrong');
+            const kurang = charObj.price - (bp.coins || 0);
+            shopFeedback = {
+              type: 'error',
+              text: `Koin belum cukup untuk membeli ${charObj.name}! Kamu butuh ${kurang} koin lagi (saldo: ${bp.coins || 0} koin).`
+            };
+            renderView();
+            return;
+          }
+
+          battleAudio.play('click');
+          this.showBattlePurchaseConfirmModal({
+            charObj,
+            currentCoins: bp.coins || 0,
+            onConfirm: async () => {
+              if (isProcessingPurchase) return;
+              isProcessingPurchase = true;
+              const res = await db.purchaseBattleArenaItem(
+                this.activeProfile.id,
+                'character',
+                charObj.id,
+                charObj.price
+              );
+              isProcessingPurchase = false;
+
+              if (res.success) {
+                battleAudio.play('reward');
+                this.activeProfile = res.profile;
+                this.showBattleArenaHub('collection', {
+                  subCategory: 'character',
+                  previewCharId: charObj.id,
+                  feedback: {
+                    type: 'success',
+                    text: `Berhasil! ${charObj.name} kini Dimiliki dan langsung bisa dipilih sebagai Tutor atau Murid di tab Pertarungan.`
+                  }
+                });
+              } else {
+                battleAudio.play('wrong');
+                shopFeedback = { type: 'error', text: res.message || 'Pembelian gagal diproses.' };
+                renderView();
+              }
+            }
+          });
+        });
+      });
+
+      this.container.querySelectorAll('.btn-buy-item').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          if (!this.activeProfile || isProcessingPurchase) return;
+          isProcessingPurchase = true;
+          btn.disabled = true;
+
+          const res = await db.purchaseBattleArenaItem(
+            this.activeProfile.id,
+            btn.dataset.cat,
+            btn.dataset.id,
+            Number(btn.dataset.price)
+          );
+          isProcessingPurchase = false;
+
+          if (res.success) {
+            battleAudio.play('reward');
+            this.activeProfile = res.profile;
+            this.showBattleArenaHub('collection', {
+              subCategory: activeSubCat,
+              previewCharId,
+              feedback: { type: 'success', text: `${btn.dataset.name} berhasil dibeli!` }
+            });
+          } else {
+            battleAudio.play('wrong');
+            btn.disabled = false;
+            shopFeedback = { type: 'error', text: res.message || 'Koin belum mencukupi.' };
+            renderView();
+          }
+        });
+      });
+
+      this.container.querySelectorAll('.btn-equip-item').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          if (!this.activeProfile) return;
+          battleAudio.play('click');
+          this.activeProfile = await db.equipBattleArenaItem(
+            this.activeProfile.id,
+            btn.dataset.cat,
+            btn.dataset.id
+          );
+          this.showBattleArenaHub('collection', {
+            subCategory: activeSubCat,
+            previewCharId
+          });
+        });
+      });
+    };
+
+    renderView();
+  }
+
+  showBattlePurchaseConfirmModal({ charObj, currentCoins, onConfirm }) {
+    const existing = document.getElementById('ba-buy-confirm-modal');
+    if (existing) existing.remove();
+
+    const previewUrl = BattleFighterRig.renderPreviewDataURL(charObj.id);
+    const sisaKoin = Math.max(0, currentCoins - charObj.price);
+
+    const modalEl = document.createElement('div');
+    modalEl.id = 'ba-buy-confirm-modal';
+    modalEl.className = 'modal-backdrop';
+    modalEl.style.position = 'absolute';
+    modalEl.style.inset = '0';
+    modalEl.style.zIndex = '70';
+
+    modalEl.innerHTML = `
+      <div class="cartoon-panel" style="max-width:440px; padding:22px; text-align:center;">
+        <h3 style="margin:0 0 8px; font-size:1.3rem; font-weight:900; color:#2b1810;">
+          🛒 Konfirmasi Pembelian Karakter
+        </h3>
+        <div style="background:#eef9ff; border:2px solid #38bdf8; border-radius:16px; padding:12px; margin-bottom:14px;">
+          <img src="${previewUrl}" alt="${this.escapeHtml(charObj.name)}" style="width:96px; height:108px; object-fit:contain;" />
+          <div style="font-weight:900; font-size:1.1rem; color:#1e3a8a; margin-top:4px;">${this.escapeHtml(charObj.name)}</div>
+          <div style="font-size:0.84rem; font-weight:700; color:#475569;">${this.escapeHtml(charObj.roleTag || '')}</div>
+        </div>
+
+        <div style="background:#fffbeb; border:2px solid #f59e0b; border-radius:12px; padding:10px 14px; font-size:0.88rem; font-weight:800; color:#78350f; margin-bottom:16px;">
+          <div>Harga Karakter: <strong>🪙 ${charObj.price} Koin</strong></div>
+          <div style="font-size:0.82rem; margin-top:4px; color:#576574;">
+            Saldo Sekarang: ${currentCoins} Koin → Sisa Setelah Beli: <strong>${sisaKoin} Koin</strong>
           </div>
+        </div>
+
+        <div class="btn-group-horizontal" style="justify-content:center; gap:10px;">
+          <button type="button" id="btn-ba-confirm-cancel" class="btn-cartoon btn-gray btn-small">Batal</button>
+          <button type="button" id="btn-ba-confirm-ok" class="btn-cartoon btn-green btn-small">✅ Konfirmasi Beli</button>
         </div>
       </div>
     `;
 
-    this.bindBattleHubHeaderEvents("collection");
+    this.container.appendChild(modalEl);
 
-    const msgBox = document.getElementById("shop-msg");
-
-    this.container.querySelectorAll(".btn-buy-item").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!this.activeProfile) return;
-        const res = await db.purchaseBattleArenaItem(
-          this.activeProfile.id,
-          btn.dataset.cat,
-          btn.dataset.id,
-          Number(btn.dataset.price),
-        );
-        if (res.success) {
-          battleAudio.play("reward");
-          this.activeProfile = res.profile;
-          this.showBattleArenaHub("collection");
-        } else {
-          battleAudio.play("wrong");
-          msgBox.textContent = `⚠️ ${res.message}`;
-          msgBox.style.color = "#c0392b";
-          msgBox.style.display = "block";
-        }
-      });
+    let confirmedOnce = false;
+    document.getElementById('btn-ba-confirm-cancel').addEventListener('click', () => {
+      battleAudio.play('click');
+      modalEl.remove();
     });
 
-    this.container.querySelectorAll(".btn-equip-item").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!this.activeProfile) return;
-        battleAudio.play("click");
-        this.activeProfile = await db.equipBattleArenaItem(
-          this.activeProfile.id,
-          btn.dataset.cat,
-          btn.dataset.id,
-        );
-        this.showBattleArenaHub("collection");
-      });
+    const okBtn = document.getElementById('btn-ba-confirm-ok');
+    okBtn.addEventListener('click', async () => {
+      if (confirmedOnce) return;
+      confirmedOnce = true;
+      okBtn.disabled = true;
+      modalEl.remove();
+      if (onConfirm) await onConfirm();
     });
   }
 

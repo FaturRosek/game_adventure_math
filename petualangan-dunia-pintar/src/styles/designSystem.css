@@ -991,8 +991,8 @@ body.pdp-has-menu-art .pdp-fallback-only {
 
 .pdp-char-cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 10px;
 }
 
 .pdp-char-select-card {
@@ -1022,13 +1022,112 @@ body.pdp-has-menu-art .pdp-fallback-only {
 }
 
 .pdp-char-thumb {
-  width: 82px;
-  height: 94px;
+  width: 72px;
+  height: 84px;
   object-fit: contain;
+}
+
+@media (max-width: 960px) {
+  .pdp-char-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 820px) {
   .pdp-char-studio-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pdp-matching-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.pdp-match-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdp-match-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms, background-color 140ms, transform 120ms;
+}
+
+.pdp-match-btn.active {
+  border-color: #2563eb;
+  background: #dbeafe;
+  transform: scale(1.02);
+}
+
+.pdp-match-btn.paired {
+  border-color: #16a34a;
+  background: #dcfce7;
+}
+
+.pdp-match-num,
+.pdp-match-badge {
+  background: #f59e0b;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.pdp-essay-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.pdp-essay-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdp-clue-btn {
+  background: linear-gradient(180deg, #fde047, #f59e0b);
+  color: #451a03;
+  border-color: #b45309;
+}
+
+.pdp-clues-box {
+  background: #fffbeb;
+  border: 2px solid #f59e0b;
+  border-radius: 14px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #78350f;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@media (max-width: 680px) {
+  .pdp-matching-grid {
     grid-template-columns: 1fr;
   }
 }
