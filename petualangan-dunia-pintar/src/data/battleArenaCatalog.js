@@ -1,46 +1,12 @@
 export const BATTLE_CHARACTERS = [
-  {
-    id: "kiko",
-    name: "Kiko si Kancil",
-    roleTag: "Petualang Lincah",
-    price: 0,
-    free: true,
-  },
-  {
-    id: "bobi",
-    name: "Bobi si Beruang",
-    roleTag: "Pelindung Tangguh",
-    price: 0,
-    free: true,
-  },
-  {
-    id: "cici",
-    name: "Cici si Kelinci",
-    roleTag: "Pemikir Cepat",
-    price: 0,
-    free: true,
-  },
-  {
-    id: "prof_panda",
-    name: "Tutor Panda",
-    roleTag: "Pendamping Bijak",
-    price: 0,
-    free: true,
-  },
-  {
-    id: "drago",
-    name: "Drago si Naga",
-    roleTag: "Naga Cilik Cerdas",
-    price: 150,
-    free: false,
-  },
-  {
-    id: "robo",
-    name: "Robo Pintar",
-    roleTag: "Robot Futuristik",
-    price: 250,
-    free: false,
-  },
+  { id: 'kiko', name: 'Kiko', roleTag: 'Petualang Pemberani', price: 0, free: true },
+  { id: 'cici', name: 'Cici', roleTag: 'Penjelajah Ceria', price: 0, free: true },
+  { id: 'bobi', name: 'Bobi', roleTag: 'Ahli Strategi', price: 0, free: true },
+  { id: 'prof_panda', name: 'Prof. Panda', roleTag: 'Mentor Bijaksana', price: 0, free: true },
+  { id: 'kancil_kiko', name: 'Kiko si Kancil', roleTag: 'Kancil Cerdik', price: 100, free: false },
+  { id: 'kelinci_cici', name: 'Cici si Kelinci', roleTag: 'Kelinci Gesit', price: 120, free: false },
+  { id: 'beruang_bobi', name: 'Bobi si Beruang', roleTag: 'Beruang Tangguh', price: 150, free: false },
+  { id: 'panda_tutor', name: 'Tutor Panda', roleTag: 'Panda Klasik Bijak', price: 180, free: false }
 ];
 
 export const BATTLE_COSTUMES = [

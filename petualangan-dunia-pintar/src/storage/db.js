@@ -770,23 +770,24 @@ class LocalDatabase {
     return profile;
   }
 
-  ensureBattleArenaProgress(existing = null, defaultChar = "kiko") {
+  ensureBattleArenaProgress(existing = null, defaultChar = 'kiko') {
+    const freeChars = ['kiko', 'bobi', 'cici', 'prof_panda'];
     const base = {
       coins: 0,
       xp: 0,
       level: 1,
-      selectedTutorChar: "prof_panda",
-      selectedStudentChar: defaultChar || "kiko",
-      unlockedCharacters: ["kiko", "bobi", "cici", "prof_panda"],
-      unlockedCostumes: ["default"],
-      unlockedAccessories: ["none"],
-      unlockedAttackEffects: ["default"],
-      unlockedVictoryEffects: ["confetti"],
+      selectedTutorChar: 'prof_panda',
+      selectedStudentChar: freeChars.includes(defaultChar) ? defaultChar : 'kiko',
+      unlockedCharacters: [...freeChars],
+      unlockedCostumes: ['default'],
+      unlockedAccessories: ['none'],
+      unlockedAttackEffects: ['default'],
+      unlockedVictoryEffects: ['confetti'],
       equipped: {
-        costume: "default",
-        accessory: "none",
-        attackEffect: "default",
-        victoryEffect: "confetti",
+        costume: 'default',
+        accessory: 'none',
+        attackEffect: 'default',
+        victoryEffect: 'confetti'
       },
       stats: {
         matches: 0,
@@ -795,52 +796,34 @@ class LocalDatabase {
         draws: 0,
         totalQuestions: 0,
         totalCorrect: 0,
-        highestCombo: 0,
+        highestCombo: 0
       },
       achievements: [],
-      claimedMatchIds: [],
+      claimedMatchIds: []
     };
 
-    if (!existing || typeof existing !== "object") return base;
+    if (!existing || typeof existing !== 'object') return base;
 
     const merged = {
       ...base,
       ...existing,
       equipped: { ...base.equipped, ...(existing.equipped || {}) },
       stats: { ...base.stats, ...(existing.stats || {}) },
-      unlockedCharacters: Array.from(
-        new Set([
-          ...base.unlockedCharacters,
-          ...(existing.unlockedCharacters || []),
-        ]),
-      ),
-      unlockedCostumes: Array.from(
-        new Set([
-          ...base.unlockedCostumes,
-          ...(existing.unlockedCostumes || []),
-        ]),
-      ),
-      unlockedAccessories: Array.from(
-        new Set([
-          ...base.unlockedAccessories,
-          ...(existing.unlockedAccessories || []),
-        ]),
-      ),
-      unlockedAttackEffects: Array.from(
-        new Set([
-          ...base.unlockedAttackEffects,
-          ...(existing.unlockedAttackEffects || []),
-        ]),
-      ),
-      unlockedVictoryEffects: Array.from(
-        new Set([
-          ...base.unlockedVictoryEffects,
-          ...(existing.unlockedVictoryEffects || []),
-        ]),
-      ),
+      unlockedCharacters: Array.from(new Set([...freeChars, ...(existing.unlockedCharacters || [])])),
+      unlockedCostumes: Array.from(new Set([...base.unlockedCostumes, ...(existing.unlockedCostumes || [])])),
+      unlockedAccessories: Array.from(new Set([...base.unlockedAccessories, ...(existing.unlockedAccessories || [])])),
+      unlockedAttackEffects: Array.from(new Set([...base.unlockedAttackEffects, ...(existing.unlockedAttackEffects || [])])),
+      unlockedVictoryEffects: Array.from(new Set([...base.unlockedVictoryEffects, ...(existing.unlockedVictoryEffects || [])])),
       achievements: Array.from(new Set(existing.achievements || [])),
-      claimedMatchIds: Array.from(new Set(existing.claimedMatchIds || [])),
+      claimedMatchIds: Array.from(new Set(existing.claimedMatchIds || []))
     };
+
+    if (!merged.unlockedCharacters.includes(merged.selectedTutorChar)) {
+      merged.selectedTutorChar = 'prof_panda';
+    }
+    if (!merged.unlockedCharacters.includes(merged.selectedStudentChar)) {
+      merged.selectedStudentChar = 'kiko';
+    }
 
     merged.level = calculateBattleLevel(merged.xp).level;
     return merged;
@@ -849,34 +832,54 @@ class LocalDatabase {
   async updateBattleArenaSelection(profileId, { tutorChar, studentChar }) {
     const profile = await this.getProfileById(profileId);
     if (!profile) return null;
-    if (tutorChar) profile.battleArenaProgress.selectedTutorChar = tutorChar;
-    if (studentChar)
-      profile.battleArenaProgress.selectedStudentChar = studentChar;
+    const bp = profile.battleArenaProgress;
+
+    if (tutorChar && bp.unlockedCharacters.includes(tutorChar)) {
+      bp.selectedTutorChar = tutorChar;
+    }
+    if (studentChar && bp.unlockedCharacters.includes(studentChar)) {
+      bp.selectedStudentChar = studentChar;
+    }
     await this.saveProfile(profile);
     return profile;
   }
 
   async purchaseBattleArenaItem(profileId, category, itemId, price) {
     const profile = await this.getProfileById(profileId);
-    if (!profile) return { success: false, message: "Profil tidak ditemukan." };
+    if (!profile) return { success: false, message: 'Profil tidak ditemukan.' };
 
     const bp = profile.battleArenaProgress;
     const listMap = {
-      character: "unlockedCharacters",
-      costume: "unlockedCostumes",
-      accessory: "unlockedAccessories",
-      attackEffect: "unlockedAttackEffects",
-      victoryEffect: "unlockedVictoryEffects",
+      character: 'unlockedCharacters',
+      costume: 'unlockedCostumes',
+      accessory: 'unlockedAccessories',
+      attackEffect: 'unlockedAttackEffects',
+      victoryEffect: 'unlockedVictoryEffects'
     };
 
     const listKey = listMap[category];
-    if (!listKey) return { success: false, message: "Kategori tidak valid." };
-    if (bp[listKey].includes(itemId))
-      return { success: true, alreadyOwned: true, profile };
-    if (bp.coins < price)
-      return { success: false, message: "Koin Battle Arena belum mencukupi." };
+    if (!listKey) return { success: false, message: 'Kategori item tidak valid.' };
 
-    bp.coins -= price;
+    const numericPrice = Math.max(0, Number(price) || 0);
+    if (bp[listKey].includes(itemId)) {
+      return {
+        success: false,
+        alreadyOwned: true,
+        profile,
+        message: 'Item ini sudah dimiliki oleh profilmu.'
+      };
+    }
+
+    if ((bp.coins || 0) < numericPrice) {
+      const kurang = numericPrice - (bp.coins || 0);
+      return {
+        success: false,
+        insufficientCoins: true,
+        message: `Koin belum cukup! Kamu butuh ${kurang} koin lagi (saldo saat ini: ${bp.coins || 0} koin).`
+      };
+    }
+
+    bp.coins -= numericPrice;
     bp[listKey].push(itemId);
     await this.saveProfile(profile);
     return { success: true, profile };
