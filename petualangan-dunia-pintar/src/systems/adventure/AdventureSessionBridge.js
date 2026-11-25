@@ -20,7 +20,7 @@ export class AdventureSessionBridge {
     return info ? info.name : String(this.subject).toUpperCase();
   }
 
-  showTransientHint(text, duration = 2600) {
+  showTransientHint(text, duration = 2800) {
     uiManager.updateAdventureHUD({ hintText: text });
     if (this.hintTimer) this.hintTimer.remove(false);
     this.hintTimer = this.scene.time.delayedCall(duration, () => {
@@ -32,19 +32,29 @@ export class AdventureSessionBridge {
     uiManager.updateAdventureHUD(partial);
   }
 
+  setKeyboardCapture(enabled) {
+    const kb = this.scene?.input?.keyboard;
+    if (!kb) return;
+    kb.enabled = enabled;
+    if (enabled) kb.enableGlobalCapture();
+    else kb.disableGlobalCapture();
+    kb.resetKeys();
+  }
+
   triggerEducationChallenge({
-    sourceType = "world_object",
-    title = "Tantangan Belajar",
+    sourceType = "quiz_box",
+    title = "Tantangan Pengetahuan",
     topic = null,
     forceDifficulty = null,
     onResolved = null,
   } = {}) {
     const sc = this.scene;
-    if (sc.isQuizOpen || sc.levelCompleted) return false;
+    if (sc.isQuizOpen || sc.levelCompleted || sc.isGameOver) return false;
 
     sc.isQuizOpen = true;
     if (sc.player?.body) sc.player.setVelocity(0, 0);
     if (sc.physics) sc.physics.pause();
+    this.setKeyboardCapture(false);
     if (this.missionState) this.missionState.pauseTimer();
     if (sc.touchState) {
       Object.keys(sc.touchState).forEach((k) => {
@@ -65,10 +75,14 @@ export class AdventureSessionBridge {
       profile: uiManager.activeProfile || this.profile,
       settings: uiManager.settings,
       forceDifficulty: resolvedDiff,
+      allowMultiType: true,
+      questionIndex: sc.questionsAnswered || 0,
+      totalQuestions: sc.totalChallenges || 5,
     });
 
     if (qData.error) {
       if (sc.physics) sc.physics.resume();
+      this.setKeyboardCapture(true);
       if (this.missionState) this.missionState.resumeTimer();
       sc.isQuizOpen = false;
       this.showTransientHint(qData.message || "Stok soal tidak mencukupi.");
@@ -78,8 +92,9 @@ export class AdventureSessionBridge {
     uiManager.showQuestionModal({
       questionData: qData,
       triggerTitle: title,
-      onComplete: async (isCorrect, chosenAnswer) => {
+      onComplete: async (isCorrect, chosenAnswer, meta = {}) => {
         if (sc.physics) sc.physics.resume();
+        this.setKeyboardCapture(true);
         if (this.missionState) this.missionState.resumeTimer();
         sc.isQuizOpen = false;
 
@@ -87,6 +102,8 @@ export class AdventureSessionBridge {
         sc.answerHistory = sc.answerHistory || [];
         sc.answerHistory.push({
           questionId: qData.id,
+          questionType: qData.questionType || "multiple_choice",
+          cluesUsed: meta?.cluesUsed || 0,
           topic: qData.topic,
           difficulty: qData.difficulty,
           sourceType: qData.sourceType || "question_bank",
@@ -117,14 +134,6 @@ export class AdventureSessionBridge {
         if (isCorrect) {
           sc.correctAnswers = (sc.correctAnswers || 0) + 1;
           sc.coinsCollected = (sc.coinsCollected || 0) + 25;
-          if (
-            sc.controller?.gainEnergy &&
-            this.modeConfig?.energy?.gainOnCorrectAnswer
-          ) {
-            sc.controller.gainEnergy(
-              this.modeConfig.energy.gainOnCorrectAnswer,
-            );
-          }
         } else {
           sc.wrongAnswers = (sc.wrongAnswers || 0) + 1;
         }
@@ -148,9 +157,9 @@ export class AdventureSessionBridge {
     return true;
   }
 
-  completeLevel({ bonusCoins = 30, collectibleLabel = "" } = {}) {
+  completeLevel({ bonusCoins = 35, collectibleLabel = "" } = {}) {
     const sc = this.scene;
-    if (sc.levelCompleted) return;
+    if (sc.levelCompleted || sc.isGameOver) return;
     sc.levelCompleted = true;
     if (sc.physics) sc.physics.pause();
     if (this.missionState) this.missionState.pauseTimer();
@@ -177,9 +186,50 @@ export class AdventureSessionBridge {
       correctCount: sc.correctAnswers || 0,
       wrongCount: sc.wrongAnswers || 0,
       starsEarned: stars,
-      badgeEarned: acc >= 0.8 ? `Juara ${modeLabel} ${subjLabel}` : "",
+      badgeEarned: acc >= 0.8 ? `Penjelajah ${modeLabel} ${subjLabel}` : "",
       collectibleItem: collectibleLabel,
       answerHistory: sc.answerHistory || [],
+    });
+  }
+
+  failLevel({
+    reason = "Daya napas habis sebelum misi selesai.",
+    theme = "ocean",
+  } = {}) {
+    const sc = this.scene;
+    if (sc.levelCompleted || sc.isGameOver) return;
+
+    sc.isGameOver = true;
+    sc.isQuizOpen = false;
+    if (sc.player?.body) sc.player.setVelocity(0, 0);
+    if (sc.physics) sc.physics.pause();
+    if (this.missionState) this.missionState.pauseTimer();
+
+    if (sc.touchState) {
+      Object.keys(sc.touchState).forEach((k) => {
+        sc.touchState[k] = false;
+      });
+    }
+    this.setKeyboardCapture(false);
+
+    if (sc.activeCharId && sc.anims.exists(`${sc.activeCharId}_hurt`)) {
+      sc.player.play(`${sc.activeCharId}_hurt`, true);
+    }
+
+    const total = Math.max(1, sc.totalChallenges || 1);
+    const answered = Math.min(total, sc.questionsAnswered || 0);
+    const remaining = Math.max(0, total - answered);
+
+    uiManager.showAdventureGameOver({
+      levelKey: this.levelKey,
+      modeLabel: this.modeConfig?.modeLabel || "Ocean Explorer",
+      subjectName: this.getSubjectLabel(),
+      answeredCount: answered,
+      remainingCount: remaining,
+      totalChallenges: total,
+      correctCount: sc.correctAnswers || 0,
+      reason,
+      theme,
     });
   }
 }

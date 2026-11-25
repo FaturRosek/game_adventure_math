@@ -20,6 +20,12 @@ import senirupaGrade4Data from "../data/senirupaGrade4.json";
 
 import { db } from "../storage/db.js";
 import { hybridEngine } from "./HybridQuestionEngine.js";
+import { questionQualityEngine } from "./QuestionQualityEngine.js";
+import {
+  ADVENTURE_MULTITYPE_BANK,
+  BALANCED_MC_OVERRIDES,
+  generateDynamicMultiTypeMath,
+} from "./adventureMultiTypeBank.js";
 
 const ALL_SUBJECT_KEYS = [
   "matematika",
@@ -299,6 +305,45 @@ export class QuestionManager {
   resetSession() {
     this.usedQuestionIds.clear();
     this.usedQuestionSignatures.clear();
+    questionQualityEngine.resetSessionBalance();
+  }
+
+  pickMultiTypeQuestion(subjKey, targetDiff, desiredType) {
+    const bank = ADVENTURE_MULTITYPE_BANK[subjKey] || [];
+    let pool = bank.filter(
+      (q) =>
+        q.questionType === desiredType &&
+        !this.usedQuestionIds.has(q.id) &&
+        !this.usedQuestionSignatures.has(q.question),
+    );
+
+    const exactDiff = pool.filter((q) => q.difficulty === targetDiff);
+    if (exactDiff.length > 0) pool = exactDiff;
+
+    let picked =
+      pool.length > 0 ? questionQualityEngine.shuffleArray(pool)[0] : null;
+
+    if (!picked && subjKey === "matematika") {
+      picked = generateDynamicMultiTypeMath(desiredType, targetDiff);
+    }
+
+    if (!picked) return null;
+
+    this.usedQuestionIds.add(picked.id);
+    this.usedQuestionSignatures.add(picked.question);
+
+    if (desiredType === "matching") {
+      return questionQualityEngine.prepareMatchingQuestion({
+        ...picked,
+        difficulty: targetDiff,
+        sourceType: picked.sourceType || "multitype_bank",
+      });
+    }
+    return questionQualityEngine.prepareEssayQuestion({
+      ...picked,
+      difficulty: targetDiff,
+      sourceType: picked.sourceType || "multitype_bank",
+    });
   }
 
   getSubjectBank(subject = "matematika", grade = 3) {
@@ -554,6 +599,35 @@ export class QuestionManager {
         });
 
     const targetDiff = diffResolution.difficulty;
+
+    if (options.allowMultiType) {
+      const qIdx = Number(options.questionIndex) || 0;
+      const total = Number(options.totalQuestions) || 5;
+      let desiredType = "multiple_choice";
+
+      if (total <= 5) {
+        if (qIdx === 1) desiredType = "matching";
+        else if (qIdx === 3) desiredType = "essay";
+      } else if (total <= 7) {
+        if (qIdx === 1 || qIdx === 4) desiredType = "matching";
+        else if (qIdx === 5) desiredType = "essay";
+      } else {
+        if (qIdx === 1 || qIdx === 4 || qIdx === 7) desiredType = "matching";
+        else if (qIdx === 2 || qIdx === 8) desiredType = "essay";
+      }
+
+      if (desiredType !== "multiple_choice") {
+        const multiQ = this.pickMultiTypeQuestion(
+          subjKey,
+          targetDiff,
+          desiredType,
+        );
+        if (multiQ) {
+          return { ...multiQ, adaptiveMeta: diffResolution };
+        }
+      }
+    }
+
     const preferTemplateProb = subjKey === "matematika" ? 0.35 : 0.2;
 
     let selectedQuestion = null;
@@ -609,11 +683,17 @@ export class QuestionManager {
     this.usedQuestionIds.add(selectedQuestion.id);
     this.usedQuestionSignatures.add(selectedQuestion.question);
 
-    return {
-      ...selectedQuestion,
-      grade: targetGrade,
+    const overridden = BALANCED_MC_OVERRIDES[selectedQuestion.id]
+      ? { ...selectedQuestion, ...BALANCED_MC_OVERRIDES[selectedQuestion.id] }
+      : selectedQuestion;
+
+    const balancedMc = questionQualityEngine.balanceAndShuffleMultipleChoice({
+      ...overridden,
       difficulty: targetDiff,
-      options: hybridEngine.shuffleArray(selectedQuestion.options),
+    });
+
+    return {
+      ...balancedMc,
       adaptiveMeta: diffResolution,
     };
   }
