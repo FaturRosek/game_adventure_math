@@ -1,7 +1,10 @@
 import Phaser from "phaser";
 import { GAME_CONFIG } from "../config/gameConfig.js";
 import { BattleFighterRig } from "../systems/BattleFighterRig.js";
-import { BATTLE_ATTACK_EFFECTS } from "../data/battleArenaCatalog.js";
+import {
+  BATTLE_ATTACK_EFFECTS,
+  BATTLE_VICTORY_EFFECTS,
+} from "../data/battleArenaCatalog.js";
 
 export class BattleArenaScene extends Phaser.Scene {
   constructor() {
@@ -28,6 +31,7 @@ export class BattleArenaScene extends Phaser.Scene {
 
   create() {
     this.buildGrand3DArena();
+    this.applyEquippedArenaEffect();
 
     this.tutorBaseX = 335;
     this.studentBaseX = 945;
@@ -240,6 +244,61 @@ export class BattleArenaScene extends Phaser.Scene {
       repeat: -1,
       ease: "Sine.easeInOut",
     });
+  }
+
+  applyEquippedArenaEffect() {
+    const W = GAME_CONFIG.width;
+    const attackFxId = this.studentCosmetic?.attackEffect || "default";
+    if (attackFxId === "default") return;
+
+    const fxCfg = BATTLE_ATTACK_EFFECTS.find((fx) => fx.id === attackFxId);
+    const fxColor = fxCfg?.color || 0x38bdf8;
+
+    const arenaRing = this.add
+      .ellipse(W / 2, 380, 910, 124, fxColor, 0.08)
+      .setDepth(2);
+    arenaRing.setStrokeStyle(4, fxColor, 0.72);
+    this.tweens.add({
+      targets: arenaRing,
+      alpha: 0.3,
+      scaleX: 1.018,
+      scaleY: 1.03,
+      duration: 1400,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    [140, W - 140].forEach((px) => {
+      const glow = this.add
+        .rectangle(px, 258, 16, 188, fxColor, 0.55)
+        .setDepth(2);
+      this.tweens.add({
+        targets: glow,
+        alpha: 0.95,
+        duration: 900,
+        yoyo: true,
+        repeat: -1,
+      });
+    });
+
+    for (let i = 0; i < 14; i++) {
+      const px = Phaser.Math.Between(160, W - 160);
+      const py = Phaser.Math.Between(150, 355);
+      const p = this.add
+        .circle(px, py, Phaser.Math.Between(3, 5), fxColor, 0.65)
+        .setDepth(3);
+      this.tweens.add({
+        targets: p,
+        y: py - Phaser.Math.Between(35, 70),
+        alpha: 0.1,
+        duration: Phaser.Math.Between(1600, 2800),
+        yoyo: true,
+        repeat: -1,
+        delay: i * 140,
+        ease: "Sine.easeInOut",
+      });
+    }
   }
 
   createLivesHUD() {
@@ -467,10 +526,55 @@ export class BattleArenaScene extends Phaser.Scene {
       this.tutorRig.playDefeatPose();
     }
 
-    const confettiColors = [0xf1c40f, 0xe74c3c, 0x2ecc71, 0x3498db, 0x9b59b6];
-    for (let i = 0; i < 32; i++) {
+    const vFxId = this.studentCosmetic?.victoryEffect || "confetti";
+    const vFxCfg = BATTLE_VICTORY_EFFECTS.find((v) => v.id === vFxId);
+    const isStarRain = vFxId.includes("star") || vFxId.includes("gold");
+    const isFireworks =
+      vFxId.includes("firework") ||
+      vFxId.includes("burst") ||
+      vFxId.includes("spark");
+
+    if (isFireworks) {
+      const burstColors = [0xfacc15, 0x38bdf8, 0xf472b6, 0x4ade80, 0xf97316];
+      [340, 640, 940].forEach((bx, bIdx) => {
+        this.time.delayedCall(bIdx * 260, () => {
+          const by = Phaser.Math.Between(150, 240);
+          for (let i = 0; i < 16; i++) {
+            const angle = (i / 16) * Math.PI * 2;
+            const dot = this.add
+              .circle(bx, by, 5, burstColors[(i + bIdx) % burstColors.length])
+              .setDepth(15);
+            this.tweens.add({
+              targets: dot,
+              x: bx + Math.cos(angle) * 110,
+              y: by + Math.sin(angle) * 95,
+              alpha: 0,
+              scale: 0.2,
+              duration: 950,
+              ease: "Cubic.easeOut",
+              onComplete: () => dot.destroy(),
+            });
+          }
+        });
+      });
+      return;
+    }
+
+    const particleColors = isStarRain
+      ? [0xfef08a, 0xfacc15, 0xf59e0b, 0xffffff]
+      : vFxCfg?.color
+        ? [vFxCfg.color, 0xfacc15, 0xffffff]
+        : [0xf1c40f, 0xe74c3c, 0x2ecc71, 0x3498db, 0x9b59b6];
+
+    for (let i = 0; i < 34; i++) {
       const cx = Phaser.Math.Between(120, GAME_CONFIG.width - 120);
-      const piece = this.add.rectangle(cx, -20, 12, 8, confettiColors[i % confettiColors.length]).setDepth(15);
+      const piece = isStarRain
+        ? this.add
+            .star(cx, -20, 5, 5, 11, particleColors[i % particleColors.length])
+            .setDepth(15)
+        : this.add
+            .rectangle(cx, -20, 12, 8, particleColors[i % particleColors.length])
+            .setDepth(15);
       this.tweens.add({
         targets: piece,
         y: Phaser.Math.Between(260, 420),
@@ -478,8 +582,8 @@ export class BattleArenaScene extends Phaser.Scene {
         angle: Phaser.Math.Between(-360, 360),
         alpha: 0,
         duration: Phaser.Math.Between(1100, 1900),
-        delay: i * 35,
-        onComplete: () => piece.destroy()
+        delay: i * 32,
+        onComplete: () => piece.destroy(),
       });
     }
   }
