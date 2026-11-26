@@ -1386,155 +1386,179 @@ export class HybridQuestionEngine {
   registerBingTemplates() {
     return [
       {
-        templateId: "TPL_BING3_NUMBERS",
+        templateId: "TPL_BING3_MY_SELF",
         subject: "Bahasa Inggris",
-        topic: "Numbers",
-        subtopic: "Numbers 1 to 100",
-        generate: () => {
-          const pairs = [
-            { num: 7, word: "Seven", wrong: ["Six", "Eight", "Seventeen"] },
-            { num: 12, word: "Twelve", wrong: ["Twenty", "Ten", "Two"] },
-            {
-              num: 19,
-              word: "Nineteen",
-              wrong: ["Ninety", "Nine", "Seventeen"],
-            },
-            { num: 20, word: "Twenty", wrong: ["Twelve", "Two", "Thirty"] },
-            {
-              num: 25,
-              word: "Twenty-five",
-              wrong: ["Fifty-two", "Fifteen", "Thirty-five"],
-            },
-            { num: 40, word: "Forty", wrong: ["Fourteen", "Four", "Fifty"] },
-            {
-              num: 100,
-              word: "One hundred",
-              wrong: ["One thousand", "Ten", "Ninety"],
-            },
-          ];
-          const chosen = this.pickRandom(pairs);
-          return {
-            question: `Bahasa Inggris yang tepat untuk angka "${chosen.num}" adalah ...`,
-            options: this.shuffleArray([chosen.word, ...chosen.wrong]),
-            correctAnswer: chosen.word,
-            explanation: `Angka ${chosen.num} dalam Bahasa Inggris ditulis dan dibaca "${chosen.word}".`,
-            params: {},
-          };
-        },
-      },
-      {
-        templateId: "TPL_BING3_COLORS_OBJECTS",
-        subject: "Bahasa Inggris",
-        topic: "Colors",
-        subtopic: "Mengenal Warna dalam Bahasa Inggris",
+        topic: "Bab 1 — My Self",
+        subtopic: "Introducing Yourself & Favorite Activities",
         generate: () => {
           const person = this.pickRandom(NAMES_POOL);
-          const colorFacts = [
+          const cases = [
             {
-              obj: "pisang yang matang (ripe banana)",
-              eng: "Yellow (Kuning)",
-              wrong: ["Purple (Ungu)", "Blue (Biru)", "Black (Hitam)"],
+              question: `Read the short greeting: "Hello! My name is ${person}. I am a third-grade student. Nice to meet you!" What should a new classmate say in reply?`,
+              options: [
+                "Nice to meet you too!",
+                "Good night, see you tomorrow!",
+                "I am sweeping the floor.",
+                "She is my grandmother.",
+              ],
+              correctAnswer: "Nice to meet you too!",
+              explanation:
+                'Ungkapan sopan untuk membalas perkenalan "Nice to meet you!" adalah "Nice to meet you too!".',
+              vocabHelp: "classmate = teman sekelas; reply = membalas",
+              visualId: null,
             },
             {
-              obj: "buah apel merah (red apple)",
-              eng: "Red (Merah)",
-              wrong: ["White (Putih)", "Blue (Biru)", "Grey (Abu-abu)"],
+              question: `${person} wants to introduce a new friend named Sinta to the teacher. Which sentence is the most polite?`,
+              options: [
+                "Miss, this is my friend Sinta.",
+                "Miss, Sinta is reading a newspaper.",
+                "Hello, my father works in the garden.",
+                "I prefer playing football after school.",
+              ],
+              correctAnswer: "Miss, this is my friend Sinta.",
+              explanation:
+                'Untuk memperkenalkan teman kepada orang lain, gunakan pola "This is my friend ...".',
+              vocabHelp: "introduce = memperkenalkan; polite = sopan",
+              visualId: null,
             },
             {
-              obj: "susu putih (fresh milk)",
-              eng: "White (Putih)",
-              wrong: ["Black (Hitam)", "Green (Hijau)", "Red (Merah)"],
-            },
-            {
-              obj: "daun segar di pohon (fresh leaf)",
-              eng: "Green (Hijau)",
-              wrong: ["Pink (Merah muda)", "Blue (Biru)", "White (Putih)"],
+              question: `${person} always brings a sketchbook and colored pencils after school because ${person} loves drawing. What is ${person}'s favorite activity?`,
+              options: [
+                "Drawing pictures",
+                "Swimming in the pool",
+                "Cooking in the kitchen",
+                "Watering the flowers",
+              ],
+              correctAnswer: "Drawing pictures",
+              explanation:
+                "Membawa buku sketsa dan pensil warna menunjukkan aktivitas kegemaran menggambar (drawing pictures).",
+              vocabHelp: "after school = sepulang sekolah; favorite = kesukaan",
+              visualId: null,
             },
           ];
-          const c = this.pickRandom(colorFacts);
+          const chosen = this.pickRandom(cases);
           return {
-            question: `${person} melihat ${c.obj}. Warna benda tersebut dalam Bahasa Inggris adalah ...`,
-            options: this.shuffleArray([c.eng, ...c.wrong]),
-            correctAnswer: c.eng,
-            explanation: `Warna ${c.obj} dalam Bahasa Inggris adalah ${c.eng}.`,
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            vocabHelp: chosen.vocabHelp,
+            visualId: chosen.visualId,
             params: {},
           };
         },
       },
       {
-        templateId: "TPL_BING3_ANIMALS_FOOD",
+        templateId: "TPL_BING3_MY_FAMILY",
         subject: "Bahasa Inggris",
-        topic: "Animals",
-        subtopic: "Vocabulary Hewan dan Cirinya",
+        topic: "Bab 2 — My Family",
+        subtopic: "Family Members and Relationships",
         generate: () => {
-          const items = [
+          const cases = [
             {
-              desc: "Hewan ini suka melompat, bertelinga panjang, dan suka makan wortel (It has long ears and likes carrots)",
-              ans: "Rabbit (Kelinci)",
-              wrong: ["Fish (Ikan)", "Bird (Burung)", "Snake (Ular)"],
+              question:
+                "Look at the family chart! Based on the diagram, who is Mr. Ali to Raka?",
+              options: ["Father", "Brother", "Uncle", "Grandfather"],
+              correctAnswer: "Father",
+              explanation:
+                "Pada bagan keluarga terlihat Mr. Ali adalah ayah (Father) dari Raka.",
+              vocabHelp: "father = ayah; family chart = bagan keluarga",
+              visualId: "en_family_tree",
             },
             {
-              desc: "Hewan ini bisa terbang tinggi di langit dan memiliki sayap (It has wings and can fly in the sky)",
-              ans: "Bird (Burung)",
-              wrong: ["Cow (Sapi)", "Cat (Kucing)", "Goat (Kambing)"],
+              question:
+                "Look at the family chart! Raka is a boy and Lina is a girl from the same parents. What is Lina to Raka?",
+              options: ["Sister", "Mother", "Aunt", "Cousin"],
+              correctAnswer: "Sister",
+              explanation:
+                "Saudara perempuan kandung dalam Bahasa Inggris disebut Sister.",
+              vocabHelp: "sister = saudara perempuan",
+              visualId: "en_family_tree",
             },
             {
-              desc: "Hewan ternak ini menghasilkan susu segar dan berbunyi moo (It gives us milk)",
-              ans: "Cow (Sapi)",
-              wrong: ["Chicken (Ayam)", "Duck (Bebek)", "Ant (Semut)"],
-            },
-            {
-              desc: "Hewan ini hidup di air dan berenang menggunakan sirip (It lives in water and can swim)",
-              ans: "Fish (Ikan)",
-              wrong: ["Monkey (Monyet)", "Horse (Kuda)", "Lion (Singa)"],
+              question:
+                "Look at the family chart! Mrs. Ani has two children: Raka and Lina. Who is Raka to Mrs. Ani?",
+              options: ["Her son", "Her daughter", "Her father", "Her brother"],
+              correctAnswer: "Her son",
+              explanation:
+                "Anak laki-laki dari seorang ibu disebut son (Her son = anak laki-lakinya).",
+              vocabHelp: "son = anak laki-laki; daughter = anak perempuan",
+              visualId: "en_family_tree",
             },
           ];
-          const it = this.pickRandom(items);
+          const chosen = this.pickRandom(cases);
           return {
-            question: `Tebaklah hewan berikut dalam Bahasa Inggris! "${it.desc}". Hewan apakah itu?`,
-            options: this.shuffleArray([it.ans, ...it.wrong]),
-            correctAnswer: it.ans,
-            explanation: `Berdasarkan deskripsi tersebut, jawabannya adalah ${it.ans}.`,
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            vocabHelp: chosen.vocabHelp,
+            visualId: chosen.visualId,
             params: {},
           };
         },
       },
       {
-        templateId: "TPL_BING3_SIMPLE_SENTENCES",
+        templateId: "TPL_BING3_HOME_ACTIVITIES",
         subject: "Bahasa Inggris",
-        topic: "Simple Sentences",
-        subtopic: "Kalimat Sederhana tentang Kesukaan dan Kepemilikan",
+        topic: "Bab 3 — My Family's Activities at Home",
+        subtopic: "Daily Family Activities at Home",
         generate: () => {
-          const person = this.pickRandom(NAMES_POOL);
-          const sentences = [
+          const cases = [
             {
-              indo: `${person} suka makan buah apel`,
-              eng: `${person} likes to eat apples`,
-              w1: `${person} sleeping in the classroom`,
-              w2: `Apples like to eat ${person}`,
-              w3: `${person} is a red apple`,
+              question:
+                "The living room floor is dusty. Mother takes a broom and starts cleaning. What is Mother doing?",
+              options: [
+                "She is sweeping the floor",
+                "She is reading a newspaper",
+                "She is watering the plants",
+                "She is sleeping on the sofa",
+              ],
+              correctAnswer: "She is sweeping the floor",
+              explanation:
+                "Menggunakan sapu (broom) untuk membersihkan lantai berarti sedang menyapu (sweeping the floor).",
+              vocabHelp: "dusty = berdebu; broom = sapu",
+              visualId: null,
             },
             {
-              indo: `Saya mempunyai sebuah tas sekolah baru`,
-              eng: `I have a new school bag`,
-              w1: `I am a school bag`,
-              w2: `Bag have a new school I`,
-              w3: `My school is a new bag`,
+              question:
+                "Every morning, Father sits in the yard with a cup of tea and reads the daily news. What is Father doing?",
+              options: [
+                "He is reading a newspaper",
+                "He is washing the dishes",
+                "He is feeding the cat",
+                "He is tidying his bed",
+              ],
+              correctAnswer: "He is reading a newspaper",
+              explanation:
+                "Membaca berita harian disebut reading a newspaper.",
+              vocabHelp: "newspaper = koran; yard = halaman",
+              visualId: null,
             },
             {
-              indo: `Ini adalah buku cerita saya`,
-              eng: `This is my story book`,
-              w1: `That are my pencil`,
-              w2: `Book is my this story`,
-              w3: `I am a story book`,
+              question:
+                "In the afternoon, Raka goes to the backyard with a bowl of fish food for his pets. What is Raka doing?",
+              options: [
+                "He is feeding his pets",
+                "He is cooking breakfast",
+                "He is mopping the floor",
+                "He is watching television",
+              ],
+              correctAnswer: "He is feeding his pets",
+              explanation:
+                "Memberi makan hewan peliharaan di halaman belakang disebut feeding his pets.",
+              vocabHelp: "backyard = halaman belakang; feeding = memberi makan",
+              visualId: null,
             },
           ];
-          const s = this.pickRandom(sentences);
+          const chosen = this.pickRandom(cases);
           return {
-            question: `Bahasa Inggris yang tepat untuk kalimat "${s.indo}" adalah ...`,
-            options: this.shuffleArray([s.eng, s.w1, s.w2, s.w3]),
-            correctAnswer: s.eng,
-            explanation: `Terjemahan Bahasa Inggris yang tepat untuk "${s.indo}" adalah "${s.eng}".`,
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correctAnswer,
+            explanation: chosen.explanation,
+            vocabHelp: chosen.vocabHelp,
+            visualId: chosen.visualId,
             params: {},
           };
         },
@@ -2075,39 +2099,40 @@ export class HybridQuestionEngine {
   registerSenirupaGrade3Templates() {
     return [
       {
-        templateId: "TPL_SR3_OBSERVASI_VISUAL",
+        templateId: "TPL_SR3_GARIS_BENTUK",
         grade: 3,
         subject: "Seni Rupa",
-        topic: "Warna Primer dan Pencampuran Warna",
-        subtopic: "Pemecahan Masalah Pencampuran Warna dan Bentuk",
+        topic: "Bab 1 — Eksplorasi Garis dan Bentuk",
+        subtopic: "Mengidentifikasi Garis dan Bentuk",
         generate: () => {
           const cases = [
             {
               question:
-                "Saat menggambar buah jeruk matang yang segar, kamu ingin membuat warna ORANYE (Jingga), tetapi di kotak cat airmu hanya ada warna Merah, Kuning, dan Biru. Campuran manakah yang harus kamu buat di atas palet?",
-              correct: "Mencampurkan warna Merah dan Kuning secara merata",
+                "Perhatikan gambar di atas! Jenis garis yang meliuk lembut seperti ombak laut pada gambar tersebut adalah ...",
+              correct: "Garis bergelombang",
               options: [
-                "Mencampurkan warna Merah dan Kuning secara merata",
-                "Mencampurkan warna Biru dan Kuning secara merata",
-                "Mencampurkan warna Merah dan Biru secara merata",
-                "Mencampurkan ketiga warna primer sekaligus hingga menjadi cokelat gelap",
+                "Garis bergelombang",
+                "Garis zig-zag",
+                "Garis lurus vertikal",
+                "Garis spiral melingkar",
               ],
               explanation:
-                "Warna sekunder Oranye (Jingga) dihasilkan dari pencampuran dua warna primer, yaitu Merah dan Kuning.",
+                "Garis bergelombang memiliki lengkungan naik-turun yang halus menyerupai ombak air.",
+              visualId: "sr_line_wavy",
             },
             {
               question:
-                "Bayangkan kamu mengamati dua benda di ruang kelas: selembar kertas gambar yang tipis dan sebuah kotak tempat pensil dari kayu. Mengapa kotak pensil kayu disebut karya tiga dimensi sedangkan kertas gambar disebut dua dimensi?",
-              correct:
-                "Karena kotak pensil kayu memiliki ukuran panjang, lebar, tinggi, serta rongga ruang di dalamnya, sedangkan kertas hanya berupa bidang datar",
+                "Perhatikan gambar bentuk di atas! Ketiga bangun tersebut (persegi, segitiga, lingkaran) termasuk kelompok ...",
+              correct: "Bentuk geometris",
               options: [
-                "Karena kotak pensil kayu memiliki ukuran panjang, lebar, tinggi, serta rongga ruang di dalamnya, sedangkan kertas hanya berupa bidang datar",
-                "Karena kertas gambar warnanya putih sedangkan kotak pensil warnanya cokelat",
-                "Karena kotak pensil kayu tidak bisa digambari dengan pensil warna",
-                "Karena kertas gambar lebih berat daripada kotak pensil kayu",
+                "Bentuk geometris",
+                "Bentuk organik alami",
+                "Tekstur kasar buatan",
+                "Komposisi radial",
               ],
               explanation:
-                "Ciri utama benda tiga dimensi (3D) adalah memiliki ketebalan/tinggi dan volume ruang sehingga dapat dilihat dari berbagai sisi.",
+                "Persegi, segitiga, dan lingkaran adalah bentuk teratur yang disebut bentuk geometris.",
+              visualId: "sr_shape_geometric",
             },
           ];
           const chosen = this.pickRandom(cases);
@@ -2116,6 +2141,213 @@ export class HybridQuestionEngine {
             options: this.shuffleArray(chosen.options),
             correctAnswer: chosen.correct,
             explanation: chosen.explanation,
+            visualId: chosen.visualId,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_SR3_WARNA",
+        grade: 3,
+        subject: "Seni Rupa",
+        topic: "Bab 2 — Eksplorasi Warna",
+        subtopic: "Warna Primer, Sekunder & Roda Warna",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Perhatikan ilustrasi pencampuran dua warna primer di atas! Jika warna Merah dan Kuning dicampur secara merata, warna sekunder apakah yang terbentuk?",
+              correct: "Oranye (Jingga)",
+              options: [
+                "Oranye (Jingga)",
+                "Hijau",
+                "Ungu",
+                "Abu-abu",
+              ],
+              explanation:
+                "Pencampuran warna primer Merah dan Kuning menghasilkan warna sekunder Oranye (Jingga).",
+              visualId: "sr_color_mix_ry",
+            },
+            {
+              question:
+                "Perhatikan ilustrasi pencampuran warna di atas! Jika cat air Kuning dan Biru dicampur bersama di palet, warna baru yang dihasilkan adalah ...",
+              correct: "Hijau",
+              options: ["Hijau", "Oranye", "Ungu", "Merah muda"],
+              explanation:
+                "Campuran dua warna primer Kuning dan Biru menghasilkan warna sekunder Hijau.",
+              visualId: "sr_color_mix_yb",
+            },
+            {
+              question:
+                "Perhatikan ilustrasi pencampuran warna di atas! Warna sekunder apakah yang muncul saat warna Merah dan Biru dicampur?",
+              correct: "Ungu",
+              options: ["Ungu", "Hijau", "Oranye", "Kuning"],
+              explanation:
+                "Campuran warna primer Merah dan Biru menghasilkan warna sekunder Ungu.",
+              visualId: "sr_color_mix_rb",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            visualId: chosen.visualId,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_SR3_MENGGAMBAR_CERITA",
+        grade: 3,
+        subject: "Seni Rupa",
+        topic: "Bab 3 — Menggambar Cerita",
+        subtopic: "Panel Gambar Cerita dan Alat Gambar",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Perhatikan urutan 3 panel gambar cerita di atas! Mengapa gambar cerita disajikan dalam beberapa panel secara berurutan?",
+              correct:
+                "Agar alur cerita dari awal hingga akhir mudah dipahami pembaca",
+              options: [
+                "Agar alur cerita dari awal hingga akhir mudah dipahami pembaca",
+                "Agar kertas gambar tidak memiliki ruang kosong sama sekali",
+                "Karena pensil hanya bisa dipakai untuk satu kotak kecil",
+                "Supaya warna latar belakangnya menjadi gelap semua",
+              ],
+              explanation:
+                "Panel berurutan membantu menunjukkan langkah kejadian dari awal, tengah, hingga akhir cerita.",
+              visualId: "sr_story_panels",
+            },
+            {
+              question:
+                "Perhatikan alat-alat gambar pada gambar di atas! Alat manakah yang paling tepat digunakan untuk menarik garis tepi panel agar lurus dan rapi?",
+              correct: "Penggaris",
+              options: ["Penggaris", "Penghapus", "Krayon", "Kuas cat air"],
+              explanation:
+                "Penggaris membantu membuat garis lurus dan ukuran bingkai panel yang rapi.",
+              visualId: "sr_art_tools",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            visualId: chosen.visualId,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_SR3_KOMPOSISI",
+        grade: 3,
+        subject: "Seni Rupa",
+        topic: "Bab 4 — Eksplorasi Komposisi",
+        subtopic: "Komposisi Simetris, Asimetris, dan Radial",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Perhatikan gambar tata letak benda di atas! Bagian kiri dan kanan garis tengah memiliki bentuk serta jarak yang sama persis. Komposisi ini disebut ...",
+              correct: "Komposisi simetris",
+              options: [
+                "Komposisi simetris",
+                "Komposisi asimetris",
+                "Komposisi radial",
+                "Tekstur kasar",
+              ],
+              explanation:
+                "Komposisi simetris menata objek secara seimbang dan sama persis di sisi kiri dan kanan sumbu tengah.",
+              visualId: "sr_comp_symmetric",
+            },
+            {
+              question:
+                "Perhatikan komposisi gambar di atas! Sisi kiri berisi satu lingkaran besar, sedangkan sisi kanan berisi beberapa bentuk kecil agar tetap seimbang. Pola ini disebut ...",
+              correct: "Komposisi asimetris",
+              options: [
+                "Komposisi asimetris",
+                "Komposisi simetris",
+                "Komposisi radial",
+                "Garis spiral",
+              ],
+              explanation:
+                "Komposisi asimetris menyeimbangkan objek yang berbeda ukuran/jumlah antara sisi kiri dan kanan.",
+              visualId: "sr_comp_asymmetric",
+            },
+            {
+              question:
+                "Perhatikan gambar kelopak bunga yang memancar dari titik pusat di tengah! Jenis komposisi tersebut adalah ...",
+              correct: "Komposisi radial",
+              options: [
+                "Komposisi radial",
+                "Komposisi simetris lurus",
+                "Komposisi asimetris acak",
+                "Teknik frottage",
+              ],
+              explanation:
+                "Komposisi radial menyusun unsur gambar memancar atau melingkar dari satu titik pusat di tengah.",
+              visualId: "sr_comp_radial",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            visualId: chosen.visualId,
+            params: {},
+          };
+        },
+      },
+      {
+        templateId: "TPL_SR3_TEKSTUR",
+        grade: 3,
+        subject: "Seni Rupa",
+        topic: "Bab 5 — Mengenal dan Mengeksplorasi Tekstur",
+        subtopic: "Tekstur Nyata, Semu, dan Teknik Frottage",
+        generate: () => {
+          const cases = [
+            {
+              question:
+                "Perhatikan perbandingan Benda A (Kulit Kayu) dan Benda B (Kaca) pada gambar di atas! Jika diraba langsung, bagaimana perbedaan tekstur keduanya?",
+              correct: "Kulit kayu bertekstur kasar, sedangkan kaca bertekstur halus",
+              options: [
+                "Kulit kayu bertekstur kasar, sedangkan kaca bertekstur halus",
+                "Kulit kayu bertekstur halus, sedangkan kaca bertekstur kasar",
+                "Keduanya sama-sama memiliki tekstur sangat kasar",
+                "Keduanya sama-sama lunak seperti kapas",
+              ],
+              explanation:
+                "Permukaan kulit kayu memiliki lekukan kasar saat diraba, sedangkan permukaan kaca licin dan halus.",
+              visualId: "sr_texture_compare",
+            },
+            {
+              question:
+                "Perhatikan gambar teknik menggosok kertas di atas uang koin menggunakan pensil! Teknik mencetak tekstur ini disebut ...",
+              correct: "Teknik frottage (gosok)",
+              options: [
+                "Teknik frottage (gosok)",
+                "Teknik mozaik tempel",
+                "Teknik lipat origami",
+                "Komposisi simetris",
+              ],
+              explanation:
+                "Teknik frottage dilakukan dengan meletakkan kertas di atas benda bertekstur lalu menggosoknya dengan pensil atau krayon.",
+              visualId: "sr_texture_frottage",
+            },
+          ];
+          const chosen = this.pickRandom(cases);
+          return {
+            question: chosen.question,
+            options: this.shuffleArray(chosen.options),
+            correctAnswer: chosen.correct,
+            explanation: chosen.explanation,
+            visualId: chosen.visualId,
             params: {},
           };
         },
@@ -2772,6 +3004,8 @@ export class HybridQuestionEngine {
       options: rawResult.options,
       correctAnswer: rawResult.correctAnswer,
       explanation: rawResult.explanation,
+      visualId: rawResult.visualId || null,
+      vocabHelp: rawResult.vocabHelp || null,
       sourceType: "template_generator",
       generatorParams: rawResult.params || {},
     };

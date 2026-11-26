@@ -1,4 +1,3 @@
-
 export const BALANCED_MC_OVERRIDES = {
   IPAS3_004: {
     options: ["Berudu", "Jentik nyamuk", "Kepompong", "Ulat air"],
@@ -61,7 +60,6 @@ export const BALANCED_MC_OVERRIDES = {
 
 export const ADVENTURE_MULTITYPE_BANK = {
   ipas: [
-
     {
       id: "IPAS3_MATCH_01",
       grade: 3,
@@ -220,7 +218,6 @@ export const ADVENTURE_MULTITYPE_BANK = {
   ],
 
   bahasa_indonesia: [
-
     {
       id: "BINDO3_MATCH_01",
       grade: 3,
@@ -343,7 +340,6 @@ export const ADVENTURE_MULTITYPE_BANK = {
   ],
 
   matematika: [
-
     {
       id: "MTK3_MATCH_01",
       grade: 3,
@@ -417,39 +413,122 @@ export const ADVENTURE_MULTITYPE_BANK = {
   ],
 
   bahasa_inggris: [
+
     {
       id: "BING3_MATCH_01",
       grade: 3,
       subject: "Bahasa Inggris",
       questionType: "matching",
-      topic: "Vocabulary",
+      topic: "Bab 1 — My Self",
       difficulty: "mudah",
       question:
-        "Cocokkan kata Bahasa Inggris dengan artinya dalam Bahasa Indonesia!",
+        "Match the question with the best response! (Cocokkan pertanyaan dengan jawabannya)",
       pairs: [
-        { id: "p1", left: "Apple", right: "Apel" },
-        { id: "p2", left: "Book", right: "Buku" },
-        { id: "p3", left: "Water", right: "Air" },
+        { id: "p1", left: "What is your name?", right: "My name is Edo." },
+        {
+          id: "p2",
+          left: "What is your favorite activity?",
+          right: "I like cycling.",
+        },
+        { id: "p3", left: "Nice to meet you.", right: "Nice to meet you too." },
       ],
-      explanation: "Apple = apel, Book = buku, dan Water = air.",
+      explanation:
+        "Setiap ungkapan perkenalan dan aktivitas favorit dipasangkan dengan respons percakapan yang tepat.",
     },
+    {
+      id: "BING3_MATCH_02",
+      grade: 3,
+      subject: "Bahasa Inggris",
+      questionType: "matching",
+      topic: "Bab 2 — My Family",
+      difficulty: "sedang",
+      question: "Match each family member with the right description!",
+      pairs: [
+        { id: "p1", left: "Grandfather", right: "My father's father" },
+        { id: "p2", left: "Aunt", right: "My mother's sister" },
+        { id: "p3", left: "Parents", right: "My father and mother" },
+      ],
+      explanation:
+        "Grandfather = kakek, Aunt = bibi/tante, dan Parents = orang tua (ayah dan ibu).",
+    },
+    {
+      id: "BING3_MATCH_03",
+      grade: 3,
+      subject: "Bahasa Inggris",
+      questionType: "matching",
+      topic: "Bab 3 — My Family's Activities at Home",
+      difficulty: "sulit",
+      question: "Match the activity at home with the right place!",
+      pairs: [
+        { id: "p1", left: "Cooking breakfast", right: "In the kitchen" },
+        { id: "p2", left: "Watering the flowers", right: "In the garden" },
+        { id: "p3", left: "Tidying the bed", right: "In the bedroom" },
+      ],
+      explanation:
+        "Memasak di dapur (kitchen), menyiram bunga di taman (garden), dan merapikan tempat tidur di kamar (bedroom).",
+    },
+
     {
       id: "BING3_ESSAY_01",
       grade: 3,
       subject: "Bahasa Inggris",
       questionType: "essay",
-      topic: "Greetings",
+      topic: "Bab 1 — My Self",
       difficulty: "mudah",
-      question: 'Apa ucapan "Selamat pagi" dalam Bahasa Inggris?',
-      correctAnswer: "Good morning",
-      acceptedAnswers: ["good morning"],
-      requiredConcepts: [["good"], ["morning"]],
+      question:
+        'Complete the sentence to introduce yourself: "Hello! My ___ is Rina."',
+      correctAnswer: "name",
+      acceptedAnswers: ["name", "my name is rina"],
+      requiredConcepts: [["name"]],
       clues: [
-        "Ucapan ini terdiri dari 2 kata Bahasa Inggris.",
-        'Kata pertamanya adalah "Good".',
-        'Kata keduanya berarti pagi dan diawali huruf "m".',
+        "Kalimat ini digunakan untuk menyebutkan nama diri sendiri.",
+        'Kata yang hilang dalam Bahasa Indonesia berarti "nama".',
+        'Jawabannya 1 kata Bahasa Inggris (4 huruf) yang diawali huruf "n".',
       ],
-      explanation: '"Selamat pagi" dalam Bahasa Inggris adalah "Good morning".',
+      explanation:
+        'Untuk memperkenalkan nama diri dalam Bahasa Inggris, kita mengucapkan "My name is ...".',
+    },
+    {
+      id: "BING3_ESSAY_02",
+      grade: 3,
+      subject: "Bahasa Inggris",
+      questionType: "essay",
+      topic: "Bab 2 — My Family",
+      difficulty: "sedang",
+      visualId: "en_family_tree",
+      question:
+        "Look at the family tree! Who is Mrs. Ani to Raka? (Write in English)",
+      correctAnswer: "mother",
+      acceptedAnswers: ["mother", "mom", "his mother", "my mother"],
+      requiredConcepts: [["mother", "mom", "mama"]],
+      clues: [
+        "Lihat kotak berwarna merah muda di bagian atas bagan keluarga.",
+        "Mrs. Ani adalah ibu dari Raka dan Lina.",
+        'Tuliskan kata "ibu" dalam Bahasa Inggris (diawali huruf "m").',
+      ],
+      explanation:
+        'Mrs. Ani adalah ibu Raka, yang dalam Bahasa Inggris disebut "mother".',
+    },
+    {
+      id: "BING3_ESSAY_03",
+      grade: 3,
+      subject: "Bahasa Inggris",
+      questionType: "essay",
+      topic: "Bab 3 — My Family's Activities at Home",
+      difficulty: "sulit",
+      question:
+        'Complete the sentence: "Mother is in the kitchen. She is ___ dinner for our family."',
+      vocabHelp: "dinner = makan malam",
+      correctAnswer: "cooking",
+      acceptedAnswers: ["cooking", "making", "preparing"],
+      requiredConcepts: [["cooking", "making", "preparing"]],
+      clues: [
+        "Pikirkan kegiatan yang dilakukan Ibu di dapur (kitchen) untuk menyiapkan makan malam.",
+        'Dalam Bahasa Indonesia, kata kerjanya berarti "sedang memasak".',
+        'Kata Bahasa Inggrisnya berakhiran "-ing" dan diawali huruf "c".',
+      ],
+      explanation:
+        'Kegiatan memasak di dapur dalam Bahasa Inggris adalah "cooking".',
     },
   ],
 
@@ -492,6 +571,189 @@ export const ADVENTURE_MULTITYPE_BANK = {
       ],
       explanation:
         "Bhinneka Tunggal Ika berarti berbeda-beda tetapi tetap satu jua.",
+    },
+  ],
+
+  seni_rupa: [
+
+    {
+      id: "SR3_MATCH_01",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "matching",
+      topic: "Bab 1 — Eksplorasi Garis dan Bentuk",
+      difficulty: "mudah",
+      question:
+        "Cocokkan jenis garis atau bentuk dengan contoh bendanya di sekitar kita!",
+      pairs: [
+        { id: "p1", left: "Garis bergelombang", right: "Ombak air laut" },
+        {
+          id: "p2",
+          left: "Bentuk geometris",
+          right: "Papan tulis persegi panjang",
+        },
+        { id: "p3", left: "Bentuk organik", right: "Awan dan dedaunan" },
+      ],
+      explanation:
+        "Ombak memakai garis bergelombang, papan tulis berbentuk geometris, dan awan/daun berbentuk organik.",
+    },
+    {
+      id: "SR3_MATCH_02",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "matching",
+      topic: "Bab 2 — Eksplorasi Warna",
+      difficulty: "mudah",
+      visualId: "sr_color_wheel",
+      question:
+        "Amati roda warna di atas! Cocokkan campuran warna primer dengan warna sekunder hasilnya!",
+      pairs: [
+        { id: "p1", left: "Merah + Kuning", right: "Oranye" },
+        { id: "p2", left: "Kuning + Biru", right: "Hijau" },
+        { id: "p3", left: "Merah + Biru", right: "Ungu" },
+      ],
+      explanation:
+        "Merah+Kuning = Oranye, Kuning+Biru = Hijau, dan Merah+Biru = Ungu.",
+    },
+    {
+      id: "SR3_MATCH_03",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "matching",
+      topic: "Bab 4 — Eksplorasi Komposisi",
+      difficulty: "sedang",
+      question: "Cocokkan jenis komposisi keseimbangan dengan ciri susunannya!",
+      pairs: [
+        {
+          id: "p1",
+          left: "Komposisi simetris",
+          right: "Kiri dan kanan sama persis",
+        },
+        {
+          id: "p2",
+          left: "Komposisi asimetris",
+          right: "Berbeda bentuk tetapi seimbang",
+        },
+        {
+          id: "p3",
+          left: "Komposisi radial",
+          right: "Memancar dari titik tengah",
+        },
+      ],
+      explanation:
+        "Simetris sama persis kiri-kanan, asimetris berbeda namun seimbang, dan radial memancar dari pusat.",
+    },
+    {
+      id: "SR3_MATCH_04",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "matching",
+      topic: "Bab 5 — Mengenal dan Mengeksplorasi Tekstur",
+      difficulty: "sulit",
+      visualId: "sr_texture_animals",
+      question:
+        "Amati gambar hewan di atas! Cocokkan hewan dengan tekstur permukaan tubuhnya!",
+      pairs: [
+        { id: "p1", left: "Kucing", right: "Berbulu lembut" },
+        { id: "p2", left: "Ikan", right: "Bersisik licin" },
+        { id: "p3", left: "Kura-kura", right: "Bertempurung keras" },
+      ],
+      explanation:
+        "Setiap hewan memiliki tekstur tubuh khas: kucing berbulu lembut, ikan bersisik licin, dan kura-kura bertempurung keras.",
+    },
+
+    {
+      id: "SR3_ESSAY_01",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "essay",
+      topic: "Bab 2 — Eksplorasi Warna",
+      difficulty: "mudah",
+      visualId: "sr_color_primary",
+      question:
+        "Amati tiga warna pokok pada gambar di atas! Sebutkan ketiga warna primer tersebut!",
+      correctAnswer: "Merah, kuning, dan biru",
+      acceptedAnswers: [
+        "merah kuning biru",
+        "merah, kuning, biru",
+        "merah kuning dan biru",
+      ],
+      requiredConcepts: [["merah"], ["kuning"], ["biru"]],
+      clues: [
+        "Lihat ketiga lingkaran warna yang ditampilkan di bagian atas soal.",
+        "Warna primer terdiri dari 3 warna dasar yang tidak bisa dibuat dari campuran warna lain.",
+        "Sebutkan 3 warnanya: diawali huruf M, K, dan B.",
+      ],
+      explanation:
+        "Tiga warna primer dalam seni rupa adalah merah, kuning, dan biru.",
+    },
+    {
+      id: "SR3_ESSAY_02",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "essay",
+      topic: "Bab 3 — Menggambar Cerita",
+      difficulty: "sedang",
+      visualId: "sr_art_tools",
+      question:
+        "Alat apa yang digunakan untuk menghapus garis sketsa pensil yang salah saat menggambar cerita?",
+      correctAnswer: "Penghapus",
+      acceptedAnswers: ["penghapus", "karet penghapus", "stipo"],
+      requiredConcepts: [["penghapus", "hapus"]],
+      clues: [
+        "Lihat benda berwarna merah muda di bagian tengah gambar alat di atas.",
+        "Benda ini terbuat dari karet lembut yang selalu dipakai bersama pensil.",
+        'Jawabannya 1 kata yang diawali "Peng...".',
+      ],
+      explanation:
+        "Penghapus digunakan untuk membersihkan atau memperbaiki garis sketsa pensil.",
+    },
+    {
+      id: "SR3_ESSAY_03",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "essay",
+      topic: "Bab 4 — Eksplorasi Komposisi",
+      difficulty: "sedang",
+      visualId: "sr_comp_symmetric",
+      question:
+        "Amati gambar di atas! Jika sisi kiri dan kanan memiliki bentuk serta ukuran yang sama persis, disebut komposisi keseimbangan apa?",
+      correctAnswer: "Simetris",
+      acceptedAnswers: [
+        "simetris",
+        "komposisi simetris",
+        "formal",
+        "komposisi formal",
+      ],
+      requiredConcepts: [["simetris", "formal"]],
+      clues: [
+        "Bayangkan kertas yang dilipat tepat di garis putus-putus tengah, lalu sisi kiri dan kanannya saling menumpuk pas.",
+        "Komposisi ini disebut juga komposisi formal.",
+        'Nama lainnya terdiri dari 1 kata yang diawali huruf "S".',
+      ],
+      explanation:
+        "Susunan kiri dan kanan yang sama persis disebut komposisi formal atau simetris.",
+    },
+    {
+      id: "SR3_ESSAY_04",
+      grade: 3,
+      subject: "Seni Rupa",
+      questionType: "essay",
+      topic: "Bab 5 — Mengenal dan Mengeksplorasi Tekstur",
+      difficulty: "sulit",
+      visualId: "sr_texture_frottage",
+      question:
+        "Amati gambar di atas! Apa nama teknik memindahkan pola tekstur koin ke atas kertas dengan cara menggosoknya memakai krayon atau pensil?",
+      correctAnswer: "Teknik gosok",
+      acceptedAnswers: ["teknik gosok", "gosok", "frottage", "menggosok"],
+      requiredConcepts: [["gosok", "menggosok", "frottage"]],
+      clues: [
+        "Perhatikan gerakan krayon di atas kertas yang di bawahnya terdapat uang koin.",
+        "Nama tekniknya sesuai dengan cara kita menggerakkan krayon di atas permukaan kertas.",
+        'Jawabannya adalah "Teknik ..." (diawali huruf "g") atau istilah "frottage".',
+      ],
+      explanation:
+        "Teknik memindahkan tekstur benda timbul ke kertas dengan menggosok krayon/pensil disebut teknik gosok (frottage).",
     },
   ],
 };
