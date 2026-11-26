@@ -14,6 +14,7 @@ import { db } from "../storage/db.js";
 import { questionManager } from "./QuestionManager.js";
 import { hybridEngine } from "./HybridQuestionEngine.js";
 import { questionQualityEngine } from "./QuestionQualityEngine.js";
+import { questionVisualRenderer } from "./QuestionVisualRenderer.js";
 import {
   BATTLE_CHARACTERS,
   BATTLE_COSTUMES,
@@ -1697,8 +1698,15 @@ export class UIManager {
           </div>
         </div>
 
+        ${questionVisualRenderer.render(questionData.visualId)}
+
         <div class="quiz-question-box">
           ${this.escapeHtml(questionData.question)}
+          ${questionData.vocabHelp ? `
+            <div style="margin-top:6px;font-size:0.8rem;font-weight:700;color:#0369a1;background:#f0f9ff;border-radius:8px;padding:4px 8px;display:inline-block;">
+              💡 Kosakata: ${this.escapeHtml(questionData.vocabHelp)}
+            </div>
+          ` : ''}
         </div>
 
         ${bodyHtml}
@@ -4127,12 +4135,13 @@ export class UIManager {
             studentChar
           });
         }
+        const latestEquipped = this.activeProfile?.battleArenaProgress?.equipped || bp.equipped;
         this.startBattleArenaMatch({
           tutorName: tutorName.trim() || 'Tutor',
           studentName: studentName.trim() || 'Murid',
           tutorCharacter: tutorChar,
           studentCharacter: studentChar,
-          studentCosmetic: bp.equipped,
+          studentCosmetic: { ...latestEquipped },
           grade: chosenGrade,
           subject: chosenSubject,
           difficulty: chosenDifficulty,
@@ -4161,7 +4170,11 @@ export class UIManager {
     const renderView = () => {
       const previewCharObj = BATTLE_CHARACTERS.find((c) => c.id === previewCharId) || BATTLE_CHARACTERS[0];
       const isPreviewOwned = this.isBattleCharOwned(previewCharObj, bp);
-      const previewUrl = BattleFighterRig.renderPreviewDataURL(previewCharObj.id);
+      const previewUrl = BattleFighterRig.renderPreviewDataURL(previewCharObj.id, 'student', bp.equipped);
+      const activeCostumeName = BATTLE_COSTUMES.find((c) => c.id === bp.equipped.costume)?.name || 'Default';
+      const activeAccName = BATTLE_ACCESSORIES.find((a) => a.id === bp.equipped.accessory)?.name || 'Tanpa Aksesori';
+      const activeAtkName = BATTLE_ATTACK_EFFECTS.find((e) => e.id === bp.equipped.attackEffect)?.name || 'Default';
+      const activeVicName = BATTLE_VICTORY_EFFECTS.find((v) => v.id === bp.equipped.victoryEffect)?.name || 'Confetti';
 
       const renderStandardShopGroup = (title, category, items, ownedList, equippedId) => {
         const cards = items.map((it) => {
@@ -4264,7 +4277,7 @@ export class UIManager {
                   Kosmetik murni — adil tanpa bonus damage atau statistik pertandingan.
                 </div>
                 <div style="color:#0369a1; font-size:0.8rem; margin-top:2px;">
-                  Kostum Aktif: ${this.escapeHtml(bp.equipped.costume)} · Aksesori Aktif: ${this.escapeHtml(bp.equipped.accessory)} · Efek: ${this.escapeHtml(bp.equipped.attackEffect)}
+                  Kostum: ${this.escapeHtml(activeCostumeName)} · Aksesori: ${this.escapeHtml(activeAccName)} · Serangan: ${this.escapeHtml(activeAtkName)} · Menang: ${this.escapeHtml(activeVicName)}
                 </div>
               </div>
             </div>
@@ -4366,33 +4379,78 @@ export class UIManager {
       });
 
       this.container.querySelectorAll('.btn-buy-item').forEach((btn) => {
-        btn.addEventListener('click', async () => {
+        btn.addEventListener('click', () => {
           if (!this.activeProfile || isProcessingPurchase) return;
-          isProcessingPurchase = true;
-          btn.disabled = true;
+          const cat = btn.dataset.cat;
+          const itemId = btn.dataset.id;
+          const itemName = btn.dataset.name || itemId;
+          const itemPrice = Number(btn.dataset.price) || 0;
 
-          const res = await db.purchaseBattleArenaItem(
-            this.activeProfile.id,
-            btn.dataset.cat,
-            btn.dataset.id,
-            Number(btn.dataset.price)
-          );
-          isProcessingPurchase = false;
-
-          if (res.success) {
-            battleAudio.play('reward');
-            this.activeProfile = res.profile;
-            this.showBattleArenaHub('collection', {
-              subCategory: activeSubCat,
-              previewCharId,
-              feedback: { type: 'success', text: `${btn.dataset.name} berhasil dibeli!` }
-            });
-          } else {
-            battleAudio.play('wrong');
-            btn.disabled = false;
-            shopFeedback = { type: 'error', text: res.message || 'Koin belum mencukupi.' };
+          const ownedListMap = {
+            costume: bp.unlockedCostumes,
+            accessory: bp.unlockedAccessories,
+            attackEffect: bp.unlockedAttackEffects,
+            victoryEffect: bp.unlockedVictoryEffects
+          };
+          if ((ownedListMap[cat] || []).includes(itemId)) {
+            shopFeedback = { type: 'error', text: `${itemName} sudah kamu miliki.` };
             renderView();
+            return;
           }
+
+          if ((bp.coins || 0) < itemPrice) {
+            battleAudio.play('wrong');
+            const kurang = itemPrice - (bp.coins || 0);
+            shopFeedback = {
+              type: 'error',
+              text: `Koin belum cukup untuk membeli ${itemName}! Butuh ${kurang} koin lagi (saldo: ${bp.coins || 0} koin).`
+            };
+            renderView();
+            return;
+          }
+
+          battleAudio.play('click');
+          this.showBattlePurchaseConfirmModal({
+            title: 'Konfirmasi Pembelian Item',
+            itemName,
+            itemSubtitle:
+              cat === 'costume'
+                ? 'Kostum Karakter'
+                : cat === 'accessory'
+                  ? 'Aksesori Karakter'
+                  : 'Efek Arena Quiz Battle',
+            price: itemPrice,
+            currentCoins: bp.coins || 0,
+            previewUrl:
+              cat === 'costume'
+                ? BattleFighterRig.renderPreviewDataURL(previewCharId, 'student', { ...bp.equipped, costume: itemId })
+                : cat === 'accessory'
+                  ? BattleFighterRig.renderPreviewDataURL(previewCharId, 'student', { ...bp.equipped, accessory: itemId })
+                  : null,
+            onConfirm: async () => {
+              if (isProcessingPurchase) return;
+              isProcessingPurchase = true;
+              const res = await db.purchaseBattleArenaItem(this.activeProfile.id, cat, itemId, itemPrice);
+              isProcessingPurchase = false;
+
+              if (res.success) {
+                battleAudio.play('reward');
+                this.activeProfile = res.profile;
+                this.showBattleArenaHub('collection', {
+                  subCategory: activeSubCat,
+                  previewCharId,
+                  feedback: {
+                    type: 'success',
+                    text: `Berhasil membeli ${itemName}! Klik tombol "Pakai" untuk langsung menggunakannya di arena.`
+                  }
+                });
+              } else {
+                battleAudio.play('wrong');
+                shopFeedback = { type: 'error', text: res.message || 'Pembelian gagal diproses.' };
+                renderView();
+              }
+            }
+          });
         });
       });
 
@@ -4416,12 +4474,24 @@ export class UIManager {
     renderView();
   }
 
-  showBattlePurchaseConfirmModal({ charObj, currentCoins, onConfirm }) {
+  showBattlePurchaseConfirmModal({
+    charObj = null,
+    title = 'Konfirmasi Pembelian',
+    itemName = '',
+    itemSubtitle = '',
+    price = 0,
+    previewUrl = null,
+    currentCoins = 0,
+    onConfirm
+  }) {
     const existing = document.getElementById('ba-buy-confirm-modal');
     if (existing) existing.remove();
 
-    const previewUrl = BattleFighterRig.renderPreviewDataURL(charObj.id);
-    const sisaKoin = Math.max(0, currentCoins - charObj.price);
+    const resolvedName = charObj ? charObj.name : itemName;
+    const resolvedSub = charObj ? (charObj.roleTag || 'Koleksi Karakter') : itemSubtitle;
+    const resolvedPrice = charObj ? charObj.price : price;
+    const resolvedImg = charObj ? BattleFighterRig.renderPreviewDataURL(charObj.id) : previewUrl;
+    const sisaKoin = Math.max(0, currentCoins - resolvedPrice);
 
     const modalEl = document.createElement('div');
     modalEl.id = 'ba-buy-confirm-modal';
@@ -4432,17 +4502,17 @@ export class UIManager {
 
     modalEl.innerHTML = `
       <div class="cartoon-panel" style="max-width:440px; padding:22px; text-align:center;">
-        <h3 style="margin:0 0 8px; font-size:1.3rem; font-weight:900; color:#2b1810;">
-          🛒 Konfirmasi Pembelian Karakter
+        <h3 style="margin:0 0 8px; font-size:1.25rem; font-weight:900; color:#2b1810;">
+          🛒 ${this.escapeHtml(charObj ? 'Konfirmasi Pembelian Karakter' : title)}
         </h3>
         <div style="background:#eef9ff; border:2px solid #38bdf8; border-radius:16px; padding:12px; margin-bottom:14px;">
-          <img src="${previewUrl}" alt="${this.escapeHtml(charObj.name)}" style="width:96px; height:108px; object-fit:contain;" />
-          <div style="font-weight:900; font-size:1.1rem; color:#1e3a8a; margin-top:4px;">${this.escapeHtml(charObj.name)}</div>
-          <div style="font-size:0.84rem; font-weight:700; color:#475569;">${this.escapeHtml(charObj.roleTag || '')}</div>
+          ${resolvedImg ? `<img src="${resolvedImg}" alt="${this.escapeHtml(resolvedName)}" style="width:94px; height:106px; object-fit:contain;" />` : `<div style="font-size:2.6rem;">✨</div>`}
+          <div style="font-weight:900; font-size:1.08rem; color:#1e3a8a; margin-top:4px;">${this.escapeHtml(resolvedName)}</div>
+          <div style="font-size:0.84rem; font-weight:700; color:#475569;">${this.escapeHtml(resolvedSub)}</div>
         </div>
 
         <div style="background:#fffbeb; border:2px solid #f59e0b; border-radius:12px; padding:10px 14px; font-size:0.88rem; font-weight:800; color:#78350f; margin-bottom:16px;">
-          <div>Harga Karakter: <strong>🪙 ${charObj.price} Koin</strong></div>
+          <div>Harga: <strong>🪙 ${resolvedPrice} Koin</strong></div>
           <div style="font-size:0.82rem; margin-top:4px; color:#576574;">
             Saldo Sekarang: ${currentCoins} Koin → Sisa Setelah Beli: <strong>${sisaKoin} Koin</strong>
           </div>
