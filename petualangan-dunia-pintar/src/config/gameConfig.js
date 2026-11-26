@@ -139,7 +139,7 @@ export const GAME_CONFIG = {
       active: true,
       allowedGrades: [1, 2, 3, 4],
       statusText: "Aktif",
-      desc: "Greetings, Numbers, Colors, Animals, Vocabulary & Reading",
+      desc: "My Self, Favorite Activities, My Family & Activities at Home",
     },
     {
       id: "pendidikan_pancasila",
@@ -157,7 +157,7 @@ export const GAME_CONFIG = {
       active: true,
       allowedGrades: [1, 2, 3, 4],
       statusText: "Aktif",
-      desc: "Unsur Rupa, Warna, Bentuk 2D/3D, Kolase, Mozaik & Apresiasi Karya",
+      desc: "Garis & Bentuk, Warna, Menggambar Cerita, Komposisi & Tekstur",
     },
     {
       id: "pai",
